@@ -39,9 +39,9 @@ Now you can enable/disable trace and debug logging with preprocessor flags. MLOG
     {
     	MLOG_TRACE("write a trace line to your log."); // works only with MLOGTRACE
     	MLOG_DEBUG("write a debug line to your log."); // works only with MLOGDEBUG
-	MLOG_INFO("write a info line to your log.");
-	MLOG_ERROR("write a error line to your log.");
-	MLOG_FATAL("write a fatal line to your log.");
-	return 0;
+    	MLOG_INFO("write a info line to your log.");
+    	MLOG_ERROR("write a error line to your log.");
+    	MLOG_FATAL("write a fatal line to your log.");
+    	return 0;
     }
 
