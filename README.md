@@ -9,7 +9,7 @@ Getting started
 ===============
 
 Building with CMake
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 
 To build the libraries and run the tests with CMake, you will need to
