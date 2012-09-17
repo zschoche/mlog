@@ -4,7 +4,6 @@
 C++ logging library to disable log statements via preprocessor.
 
 
-
 ## Getting started
 
 ### Building with CMake
@@ -24,7 +23,7 @@ configure and generate the Makefiles.
     $ cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
 Once CMake is done with generating the Makefiles and configuring the project,
-you can now build the library::
+you can now build the library.
 
     $ make
 
