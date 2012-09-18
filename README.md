@@ -38,7 +38,7 @@ Now you can enable/disable trace and debug logging with preprocessor flags. MLOG
     int main()
     {
     	MLOG_TRACE("write a trace line to your log."); // works only with MLOGTRACE
-    	MLOG_DEBUG("write a debug line to your log."); // works only with MLOGDEBUG
+    	MLOG_DEBUG("write " << 1 << " debug line to your log."); // works only with MLOGDEBUG
     	MLOG_INFO("write a info line to your log.");
     	MLOG_ERROR("write a error line to your log.");
     	MLOG_FATAL("write a fatal line to your log.");
@@ -57,7 +57,7 @@ If you want to log into a file then use the file_logger or file_logger_thread_sa
     	mlog::mlogger.reset(new mlog::file_logger("log.txt", ".", 1024 * 1024 * 5)); //5MB log files in current directory 
 
     	MLOG_TRACE("write a trace line to your log."); // works only with MLOGTRACE
-    	MLOG_DEBUG("write a debug line to your log."); // works only with MLOGDEBUG
+    	MLOG_DEBUG("write " << 1 << " debug line to your log."); // works only with MLOGDEBUG
     	MLOG_INFO("write a info line to your log.");
     	MLOG_ERROR("write a error line to your log.");
     	MLOG_FATAL("write a fatal line to your log.");
