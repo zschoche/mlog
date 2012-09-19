@@ -10,6 +10,7 @@
 
 #include "logger.hpp"
 #include "leveled_logger.hpp"
+#include "thread_safe.hpp"
 #include <boost/shared_ptr.hpp>
 
 namespace mlog

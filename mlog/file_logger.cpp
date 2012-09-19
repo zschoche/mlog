@@ -1,5 +1,4 @@
 
-
 #include "file_logger.hpp"
 #include <ostream>
 #include <sstream>
@@ -82,23 +81,5 @@ std::string file_logger::get_next_logfile(const std::string& directory, const st
 
 	return result;
 }
-
-file_logger_thread_safe::file_logger_thread_safe (const std::string& log_name, const std::string& log_directory, std::size_t max_file_size)
-:file_logger(log_name, log_directory, max_file_size)
-{
-
-}
-file_logger_thread_safe::~file_logger_thread_safe()
-{
-}
-
-void file_logger_thread_safe::write_to_log(const std::string& log_text) 
-{
-	boost::mutex::scoped_lock lock(m_mutex);
-	file_logger::write_to_log(log_text);
-}
-
-
-
 
 } /* mlog */

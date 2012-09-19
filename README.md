@@ -79,3 +79,18 @@ Your own logger must inherit from mlog::logger and overwrite the functions write
     
     }
 
+It's possible to make any logger thread safe with the mlog::thread_safe<> template.
+
+
+	#include <mlog/mlog.hpp>
+	#include <mlog/file_logger.hpp>
+		
+	int main()
+	{
+		mlog::mlogger.reset(new mlog::thread_safe<mlog::file_logger>("log.txt", ".", 1024 * 1024 * 5));
+		MLOG_TRACE("this is thread safe.");
+		return 0;
+	}
+
+
+
