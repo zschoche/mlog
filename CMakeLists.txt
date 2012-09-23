@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project(mlog)
 
-set(CMAKE_CXX_FLAGS "-Wall -g -O3 -std=c++11")
+set(CMAKE_CXX_FLAGS "-Wall -O3 -std=c++11 -fexceptions")
+#set(CMAKE_CXX_FLAGS "-Wall -g -std=c++11 -fexceptions")
 
 #includes
 include_directories(.)
