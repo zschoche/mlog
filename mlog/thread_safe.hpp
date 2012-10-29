@@ -8,18 +8,20 @@
 
 #include <boost/move/move.hpp>
 #include <boost/thread.hpp>
+#include <boost/detail/lightweight_mutex.hpp>
+
 
 namespace mlog 
 {
 	
 
-template<class logger_type>
-class thread_safe : public logger_type
+template<class logger_type, class mutex_type>
+class synchronize : public logger_type
 {
 public:
 
 	template <typename... Args>
-	thread_safe(Args... args)
+	synchronize(Args... args)
 	:logger_type(boost::forward<Args>(args)...)
 	{
 	}
@@ -30,14 +32,22 @@ public:
 
 	virtual void write_to_log(const std::string& log_text)
 	{
-		boost::mutex::scoped_lock lock(m_mutex);
+		mutex_type::scoped_lock lock(m_mutex);
 		logger_type::write_to_log(log_text);
 	}
 
 
 private:
-	boost::mutex m_mutex;
+	boost::detail::lightweight_mutex m_mutex;
+
 };
+
+template<class logger_type>
+typedef synchronize<logger_type, boost::detail::lightweight_mutex> thread_safe;
+
+
+
+
 
 } /* mlog */
 
