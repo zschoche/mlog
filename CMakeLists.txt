@@ -3,8 +3,10 @@ project(mlog)
 
 add_definitions("-std=c++0x")
 add_definitions("-stdlib=libc++")
-
-set(CMAKE_CXX_FLAGS "-Wall -O3 -fexceptions")
+add_definitions("-Wall")
+add_definitions("-O3")
+add_definitions("-fexceptions")
+#add_definitions("-g")
 
 #includes
 include_directories(.)
