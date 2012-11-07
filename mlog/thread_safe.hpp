@@ -19,7 +19,7 @@ class thread_safe : public logger_type
 public:
 
 	template <typename... Args>
-	thread_safe(Args... args)
+	thread_safe(Args&&... args)
 	:logger_type(boost::forward<Args>(args)...)
 	{
 	}
