@@ -72,22 +72,19 @@ private:
 
 	void init_line()
 	{
-		m_stream << "{";
-
 		if (m_level == trace)
-			m_stream << "trace";
+			m_stream << "{trace}: ";
 		else if (m_level == debug)
-			m_stream << "debug";
+			m_stream << "{debug}: ";
 		else if (m_level == info)
-			m_stream << "info";
+			m_stream << "{info}: ";
 		else if (m_level == warning)
-			m_stream << "warning";
+			m_stream << "{warning}: ";
 		else if (m_level == error)
-			m_stream << "error";
+			m_stream << "{error}: ";
 		else if (m_level == fatal)
-			m_stream << "fatal";
+			m_stream << "{fatal}: ";
 
-		m_stream << "}: ";
 		m_has_content = true;
 	}
 
