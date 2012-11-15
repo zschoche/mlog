@@ -11,7 +11,7 @@
 namespace mlog
 {
 
-boost::shared_ptr<logger> mlogger(new logger());
+std::unique_ptr<logger> mlogger(new standard_logger());
 
 
 

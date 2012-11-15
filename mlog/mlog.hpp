@@ -11,12 +11,13 @@
 #include "logger.hpp"
 #include "leveled_logger.hpp"
 #include "thread_safe.hpp"
-#include <boost/shared_ptr.hpp>
+#include "standard_logger.hpp"
+#include <memory>
 
 namespace mlog
 {
 
-extern boost::shared_ptr<logger> mlogger;
+extern std::unique_ptr<logger> mlogger;
 
 template<class logger_class>
 void init();
@@ -24,8 +25,8 @@ void init();
 class log : public leveled_logger
 {
 public:
-	log(mlog_level level)
-	:leveled_logger(level, mlogger.get())
+	log(mlog_level&& level)
+	:leveled_logger(std::move(level), mlogger.get())
 	{
 
 	}
@@ -109,21 +110,33 @@ public:
 
 
 #ifdef MLOGTRACE
-#define MLOG_TRACE(x1) mlog::log_trace() << x1
+#define MLOG_TRACE_STREAM(x1) ::mlog::log_trace() << x1;
+#define MLOG_TRACE(x1) ::mlog::mlogger->write(mlog_level::trace, x1);
+ 
 #else
+#define MLOG_TRACE_STREAM(x1)
 #define MLOG_TRACE(x1)
 #endif
 
 
 #ifdef MLOGDEBUG
-#define MLOG_DEBUG(x1) mlog::log_debug() << x1
+#define MLOG_DEBUG_STREAM(x1) ::mlog::log_debug() << x1;
+#define MLOG_DEBUG(x1) ::mlog::mlogger->write(mlog_level::debug, x1); 
 #else
+#define MLOG_DEBUG_STREAM(x1)
 #define MLOG_DEBUG(x1)
 #endif
 
-#define MLOG_INFO(x1) mlog::log_info() << x1
-#define MLOG_WARNING(x1) mlog::log_warning() << x1
-#define MLOG_ERROR(x1) mlog::log_error() << x1
-#define MLOG_FATAL(x1) mlog::log_fatal() << x1
+#define MLOG_INFO_STREAM(x1) ::mlog::log_info() << x1;
+#define MLOG_INFO(x1) ::mlog::mlogger->write(mlog_level::info, x1);
+
+#define MLOG_WARNING_STREAM(x1) mlog::log_warning() << x1;
+#define MLOG_WARNING(x1) ::mlog::mlogger->write(mlog_level::warning, x1); 
+
+#define MLOG_ERROR_STREAM(x1) mlog::log_error() << x1;
+#define MLOG_ERROR(x1) ::mlog::mlogger->write(mlog_level::error, x1); 
+
+#define MLOG_FATAL_STREAM(x1) mlog::log_fatal() << x1;
+#define MLOG_FATAL(x1) ::mlog::mlogger->write(mlog_level::fatal, x1); 
 
 #endif /* MLOG_HPP_ */

@@ -31,24 +31,31 @@ public:
 
 	}
 
-	template<typename type>
-	leveled_logger& operator<<(const type& rhs)
+	template<typename T>
+	leveled_logger& operator<<(T rhs)
 	{
-		if (!m_has_content)
-			init_line();
-
+		//if (!m_has_content)
+		//	init_line();
+		m_has_content = true;
 		m_stream << rhs;
 		return *this;
 	}
 
 	leveled_logger& operator<<(char rhs)
 	{
+		m_has_content = true;
+
 		if (rhs == mlog::endl)
 			write_to_log();
 		else
 			m_stream << rhs;
 
 		return *this;
+	}
+
+	inline mlog_level level() const
+	{
+		return m_level;
 	}
 
 protected:
@@ -62,15 +69,16 @@ private:
 	logger* m_log;
 	bool m_has_content;
 	mlog_level m_level;
+	
 
 	void write_to_log()
 	{
-		m_log->write(m_stream.str());
-		m_stream.clear();
+		m_log->write(level(), m_stream.str()); 
+	//	m_stream.clear();
 		m_has_content = false;
 	}
 
-	void init_line()
+	/*void init_line()
 	{
 		if (m_level == trace)
 			m_stream << "{trace}: ";
@@ -86,7 +94,7 @@ private:
 			m_stream << "{fatal}: ";
 
 		m_has_content = true;
-	}
+	}*/
 
 };
 

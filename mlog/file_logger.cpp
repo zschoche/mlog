@@ -1,6 +1,5 @@
 
 #include "file_logger.hpp"
-#include <ostream>
 #include <sstream>
 #include <string>
 #include <boost/lexical_cast.hpp>
@@ -9,10 +8,10 @@ namespace mlog
 {
 	
 
-file_logger::file_logger(const std::string& log_name, const std::string& log_directory, std::size_t max_file_size)
-:m_log_name(log_name),
-m_log_directory(log_directory),
-m_max_file_size(max_file_size),
+file_logger::file_logger(std::string log_name, std::string log_directory, mlog_bytes max_file_size)
+:m_log_name(std::move(log_name)),
+m_log_directory(std::move(log_directory)),
+m_max_file_size(std::move(max_file_size)),
 m_offset(0),
 m_stream(get_next_logfile(log_directory, log_name, max_file_size, &m_offset), BOOST_IOS::app)
 {
@@ -25,16 +24,19 @@ file_logger::~file_logger()
 }
 
 
-void file_logger::write_to_log(const std::string& log_text)
+void file_logger::write_to_log(log_metadata&& metadata, std::string&& log_text)
 {
-	std::size_t length = log_text.size();
+	std::string metadata_str = metadata.to_string();
+	std::size_t md_len = metadata_str.size();
+	std::size_t length = log_text.size() + md_len; 
 	char* buffer = new char[length + 1];
-	memcpy(buffer, log_text.c_str(), length);
+	memcpy(buffer, metadata_str.c_str(), md_len); 
+	memcpy(&buffer[md_len], log_text.c_str(), log_text.size());
 	buffer[length] = '\n';
 	m_stream.write(buffer, length + 1);
 	delete [] buffer;
 	m_offset += length;
-	if(m_offset > max_file_size())
+	if(max_file_size() != 0 && m_offset > max_file_size())
 	{
 		flush();
 		m_stream.open(get_next_logfile(m_log_directory, m_log_name, max_file_size(), &m_offset));
@@ -47,7 +49,7 @@ void file_logger::flush()
 }
 
 
-std::string file_logger::get_next_logfile(const std::string& directory, const std::string name, std::size_t max_file_size, std::size_t* offset)
+std::string file_logger::get_next_logfile(const std::string& directory, const std::string name, mlog_bytes max_file_size, mlog_bytes* offset)
 {
 	boost::filesystem::path path(directory);
 	path /= name;

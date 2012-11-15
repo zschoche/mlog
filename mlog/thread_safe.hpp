@@ -20,7 +20,7 @@ public:
 
 	template <typename... Args>
 	thread_safe(Args&&... args)
-	:logger_type(boost::forward<Args>(args)...)
+	:logger_type(std::forward<Args>(args)...)
 	{
 	}
 
@@ -28,10 +28,10 @@ public:
 	{
 	}
 
-	virtual void write_to_log(const std::string& log_text)
+	virtual void write_to_log(log_metadata&& metadata, std::string&& log_text)
 	{
 		boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
-		logger_type::write_to_log(log_text);
+		logger_type::write_to_log(std::move(metadata), std::move(log_text));
 	}
 
 
