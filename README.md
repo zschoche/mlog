@@ -53,13 +53,13 @@ The goal is to build a library with so much comfortable as possible and so few l
 
 First of all it is really easy to create your first log entry.
 The only thing you have to do is include the __mlog/mlog.hpp__ and the use one the the logging macro functions.
+```c++
+#include <mlog/mlog.hpp>
 
-    #include <mlog/mlog.hpp>
+//...
 
-    //...
-
-    MLOG_INFO("this is your first log entry.")
-
+MLOG_INFO("this is your first log entry.")
+```
 There are 12 different macro functions
 
 The follow macro functions accept `std::strings`:
@@ -114,15 +114,15 @@ The `mlog::mlogger` is a static `std::unique_ptr<mlog::logger>` and contains the
 The standard destination is a `mlog::standard_logger`. Rest the `mlog::mlogger` to use another destination.
 
 Example:
-
-    #include <mlog/mlog.hpp>
-    #include <mlog/file_logger.hpp>
+```c++
+#include <mlog/mlog.hpp>
+#include <mlog/file_logger.hpp>
     
-    //...
+//...
     
-    mlog::mlogger.reset(new mlog::file_logger("log.txt"));
-    MLOG_TRACE("Write this into log.txt");
-
+mlog::mlogger.reset(new mlog::file_logger("log.txt"));
+MLOG_TRACE("Write this into log.txt");
+```
 
 This library is already shipped with the followed logger types:
 
@@ -161,10 +161,10 @@ This library is already shipped with the followed logger types:
 
 Is is possible to create your own logger class if you want to write your log at some place in the network or something like that. You just have to write a logger class and overload the `mlog::logger::write_to_log()` function.
 
-__mlog::logger interface__
-
-    namespace mlog
-    {
+__mlog::logger interface:__
+```c++
+namespace mlog
+{
 
 	class logger
 	{
@@ -172,4 +172,6 @@ __mlog::logger interface__
 
 		virtual void write_to_log(log_metadata&& metadata, std::string&& log_text) = 0;
 	};
-    }
+}
+
+```
