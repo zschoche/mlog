@@ -45,7 +45,6 @@ public:
 	
 	virtual ~log_trace()
 	{
-		get_logger()->flush();
 	}
 };
 
@@ -58,7 +57,6 @@ public:
 
 	virtual ~log_debug()
 	{
-		get_logger()->flush();
 	}
 
 };
@@ -88,7 +86,6 @@ public:
 	
 	virtual ~log_error()
 	{
-		get_logger()->flush();
 	}
 
 };
@@ -102,7 +99,6 @@ public:
 
 	virtual ~log_fatal()
 	{
-		get_logger()->flush();	
 	}
 };
 
