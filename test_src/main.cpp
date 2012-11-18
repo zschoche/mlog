@@ -11,7 +11,7 @@ static const int num_loops = 100000;
 void write_some_log_entrys()
 {
 	for(int i = 0; i < num_loops; i++)
-		MLOG_INFO("this is a test.") 
+		MLOG_INFO("this is a test."); 
 }
 
 double single_thread_test()
@@ -101,6 +101,7 @@ void memory_logger_test()
 void file_logger_test()
 {	
 	mlog::mlogger.reset(new mlog::file_logger("log.txt"));
+	mlog::mlogger->use_time(false);
 	double  st_result = single_thread_test();
 	mlog::mlogger->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
@@ -108,6 +109,7 @@ void file_logger_test()
 	double st_result_thread_id_time = single_thread_test();
 		
 	mlog::mlogger.reset(new mlog::file_logger_thread_safe("log.txt"));
+	mlog::mlogger->use_time(false);
 	double mt_result = multi_thread_test();
 	mlog::mlogger->use_thread_id(true);
 	double mt_result_thread_id = multi_thread_test();

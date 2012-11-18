@@ -5,8 +5,8 @@
  *      Author: philipp
  */
 
-#ifndef MLOG_HPP_
-#define MLOG_HPP_
+#ifndef __MLOG_HPP_
+#define __MLOG_HPP_
 
 #include "logger.hpp"
 #include "leveled_logger.hpp"
@@ -110,8 +110,8 @@ public:
 
 
 #ifdef MLOGTRACE
-#define MLOG_TRACE_STREAM(x1) ::mlog::log_trace() << x1;
-#define MLOG_TRACE(x1) ::mlog::mlogger->write(mlog_level::trace, x1);
+#define MLOG_TRACE_STREAM(x1) ::mlog::log_trace() << x1
+#define MLOG_TRACE(x1) ::mlog::mlogger->write(mlog_level::trace, x1)
  
 #else
 #define MLOG_TRACE_STREAM(x1)
@@ -120,23 +120,27 @@ public:
 
 
 #ifdef MLOGDEBUG
-#define MLOG_DEBUG_STREAM(x1) ::mlog::log_debug() << x1;
-#define MLOG_DEBUG(x1) ::mlog::mlogger->write(mlog_level::debug, x1); 
+#define MLOG_DEBUG_STREAM(x1) ::mlog::log_debug() << x1
+#define MLOG_DEBUG(x1) ::mlog::mlogger->write(mlog_level::debug, x1) 
 #else
 #define MLOG_DEBUG_STREAM(x1)
 #define MLOG_DEBUG(x1)
 #endif
 
-#define MLOG_INFO_STREAM(x1) ::mlog::log_info() << x1;
-#define MLOG_INFO(x1) ::mlog::mlogger->write(mlog_level::info, x1);
+#define MLOG_INFO_STREAM(x1) ::mlog::log_info() << x1
+#define MLOG_INFO(x1) ::mlog::mlogger->write(mlog_level::info, x1)
 
-#define MLOG_WARNING_STREAM(x1) mlog::log_warning() << x1;
-#define MLOG_WARNING(x1) ::mlog::mlogger->write(mlog_level::warning, x1); 
+#define MLOG_WARNING_STREAM(x1) mlog::log_warning() << x1
+#define MLOG_WARNING(x1) ::mlog::mlogger->write(mlog_level::warning, x1) 
 
-#define MLOG_ERROR_STREAM(x1) mlog::log_error() << x1;
-#define MLOG_ERROR(x1) ::mlog::mlogger->write(mlog_level::error, x1); 
+#define MLOG_ERROR_STREAM(x1) mlog::log_error() << x1
+#define MLOG_ERROR(x1) ::mlog::mlogger->write(mlog_level::error, x1) 
 
-#define MLOG_FATAL_STREAM(x1) mlog::log_fatal() << x1;
-#define MLOG_FATAL(x1) ::mlog::mlogger->write(mlog_level::fatal, x1); 
+#define MLOG_FATAL_STREAM(x1) mlog::log_fatal() << x1
+#define MLOG_FATAL(x1) ::mlog::mlogger->write(mlog_level::fatal, x1) 
 
 #endif /* MLOG_HPP_ */
+
+#ifdef MLOG_NO_LIB
+#include "impl/mlog.ipp"
+#endif

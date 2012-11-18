@@ -5,8 +5,8 @@
  *      Author: philipp
  */
 
-#ifndef LEVELED_LOGGER_HPP_
-#define LEVELED_LOGGER_HPP_
+#ifndef __LEVELED_LOGGER_HPP__
+#define __LEVELED_LOGGER_HPP__
 
 #include "logger.hpp"
 #include <sstream>
@@ -100,3 +100,8 @@ private:
 
 } /* namespace mlog */
 #endif /* LEVELED_LOGGER_HPP_ */
+
+#ifdef MLOG_NO_LIB
+#include "impl/leveled_logger.ipp"
+#endif
+

@@ -5,8 +5,8 @@
  *      Author: philipp
  */
 
-#ifndef LOGGER_HPP_
-#define LOGGER_HPP_
+#ifndef __LOGGER_HPP__
+#define __LOGGER_HPP__
 
 
 #include <string>
@@ -109,3 +109,7 @@ private:
 
 }
 #endif /* LOGGER_HPP_ */
+
+#ifdef MLOG_NO_LIB
+#include "impl/logger.ipp"
+#endif

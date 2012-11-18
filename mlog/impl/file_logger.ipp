@@ -1,5 +1,8 @@
 
-#include "file_logger.hpp"
+#ifndef __FILE_LOGGER_IPP__
+#define __FILE_LOGGER_IPP__
+
+#include "../file_logger.hpp"
 #include <sstream>
 #include <string>
 #include <boost/lexical_cast.hpp>
@@ -85,3 +88,6 @@ std::string file_logger::get_next_logfile(const std::string& directory, const st
 }
 
 } /* mlog */
+
+#endif
+

@@ -3,7 +3,11 @@
 *	Author: Philipp Zschoche
 *
 */
-#include "logger.hpp"
+
+#ifndef __LOGGER_IPP__
+#define __LOGGER_IPP__
+
+#include "../logger.hpp"
 #include <boost/random.hpp>
 
 namespace mlog
@@ -11,7 +15,7 @@ namespace mlog
 
 
 log_metadata::log_metadata()
-:use_time(false),
+:use_time(true),
 use_thread_id(false)
 {
 
@@ -75,6 +79,9 @@ logger::~logger()
 	
 	
 } /* mlog */
+
+
+#endif
 
 
 
