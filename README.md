@@ -126,15 +126,36 @@ Example:
 
 This library is already shipped with the followed logger types:
 
-| Logger Name | Description |
-|----------------------------------------|
-| `mlog::standard_logger` | Is logging into std::cout |
-|`mlog::standard_logger_thread_safe` | Is logging thread safe into std::cout | 
-|`mlog::file_logger`  | Is logging into a file |
-|`mlog::file_logger_thread_safe` | Is logging thread safe into a file |
-|`mlog::memory_logger_normal` | Is logging thread safe into the memory |
-|`mlog::memory_logger_big` | Is logging thread safe into the memory with a   |
-
+<table>
+  <tr>
+    <th>Logger Name</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>mlog::standard_logger</td>
+    <td>Is logging into std::cout</td>
+  </tr>
+  <tr>
+    <td>mlog::standard_logger_thread_safe</td>
+    <td>Is logging thread safe into std::cout</td>
+  </tr>
+  <tr>
+    <td>mlog::file_logger</td>
+    <td>Is logging into a file</td>
+  </tr> 
+  <tr>
+    <td>mlog::file_logger_thread_safe</td>
+    <td>Is logging thread safe into a file</td>
+  </tr>
+  <tr>
+    <td>mlog::memory_logger_normal</td>
+    <td>Is logging thread safe into the memory<br>(holds the last 4096 log entrys)</td>
+  </tr>
+  <tr>
+    <td>mlog::memory_logger_big</td>
+    <td>Is logging thread safe into the memory<br>(holds the last 65535 log entrys)</td>
+  </tr>
+</table>
 
 ### Custom Log Infrastructure
 
