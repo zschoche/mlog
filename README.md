@@ -159,7 +159,7 @@ This library is already shipped with the followed logger types:
 
 ### Custom Log Infrastructure
 
-Is is possible to create your own logger class if you want to write your log at some place in the network or something like that. You just have to write a logger class and overload the `mlog::logger::write_to_log()` function.
+It is possible to create your own logger class if you want to write your log at some place in the network or something like that. You just have to write a logger class and overload the `mlog::logger::write_to_log()` function.
 
 __mlog::logger interface:__
 ```c++
