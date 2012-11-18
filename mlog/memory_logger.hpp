@@ -71,10 +71,6 @@ public:
 		}
 	}
 	
-	virtual void flush()
-	{
-
-	}
 
 	std::ostream& output(std::ostream& stream) 
 	{

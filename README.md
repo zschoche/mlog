@@ -1,16 +1,98 @@
 # mlog
 
+a comfortable lightweight C++ logging library -- header-only, cross-platform, C++11.
 
-C++ logging library to disable log statements via preprocessor.
+## Prolog
+
+My first intention to build the library was Boost.Log and my problems with it.
+I have worked with Boost.log before I started to build to this logging library.
+
+Don't get me wrong Boost.Log is a great library, but once I tried to build a sandboxed app for Apples OSX 10.8 and got in trouble with Boost.Log.
+
+I thought a bit about logging at all and decided to create a lightweight logging library.
+The goal is to build a library with so much comfortable as possible and so few logging overhead as possible.
+
+## What makes this library lightweight?
+
+ - The preprocessor `MLOG_NO_LIB` makes this library header-only.
+
+ - Here are the speed test result on my MacBook Air (1.86 GHz Intel Core 2 Duo, 4GB RAM):
+
+>      ### single-threaded standard logger test ###
+>      0.005545ms for each log statment.
+>      0.00789ms for each log statment with thread id.
+>      0.01663ms for each log statment with thread id and timestamp.
+
+>      ### multi-threaded standard logger test ###
+>      0.027485ms for each log statment.
+>      0.03672ms for each log statment with thread id.
+>      0.050505ms for each log statment with thread id and timestamp.
+
+>      ### single-threaded memory logger test ###
+>      4e-05ms for each log statment.
+>      4.5e-05ms for each log statment with thread id.
+>      9e-05ms for each log statment with thread id and timestamp.
+
+>      ### multi-threaded memory logger test ###
+>      0.00013ms for each log statment.
+>      0.0001ms for each log statment with thread id.
+>      0.0001ms for each log statment with thread id and timestamp.
+
+>      ### single-threaded file logger test ###
+>      0.00037ms for each log statment.
+>      0.001385ms for each log statment with thread id.
+>      0.002795ms for each log statment with thread id and timestamp.
+    
+>      ### multi-threaded file logger test ###
+>      0.00457ms for each log statment.
+>      0.01448ms for each log statment with thread id.
+>      0.021335ms for each log statment with thread id and timestamp.
 
 
+## What makes this library comfortable?
 
-## Getting started
+First of all it is really easy to create your first log entry.
+The only thing you have to do is include the __mlog/mlog.hpp__ and the use one the the logging macro functions.
 
-### Building with CMake
+    #include <mlog/mlog.hpp>
+
+    //...
+
+    MLOG_INFO("this is your first log entry.")
+
+There are 12 different macro functions
+
+The follow macro functions accept `std::strings`:
+
+    MLOG_TRACE()
+    MLOG_DEBUG()
+    MLOG_INFO()
+    MLOG_WARNING()
+    MLOG_ERROR()
+    MLOG_FATAL()
+
+Example: `MLOG_INFO("how to log");`
+
+The next functions working with `std::stringstream`:
+
+    MLOG_TRACE_STREAM()
+    MLOG_DEBUG_STREAM()
+    MLOG_INFO_STREAM()
+    MLOG_WARNING_STREAM()
+    MLOG_ERROR_STREAM()
+    MLOG_FATAL_STREAM()
+
+Example: `MLOG_INFO_STREAM("how to log " << "with a stream");`
+
+The trace and debug log statments are only working when **MLOGDEBUG** and **MLOGTRACE** is defined as a preprocessor flag. If it is not then the debug and trace statments are completely ignored. These statements do not affect the performance of your program any more.
+
+I just recommend you to use these macro functions while developing and remove the defines on your release builds.
+Also I just recommand you to use [Boost.Format](http://www.boost.org/doc/libs/1_52_0/libs/format/) is stead of the std::stringstream version. It's faster.
+
+## Building with CMake
 
 To build the library and with CMake, you will need to
-have CMake version 2.8 or higher installed appropriately in your
+have CMake version 2.6 or higher installed appropriately in your
 system.
 
     $ cmake --version
@@ -26,71 +108,47 @@ you can now build the library.
 
     $ make
 
-### How to create logs 
+## Log Destination
 
-Add this mlog project directory as an include directory and the libmlog.a into your project.
+The `mlog::mlogger` is a static `std::unique_ptr<mlog::logger>` and contains the current log destination.
+The standard destination is a `mlog::standard_logger`. Rest the `mlog::mlogger` to use another destination.
 
-Now you can enable/disable trace and debug logging with preprocessor flags. MLOGTRACE for trace and MLOGDEBUG for debug.
-
-
-    #include <mlog/mlog.hpp>
-
-    int main()
-    {
-    	MLOG_TRACE("write a trace line to your log."); // works only with MLOGTRACE
-    	MLOG_DEBUG("write " << 1 << " debug line to your log."); // works only with MLOGDEBUG
-    	MLOG_INFO("write a info line to your log.");
-    	MLOG_ERROR("write a error line to your log.");
-    	MLOG_FATAL("write a fatal line to your log.");
-    	return 0;
-    }
-
-The default log target is std::cout.
-If you want to log into a file then use the file_logger or file_logger_thread_safe.
-
+Example:
 
     #include <mlog/mlog.hpp>
     #include <mlog/file_logger.hpp>
+    
+    //...
+    
+    mlog::mlogger.reset(new mlog::file_logger("log.txt"));
+    MLOG_TRACE("Write this into log.txt");
 
-    int main()
-    {
-    	mlog::mlogger.reset(new mlog::file_logger("log.txt", ".", 1024 * 1024 * 5)); //5MB log files in current directory 
 
-    	MLOG_TRACE("write a trace line to your log."); // works only with MLOGTRACE
-    	MLOG_DEBUG("write " << 1 << " debug line to your log."); // works only with MLOGDEBUG
-    	MLOG_INFO("write a info line to your log.");
-    	MLOG_ERROR("write a error line to your log.");
-    	MLOG_FATAL("write a fatal line to your log.");
-    	return 0;
-    }
+This library is already shipped with the followed logger types:
 
-If you want to write your logs to a completly different target then you have to implement your own logger and reset mlog::mlogger.
-Your own logger must inherit from mlog::logger and overwrite the functions write_to_log() and flush().
+| Logger Name | Description |
+|----------------------------------------|
+| `mlog::standard_logger` | Is logging into std::cout |
+|`mlog::standard_logger_thread_safe` | Is logging thread safe into std::cout | 
+|`mlog::file_logger`  | Is logging into a file |
+|`mlog::file_logger_thread_safe` | Is logging thread safe into a file |
+|`mlog::memory_logger_normal` | Is logging thread safe into the memory |
+|`mlog::memory_logger_big` | Is logging thread safe into the memory with a   |
+
+
+### Custom Log Infrastructure
+
+Is is possible to create your own logger class if you want to write your log at some place in the network or something like that. You just have to write a logger class and overload the `mlog::logger::write_to_log()` function.
+
+__mlog::logger interface__
 
     namespace mlog
     {
-    
-    class logger
-    {
-    public:
-    	virtual void flush();
-    	virtual void write_to_log(const std::string& log_text);
-    };
-    
-    }
 
-It's possible to make any logger thread safe with the mlog::thread_safe<> template.
-
-
-	#include <mlog/mlog.hpp>
-	#include <mlog/file_logger.hpp>
-		
-	int main()
+	class logger
 	{
-		mlog::mlogger.reset(new mlog::thread_safe<mlog::file_logger>("log.txt", ".", 1024 * 1024 * 5));
-		MLOG_TRACE("this is thread safe.");
-		return 0;
-	}
+	public:
 
-
-
+		virtual void write_to_log(log_metadata&& metadata, std::string&& log_text) = 0;
+	};
+    }
