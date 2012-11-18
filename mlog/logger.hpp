@@ -40,11 +40,15 @@ inline std::string level_to_string(T&& level)
 
 struct log_metadata
 {
+
+	//typedef std::chrono::high_resolution_clock clocks;
+	typedef std::chrono::system_clock clocks;
+
 	bool use_time;
 	bool use_thread_id;
 	mlog_level level;
 	short session_id;
-	std::chrono::time_point<std::chrono::system_clock> time;
+	std::chrono::time_point<clocks> time;
 	std::thread::id thread_id;
 
 	log_metadata();
@@ -74,7 +78,7 @@ public:
 		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id), std::string(log_text));
 	}
 
-	virtual void flush() = 0;
+	//virtual void flush() = 0;
 	virtual void write_to_log(log_metadata&& metadata, std::string&& log_text) = 0;
 
 	

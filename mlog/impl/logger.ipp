@@ -28,7 +28,7 @@ level(std::move(lvl)),
 session_id(std::move(session_id))
 {
 	if(use_time)
-		time = std::chrono::system_clock::now(); 
+		time = clocks::now(); 
 
 	if(use_thread_id)
 		thread_id = std::this_thread::get_id();
@@ -39,8 +39,10 @@ std::string log_metadata::to_string() const
 	char buffer[64];
 	if(use_time)
 	{
-		std::time_t timet = std::chrono::system_clock::to_time_t(time);
-		uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch()).count() - timet * 1000;
+
+		std::time_t timet = clocks::to_time_t(time);
+
+		uint64_t ms = std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count() - timet * 1000000000;
 		std::tm* tm =  std::localtime(&timet);
 		
 		if(use_thread_id) //2012-11-02 15:24:04.345 [24-0x7fff72ca8180]{warning}: 
