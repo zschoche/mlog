@@ -4,19 +4,17 @@ a comfortable lightweight C++ logging library -- header-only, cross-platform, C+
 
 ## Prolog
 
-My first intention to build the library was Boost.Log and my problems with it.
-I have worked with Boost.log before I started to build to this logging library.
+Building this library first came to my mind when I was working with Boost.Log and experienced some problems with it.
 
-Don't get me wrong Boost.Log is a great library, but once I tried to build a sandboxed app for Apples OSX 10.8 and got in trouble with Boost.Log.
+Don't get me wrong Boost.Log is a great library, but one day when I started building a sandboxed app for Apple's OSX 10.8, Boost.Log gave me a headache.
 
-I thought a bit about logging at all and decided to create a lightweight logging library.
-The goal is to build a library with so much comfortable as possible and so few logging overhead as possible.
+I thought a bit about logging in general and decided to create a lightweight logging library. My goal was to build a library which is as comfortable as possible and which has as few logging overhead as possible.
 
 ## What makes this library lightweight?
 
  - The preprocessor `MLOG_NO_LIB` makes this library header-only.
 
- - Here are the speed test result on my MacBook Air (1.86 GHz Intel Core 2 Duo, 4GB RAM):
+ - Here are the speed test results on my MacBook Air (1.86 GHz Intel Core 2 Duo, 4GB RAM):
 
 >      ### single-threaded standard logger test ###
 >      0.005545ms for each log statment.
@@ -51,8 +49,7 @@ The goal is to build a library with so much comfortable as possible and so few l
 
 ## What makes this library comfortable?
 
-First of all it is really easy to create your first log entry.
-The only thing you have to do is include the __mlog/mlog.hpp__ and the use one the the logging macro functions.
+Basically you just have to include the __mlog/mlog.hpp__ and use one of the logging macro functions.
 ```c++
 #include <mlog/mlog.hpp>
 
@@ -62,7 +59,7 @@ MLOG_INFO("this is your first log entry.")
 ```
 There are 12 different macro functions.
 
-The follow macro functions accept a `std::string`:
+The follow macro functions work with `std::string`:
 
     MLOG_TRACE()
     MLOG_DEBUG()
@@ -73,7 +70,7 @@ The follow macro functions accept a `std::string`:
 
 Example: `MLOG_INFO("how to log");`
 
-The next functions working with `std::stringstream`:
+The next functions work with `std::stringstream`:
 
     MLOG_TRACE_STREAM()
     MLOG_DEBUG_STREAM()
@@ -85,9 +82,7 @@ The next functions working with `std::stringstream`:
 Example: `MLOG_INFO_STREAM("how to log " << "with a stream");`
 
 The trace and debug log statments are only working when **MLOGDEBUG** and **MLOGTRACE** is defined as a preprocessor flag. If it is not then the debug and trace statments are completely ignored. These statements do not affect the performance of your program any more.
-
-I just recommend you to use these macro functions while developing and remove the defines on your release builds.
-Also I just recommand you to use [Boost.Format](http://www.boost.org/doc/libs/1_52_0/libs/format/) is stead of the std::stringstream version. It's faster.
+I just recommand you to use [Boost.Format](http://www.boost.org/doc/libs/1_52_0/libs/format/) is stead of the std::stringstream version. It's faster.
 
 ## Building with CMake
 
