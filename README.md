@@ -60,9 +60,9 @@ The only thing you have to do is include the __mlog/mlog.hpp__ and the use one t
 
 MLOG_INFO("this is your first log entry.")
 ```
-There are 12 different macro functions
+There are 12 different macro functions.
 
-The follow macro functions accept `std::strings`:
+The follow macro functions accept a `std::string`:
 
     MLOG_TRACE()
     MLOG_DEBUG()
