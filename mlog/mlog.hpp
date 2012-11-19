@@ -27,13 +27,7 @@ class log : public leveled_logger
 public:
 	log(mlog_level&& level)
 	:leveled_logger(std::move(level), mlogger.get())
-	{
-
-	}
-
-	virtual ~log()
-	{
-	}
+	{ }
 };
 
 class log_trace : public log
@@ -42,10 +36,6 @@ public:
 	log_trace()
 	:log(trace)
 	{ }
-	
-	virtual ~log_trace()
-	{
-	}
 };
 
 class log_debug : public log
@@ -54,11 +44,6 @@ public:
 	log_debug()
 	:log(debug)
 	{ }
-
-	virtual ~log_debug()
-	{
-	}
-
 };
 
 class log_info : public log
@@ -83,11 +68,6 @@ public:
 	log_error()
 	:log(error)
 	{ }
-	
-	virtual ~log_error()
-	{
-	}
-
 };
 
 class log_fatal : public log
@@ -96,10 +76,6 @@ public:
 	log_fatal()
 	:log(fatal)
 	{ }
-
-	virtual ~log_fatal()
-	{
-	}
 };
 
 }; /* namespace mlog */

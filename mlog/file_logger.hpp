@@ -42,7 +42,7 @@ public:
 	
 	file_logger(std::string log_name, std::string log_directory = ".", mlog_bytes max_file_size = 5 * 1024 * 1024 /*5_MB*/);
 	virtual ~file_logger();
-	virtual void write_to_log(log_metadata&& metadata, std::string&& log_text); 
+	void write_to_log(log_metadata&& metadata, std::string&& log_text) override; 
 
 	template<typename T>
 	inline void max_file_size(T value) 

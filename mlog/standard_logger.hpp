@@ -27,12 +27,12 @@ public:
 	{
 	}
 
-	virtual void flush()
+	void flush()
 	{
 		std::cout.flush();	
 	}
 
-	virtual void write_to_log(log_metadata&& metadata, std::string&& log_text)
+	void write_to_log(log_metadata&& metadata, std::string&& log_text) override 
 	{
 		metadata.output(std::cout) << log_text << std::endl;
 	}

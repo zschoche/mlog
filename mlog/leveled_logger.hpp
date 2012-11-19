@@ -74,27 +74,8 @@ private:
 	void write_to_log()
 	{
 		m_log->write(level(), m_stream.str()); 
-	//	m_stream.clear();
 		m_has_content = false;
 	}
-
-	/*void init_line()
-	{
-		if (m_level == trace)
-			m_stream << "{trace}: ";
-		else if (m_level == debug)
-			m_stream << "{debug}: ";
-		else if (m_level == info)
-			m_stream << "{info}: ";
-		else if (m_level == warning)
-			m_stream << "{warning}: ";
-		else if (m_level == error)
-			m_stream << "{error}: ";
-		else if (m_level == fatal)
-			m_stream << "{fatal}: ";
-
-		m_has_content = true;
-	}*/
 
 };
 

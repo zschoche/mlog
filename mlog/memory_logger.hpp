@@ -51,7 +51,7 @@ public:
 	{
 	}
 
-	virtual void write_to_log(log_metadata&& metadata, std::string&& log_text)
+	void write_to_log(log_metadata&& metadata, std::string&& log_text) override
 	{
 	
 		if(m_use_mutex)
