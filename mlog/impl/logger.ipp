@@ -13,14 +13,6 @@
 namespace mlog
 {
 
-
-log_metadata::log_metadata()
-:use_time(true),
-use_thread_id(false)
-{
-
-}
-
 log_metadata::log_metadata(mlog_level&& lvl, short session_id, bool _use_time, bool _use_thread_id)
 :use_time(std::move(_use_time)), 
 use_thread_id(std::move(_use_thread_id)),

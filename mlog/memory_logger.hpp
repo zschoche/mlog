@@ -40,7 +40,6 @@ public:
 			ss << "Invalid template argument mlog::memory_logger::N. Next valid entry count is " << mask+1 << "."; 
 			throw std::invalid_argument(ss.str());
 		}
-		
 		if(!m_use_mutex.is_lock_free())
 			throw std::runtime_error("std::atomic<bool> is not lock free.");
 		
@@ -108,7 +107,7 @@ typedef memory_logger_big memory_logger_big_thread_safe; //memory_logger is alre
 
 
 template<unsigned long N>
-std::ostream& operator<<(std::ostream& lhs, memory_logger<N> & rhs) 
+constexpr std::ostream& operator<<(std::ostream& lhs, memory_logger<N> & rhs) 
 { 
  	return rhs.output(lhs); 
 }

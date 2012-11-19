@@ -44,14 +44,16 @@ struct log_metadata
 	//typedef std::chrono::high_resolution_clock clocks;
 	typedef std::chrono::system_clock clocks;
 
-	bool use_time;
-	bool use_thread_id;
-	mlog_level level;
-	short session_id;
+	bool use_time = true;
+	bool use_thread_id = false;
+	mlog_level level = info;
+	short session_id = 0;
 	std::chrono::time_point<clocks> time;
 	std::thread::id thread_id;
 
-	log_metadata();
+	log_metadata()
+	{
+	}
 
 	log_metadata(mlog_level&& lvl, short session_id, bool _use_time, bool _use_thread_id);
 	
@@ -81,10 +83,10 @@ public:
 	//virtual void flush() = 0;
 	virtual void write_to_log(log_metadata&& metadata, std::string&& log_text) = 0;
 
-	
-	inline void use_thread_id(bool value) 
+	template<typename T>	
+	inline void use_thread_id(T&& value) 
 	{
-		m_use_thread_id = value;
+		m_use_thread_id = std::forward<T>(value);
 	}
 	
 	inline bool use_thread_id() const
@@ -92,10 +94,10 @@ public:
 		return m_use_thread_id;
 	}
 
-
-	inline void use_time(bool value) 
+	template<typename T>
+	inline void use_time(T&& value) 
 	{
-		m_use_time = value;
+		m_use_time = std::forward<T>(value);
 	}
 	
 	inline bool use_time() const
