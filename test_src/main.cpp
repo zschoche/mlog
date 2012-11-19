@@ -135,8 +135,6 @@ void file_logger_test()
 
 int main()
 {
-	std::cout << static_cast<unsigned short>(-1) << std::endl;
-	return 0;
 	standard_logger_test();	
 	memory_logger_test();
 	file_logger_test();

@@ -117,5 +117,5 @@ private:
 #endif /* LOGGER_HPP_ */
 
 #ifdef MLOG_NO_LIB
-#include "impl/logger.ipp"
+#include "impl/logger.hpp"
 #endif

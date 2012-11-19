@@ -73,6 +73,6 @@ typedef thread_safe<file_logger> file_logger_thread_safe;
 #endif /* __FILE_LOGGER_HPP__ */
 
 #ifdef MLOG_NO_LIB
-#include "impl/file_logger.ipp"
+#include "impl/file_logger.hpp"
 #endif
 

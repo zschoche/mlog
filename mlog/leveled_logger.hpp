@@ -83,6 +83,6 @@ private:
 #endif /* LEVELED_LOGGER_HPP_ */
 
 #ifdef MLOG_NO_LIB
-#include "impl/leveled_logger.ipp"
+#include "impl/leveled_logger.hpp"
 #endif
 

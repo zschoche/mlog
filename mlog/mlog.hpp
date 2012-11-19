@@ -114,5 +114,5 @@ public:
 #endif /* MLOG_HPP_ */
 
 #ifdef MLOG_NO_LIB
-#include "impl/mlog.ipp"
+#include "impl/mlog.hpp"
 #endif
