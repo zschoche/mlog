@@ -106,7 +106,7 @@ you can now build the library.
 ## Log Destination
 
 The `mlog::mlogger` is a static `std::unique_ptr<mlog::logger>` and contains the current log destination.
-The standard destination is a `mlog::standard_logger`. Rest the `mlog::mlogger` to use another destination.
+The standard destination is a `mlog::standard_logger`. Reset the `mlog::mlogger` to use another destination.
 
 Example:
 ```c++
