@@ -78,13 +78,14 @@ public:
 	{ }
 };
 
+
 }; /* namespace mlog */
 
 
 #ifdef MLOGTRACE
 #define MLOG_TRACE_STREAM(x1) ::mlog::log_trace() << x1
 #define MLOG_TRACE(x1) ::mlog::mlogger->write(mlog_level::trace, x1)
- 
+
 #else
 #define MLOG_TRACE_STREAM(x1)
 #define MLOG_TRACE(x1)

@@ -59,7 +59,7 @@ MLOG_INFO("this is your first log entry.")
 ```
 There are 12 different macro functions.
 
-The follow macro functions work with `std::string`:
+The follow macro functions accept `char*`, `std::string` and `boost::format`:
 
     MLOG_TRACE()
     MLOG_DEBUG()
@@ -69,6 +69,7 @@ The follow macro functions work with `std::string`:
     MLOG_FATAL()
 
 Example: `MLOG_INFO("how to log");`
+Example: `MLOG_INFO(boost::format("how to log with format: %1%.") % 23);`
 
 The next functions work with `std::stringstream`:
 

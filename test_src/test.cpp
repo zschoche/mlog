@@ -137,10 +137,10 @@ BOOST_AUTO_TEST_CASE(memory_logger_test)
 	mlog::mlogger->use_time(false);
 	mlog::mlogger->use_thread_id(false);
 	mlog::mlogger->use_time(false);
-	
+
 	for(std::size_t i = 0;i < 2048; i++)
 	{
-		MLOG_INFO_STREAM(i);
+		MLOG_INFO(boost::format("%1%") % i);
 	}
 	
 	for(std::size_t i = 0;i < 2048; i++)

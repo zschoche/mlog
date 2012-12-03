@@ -12,6 +12,7 @@
 #include <string>
 #include <thread>
 #include <chrono>
+#include <boost/format.hpp>
 
 enum mlog_level
 {
@@ -69,6 +70,16 @@ public:
 	
 	virtual ~logger();
 		
+
+	inline void write(mlog_level&& level, boost::format&& format)
+	{
+		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id), boost::str(format));
+	}
+	
+	inline void write(mlog_level&& level, const boost::format& format)
+	{
+		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id), boost::str(format));
+	}
 
 	inline void write(mlog_level&& level, std::string&& log_text)
 	{
