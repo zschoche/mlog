@@ -79,12 +79,17 @@ public:
 		std::size_t offset = m_offset & (m_size - 1);
 		
 		for(unsigned long index = offset; index < m_size; index++)
-			m_log_entrys[index].output(stream) << std::endl;
+			m_log_entrys[index].metadata.output(stream) << m_log_entrys[index].text << std::endl;
 
 		for(unsigned long index = 0; index < offset; index++)
-			m_log_entrys[index].output(stream) << std::endl;
+			m_log_entrys[index].metadata.output(stream) << m_log_entrys[index].text << std::endl;
 
 		return stream;
+	}
+
+	const memory_entry& operator[](std::size_t const& index) const
+	{
+		return m_log_entrys[(m_offset + index) & (m_size - 1)];
 	}
 
 private:
