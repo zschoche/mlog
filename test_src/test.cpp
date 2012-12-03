@@ -1,3 +1,7 @@
+#define BOOST_TEST_MODULE test
+#define BOOST_TEST_DYN_LINK
+
+#include <boost/test/unit_test.hpp>
 
 #include <mlog/mlog.hpp>
 #include <mlog/memory_logger.hpp>
@@ -41,7 +45,7 @@ double multi_thread_test()
 	return ms; 
 }
 
-void standard_logger_test()
+BOOST_AUTO_TEST_CASE(standard_logger_speed_test)
 {
 	mlog::mlogger.reset(new mlog::standard_logger());
 	double  st_result = single_thread_test();
@@ -69,7 +73,7 @@ void standard_logger_test()
 	std::cout << mt_result_thread_id_time << "ms for each log statment with thread id and timestamp." << std::endl;
 }
 
-void memory_logger_test()
+BOOST_AUTO_TEST_CASE(memory_logger_speed_test)
 {
 	mlog::mlogger.reset(new mlog::memory_logger_normal());
 	double  st_result = single_thread_test();
@@ -94,11 +98,9 @@ void memory_logger_test()
 	std::cout << mt_result << "ms for each log statment." << std::endl;
 	std::cout << mt_result_thread_id << "ms for each log statment with thread id." << std::endl;
 	std::cout << mt_result_thread_id_time << "ms for each log statment with thread id and timestamp." << std::endl;
-
-
 }
 
-void file_logger_test()
+BOOST_AUTO_TEST_CASE(file_logger_speed_test)
 {	
 	mlog::mlogger.reset(new mlog::file_logger("log.txt"));
 	mlog::mlogger->use_time(false);
@@ -126,17 +128,27 @@ void file_logger_test()
 	std::cout << mt_result << "ms for each log statment." << std::endl;
 	std::cout << mt_result_thread_id << "ms for each log statment with thread id." << std::endl;
 	std::cout << mt_result_thread_id_time << "ms for each log statment with thread id and timestamp." << std::endl;
-
-
-
-
 }
 
-
-int main()
+BOOST_AUTO_TEST_CASE(memory_logger_test)
 {
-	standard_logger_test();	
-	memory_logger_test();
-	file_logger_test();
-	return 0;
+	mlog::memory_logger<2048>* mem_log = new mlog::memory_logger<2048>();
+	mlog::mlogger.reset(mem_log);
+	mlog::mlogger->use_time(false);
+	mlog::mlogger->use_thread_id(false);
+	mlog::mlogger->use_time(false);
+	
+	for(std::size_t i = 0;i < 2048; i++)
+	{
+		MLOG_INFO_STREAM(i);
+	}
+	
+	for(std::size_t i = 0;i < 2048; i++)
+	{
+		BOOST_CHECK_EQUAL(boost::lexical_cast<std::size_t>((*mem_log)[i].text), i); 
+	}
+
+	//std::cout << *mem_log << std::endl;
+
 }
+

@@ -23,9 +23,6 @@ aux_source_directory(./libs mlog_src)
 add_library(mlog ${mlog_src})
 
 #tests
-add_executable(test test_src/main.cpp)
-target_link_libraries(test mlog)
-target_link_libraries(test c++)
-target_link_libraries(test boost_system)
-target_link_libraries(test boost_filesystem)
+add_executable(test test_src/test.cpp)
+target_link_libraries(test c++ mlog boost_system boost_filesystem boost_unit_test_framework)
 
