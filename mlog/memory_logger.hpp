@@ -31,7 +31,7 @@ public:
 	memory_logger()
 	:m_use_mutex(false)
 	{
-		//check size
+		//check size (Yes, an exception thrown in a constructor.)
 		unsigned long bits = static_cast<unsigned long>(::log(m_size - 1) / ::log(2))+1;
 		unsigned long mask =  (1 << bits) - 1;
 		if((m_size -1) != mask) 
