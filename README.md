@@ -70,7 +70,9 @@ The follow macro functions accept `char*`, `std::string` and `boost::format`:
 
 Example:
 
+
 `MLOG_INFO("how to log");`
+
 
 `MLOG_INFO(boost::format("how to log with format: %1%.") % 23);`
 
@@ -84,6 +86,7 @@ The next functions work with `std::stringstream`:
     MLOG_FATAL_STREAM()
 
 Example: 
+
 
 `MLOG_INFO_STREAM("how to log " << "with a stream");`
 
