@@ -29,12 +29,14 @@ class memory_logger : public logger
 public:
 
 	memory_logger()
-	:m_use_mutex(false)
+	:logger(),
+	m_use_mutex(false)
 	{
-		//check size (Yes, an exception thrown in a constructor.)
-		unsigned long bits = static_cast<unsigned long>(::log(m_size - 1) / ::log(2))+1;
+		//unsigned long bits = static_cast<unsigned long>(::log(m_size - 1) / ::log(2))+1;
+		unsigned long bits = static_cast<unsigned long>(std::log2(N - 1))+1;
 		unsigned long mask =  (1 << bits) - 1;
-		if((m_size -1) != mask) 
+		static_assert((N -1) != mask,"didn't work ");
+		if((N -1) != mask) 
 		{
 			std::stringstream ss;
 			ss << "Invalid template argument mlog::memory_logger::N. Next valid entry count is " << mask+1 << "."; 
@@ -46,6 +48,8 @@ public:
 		if(!m_offset.is_lock_free())
 			throw std::runtime_error("std::atomic<unsigned long> is not lock free.");
 	}
+
+	
 
 	virtual ~memory_logger()
 	{

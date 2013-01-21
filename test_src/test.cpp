@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test)
 
 BOOST_AUTO_TEST_CASE(memory_logger_speed_test)
 {
-	mlog::mlogger.reset(new mlog::memory_logger_normal());
+	mlog::mlogger.reset(mlog::memory_logger_normal::create());
 	double  st_result = single_thread_test();
 	mlog::mlogger->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
