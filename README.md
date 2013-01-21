@@ -68,13 +68,7 @@ The follow macro functions accept `char*`, `std::string` and `boost::format`:
     MLOG_ERROR()
     MLOG_FATAL()
 
-Example:
-
-
-`MLOG_INFO("how to log");`
-
-
-`MLOG_INFO(boost::format("how to log with format: %1%.") % 23);`
+__Example:__ `MLOG_INFO("how to log");` and `MLOG_INFO(boost::format("how to log with format: %1%.") % 23);`
 
 The next functions work with `std::stringstream`:
 
@@ -85,10 +79,7 @@ The next functions work with `std::stringstream`:
     MLOG_ERROR_STREAM()
     MLOG_FATAL_STREAM()
 
-Example: 
-
-
-`MLOG_INFO_STREAM("how to log " << "with a stream");`
+__Example:__ `MLOG_INFO_STREAM("how to log " << "with a stream");`
 
 The trace and debug log statments only work if __MLOGDEBUG__ and __MLOGTRACE__ are defined as a preprocessor flag. If this is not the case the debug and trace statments will be ignored completely. These statements won't affect the performance of your program any more.
 I just recommand you to use [Boost.Format](http://www.boost.org/doc/libs/1_52_0/libs/format/) is stead of the std::stringstream version. It's faster.
