@@ -21,6 +21,11 @@ struct memory_entry
 	std::string text;
 };
 
+constexpr unsigned long log2(unsigned long x, unsigned long count = 0)
+{
+	return x < 2 ? count : log2((x>>1), count + 1);
+}
+
 
 // writing is already thread-safe.
 template<unsigned long N>
@@ -32,24 +37,24 @@ public:
 	:logger(),
 	m_use_mutex(false)
 	{
-		//unsigned long bits = static_cast<unsigned long>(::log(m_size - 1) / ::log(2))+1;
-		unsigned long bits = static_cast<unsigned long>(std::log2(N - 1))+1;
-		unsigned long mask =  (1 << bits) - 1;
-		static_assert((N -1) != mask,"didn't work ");
-		if((N -1) != mask) 
+		constexpr unsigned long bits = mlog::log2(N - 1)+1;
+		constexpr unsigned long mask =  ((1 << bits) - 1);
+		static_assert((N -1) == mask, "N is not valid. Try 4, 8, 16, 32 ... 1024, 2048, 4096... and so on.");
+		/*if((N -1) != mask) 
 		{
 			std::stringstream ss;
 			ss << "Invalid template argument mlog::memory_logger::N. Next valid entry count is " << mask+1 << "."; 
 			throw std::invalid_argument(ss.str());
-		}
-		if(!m_use_mutex.is_lock_free())
-			throw std::runtime_error("std::atomic<bool> is not lock free.");
+		}*/
 		
-		if(!m_offset.is_lock_free())
-			throw std::runtime_error("std::atomic<unsigned long> is not lock free.");
+		
 	}
 
-	
+	inline bool is_lock_free()
+	{
+		return m_use_mutex.is_lock_free() && m_offset.is_lock_free();
+	}
+
 
 	virtual ~memory_logger()
 	{
@@ -60,7 +65,7 @@ public:
 	
 		if(m_use_mutex)
 		{
-			std::size_t index = (m_offset + m_offset_temp++)  & (m_size - 1);
+			std::size_t index = (m_offset + m_offset_temp++)  & (N - 1);
 			boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
 			memory_entry& entry = m_log_entrys[index];
 			entry.metadata = std::move(metadata);
@@ -68,7 +73,7 @@ public:
 		}
 		else
 		{
-			memory_entry& entry = m_log_entrys[m_offset++ & (m_size - 1)];
+			memory_entry& entry = m_log_entrys[m_offset++ & (N - 1)];
 			entry.metadata = std::move(metadata);
 			entry.text = std::move(log_text);
 		}
@@ -80,9 +85,9 @@ public:
 		m_offset_temp = 0;
 		boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
 		m_use_mutex = false;
-		std::size_t offset = m_offset & (m_size - 1);
+		std::size_t offset = m_offset & (N - 1);
 		
-		for(unsigned long index = offset; index < m_size; index++)
+		for(unsigned long index = offset; index < N; index++)
 			m_log_entrys[index].metadata.output(stream) << m_log_entrys[index].text << std::endl;
 
 		for(unsigned long index = 0; index < offset; index++)
@@ -93,12 +98,15 @@ public:
 
 	const memory_entry& operator[](std::size_t const& index) const
 	{
-		return m_log_entrys[(m_offset + index) & (m_size - 1)];
+		return m_log_entrys[(m_offset + index) & (N - 1)];
 	}
 
 private:
+
+
+
 	
-	const unsigned long m_size = N;
+	//const unsigned long m_size = N;
 
 	memory_entry m_log_entrys[N];
 	std::atomic<unsigned long> m_offset;

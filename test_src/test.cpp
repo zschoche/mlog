@@ -45,6 +45,24 @@ double multi_thread_test()
 	return ms; 
 }
 
+BOOST_AUTO_TEST_CASE(mlog_log2_test)
+{
+	for(unsigned long i = 1; i < 1024*1024; i++)
+		BOOST_CHECK_EQUAL(static_cast<unsigned long>(std::log2(i)), mlog::log2(i));
+}
+
+BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test)
+{
+	auto* log = new mlog::memory_logger<2>();
+	mlog::mlogger.reset(log);
+	MLOG_INFO("1");
+	MLOG_INFO("2");
+	BOOST_CHECK_EQUAL((*log)[0].text, "1");
+	BOOST_CHECK_EQUAL((*log)[1].text, "2");
+	BOOST_CHECK_EQUAL((*log)[2].text, "1"); //overflow
+}
+
+
 BOOST_AUTO_TEST_CASE(standard_logger_speed_test)
 {
 	mlog::mlogger.reset(new mlog::standard_logger());
@@ -75,7 +93,7 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test)
 
 BOOST_AUTO_TEST_CASE(memory_logger_speed_test)
 {
-	mlog::mlogger.reset(mlog::memory_logger_normal::create());
+	mlog::mlogger.reset(new mlog::memory_logger_normal());
 	double  st_result = single_thread_test();
 	mlog::mlogger->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
