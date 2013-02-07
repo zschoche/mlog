@@ -30,6 +30,7 @@ public:
 
 	memory_logger()
 	:logger(),
+	m_size(N),
 	m_use_mutex(false)
 	{
 		//unsigned long bits = static_cast<unsigned long>(::log(m_size - 1) / ::log(2))+1;
@@ -98,7 +99,7 @@ public:
 
 private:
 	
-	const unsigned long m_size = N;
+	const unsigned long m_size;
 
 	memory_entry m_log_entrys[N];
 	std::atomic<unsigned long> m_offset;
@@ -113,7 +114,6 @@ typedef memory_logger<static_cast<unsigned short>(-1)> memory_logger_big;
 
 typedef memory_logger_normal memory_logger_normal_thread_safe; //memory_logger is already thread-safe.
 typedef memory_logger_big memory_logger_big_thread_safe; //memory_logger is already thread-safe.
-
 
 template<unsigned long N>
 constexpr std::ostream& operator<<(std::ostream& lhs, memory_logger<N> & rhs) 

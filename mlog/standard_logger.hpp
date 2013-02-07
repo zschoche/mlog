@@ -9,6 +9,7 @@
 
 #include "logger.hpp"
 #include "thread_safe.hpp"
+#include <iostream>
 
 namespace mlog 
 {

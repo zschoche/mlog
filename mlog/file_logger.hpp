@@ -55,13 +55,19 @@ public:
 		return m_max_file_size;
 	}
 
+	inline bool is_open() const
+	{
+		return m_stream.is_open();
+	}
+
 	virtual void flush();
 private:
+	boost::iostreams::file_sink m_stream;
 	std::string m_log_name;		
 	std::string m_log_directory;
 	mlog_bytes m_max_file_size;
 	mlog_bytes m_offset;	
-	boost::iostreams::file_sink m_stream;
+	
 	
 	static std::string get_next_logfile(const std::string& directory, const std::string name, mlog_bytes max_file_size, mlog_bytes* offset = 0);
 };

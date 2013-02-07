@@ -45,14 +45,18 @@ struct log_metadata
 	//typedef std::chrono::high_resolution_clock clocks;
 	typedef std::chrono::system_clock clocks;
 
-	bool use_time = true;
-	bool use_thread_id = false;
-	mlog_level level = info;
-	short session_id = 0;
+	bool use_time;
+	bool use_thread_id;
+	mlog_level level;
+	short session_id;
 	std::chrono::time_point<clocks> time;
 	std::thread::id thread_id;
 
 	log_metadata()
+	:use_time(true),
+	use_thread_id(false),
+	level(info),
+	session_id(0)
 	{
 	}
 

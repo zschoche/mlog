@@ -12,11 +12,11 @@ namespace mlog
 	
 
 file_logger::file_logger(std::string log_name, std::string log_directory, mlog_bytes max_file_size)
-:m_log_name(std::move(log_name)),
+:m_stream(get_next_logfile(log_directory, log_name, max_file_size, &m_offset), BOOST_IOS::app),
+m_log_name(std::move(log_name)),
 m_log_directory(std::move(log_directory)),
 m_max_file_size(std::move(max_file_size)),
-m_offset(0),
-m_stream(get_next_logfile(log_directory, log_name, max_file_size, &m_offset), BOOST_IOS::app)
+m_offset(0)
 {
 }
 
@@ -39,6 +39,9 @@ void file_logger::write_to_log(log_metadata&& metadata, std::string&& log_text)
 	m_stream.write(buffer, length + 1);
 	delete [] buffer;
 	m_offset += length;
+
+	flush();
+
 	if(max_file_size() != 0 && m_offset > max_file_size())
 	{
 		flush();

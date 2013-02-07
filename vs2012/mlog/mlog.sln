@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mlog", "mlog\mlog.vcxproj", "{A28FC55F-614F-409B-B2C4-D1ECC7A9107D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{B5F55684-3052-43B6-8FDD-3A41BDD3083D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A28FC55F-614F-409B-B2C4-D1ECC7A9107D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A28FC55F-614F-409B-B2C4-D1ECC7A9107D}.Debug|Win32.Build.0 = Debug|Win32
+		{A28FC55F-614F-409B-B2C4-D1ECC7A9107D}.Release|Win32.ActiveCfg = Release|Win32
+		{A28FC55F-614F-409B-B2C4-D1ECC7A9107D}.Release|Win32.Build.0 = Release|Win32
+		{B5F55684-3052-43B6-8FDD-3A41BDD3083D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B5F55684-3052-43B6-8FDD-3A41BDD3083D}.Debug|Win32.Build.0 = Debug|Win32
+		{B5F55684-3052-43B6-8FDD-3A41BDD3083D}.Release|Win32.ActiveCfg = Release|Win32
+		{B5F55684-3052-43B6-8FDD-3A41BDD3083D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
