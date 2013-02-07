@@ -86,7 +86,6 @@ std::string file_logger::get_next_logfile(const std::string& directory, const st
 		else
 			*offset = 0;
 	}
-
 	return result;
 }
 
