@@ -1,5 +1,5 @@
-#define BOOST_TEST_MODULE test
 #define BOOST_TEST_DYN_LINK
+#define BOOST_TEST_MODULE test
 
 #include <boost/test/unit_test.hpp>
 
@@ -8,9 +8,22 @@
 #include <mlog/file_logger.hpp>
 #include <thread>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <cmath>
 
-static const int num_threads = 2;
-static const int num_loops = 100000;
+
+#ifdef _MSC_VER
+namespace std
+{
+	double log2( double n )  
+	{  
+		// log(n)/log(2) is log2.  
+		return log( n ) / log( 2 );  
+	}
+}
+#endif
+
+const int num_threads = 2;
+int num_loops = 100000;
 
 void write_some_log_entrys()
 {
@@ -44,6 +57,11 @@ double multi_thread_test()
 	double ms = time.total_milliseconds() / static_cast<double>(num_loops * num_threads);
 	return ms; 
 }
+/*
+BOOST_AUTO_TEST_CASE(mlog_empty_test)
+{
+
+}
 
 BOOST_AUTO_TEST_CASE(mlog_log2_test)
 {
@@ -62,9 +80,9 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test)
 	BOOST_CHECK_EQUAL((*log)[2].text, "1"); //overflow
 }
 
-
 BOOST_AUTO_TEST_CASE(standard_logger_speed_test)
 {
+	num_loops = 1000;
 	mlog::mlogger.reset(new mlog::standard_logger());
 	double  st_result = single_thread_test();
 	mlog::mlogger->use_thread_id(true);
@@ -91,17 +109,19 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test)
 	std::cout << mt_result_thread_id_time << "ms for each log statment with thread id and timestamp." << std::endl;
 }
 
+*/
 BOOST_AUTO_TEST_CASE(memory_logger_speed_test)
 {
+	num_loops = 100000;
 	mlog::mlogger.reset(new mlog::memory_logger_normal());
 	double  st_result = single_thread_test();
 	mlog::mlogger->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
 	mlog::mlogger->use_time(true);
 	double st_result_thread_id_time = single_thread_test();
-		
+	
 	double mt_result = multi_thread_test();
-	mlog::mlogger->use_thread_id(true);
+	/*mlog::mlogger->use_thread_id(true);
 	double mt_result_thread_id = multi_thread_test();
 	mlog::mlogger->use_time(true);
 	double mt_result_thread_id_time = multi_thread_test();
@@ -116,10 +136,12 @@ BOOST_AUTO_TEST_CASE(memory_logger_speed_test)
 	std::cout << mt_result << "ms for each log statment." << std::endl;
 	std::cout << mt_result_thread_id << "ms for each log statment with thread id." << std::endl;
 	std::cout << mt_result_thread_id_time << "ms for each log statment with thread id and timestamp." << std::endl;
+	//*/
 }
-
+/*
 BOOST_AUTO_TEST_CASE(file_logger_speed_test)
 {	
+	num_loops = 100000;
 	mlog::mlogger.reset(new mlog::file_logger("log.txt"));
 	mlog::mlogger->use_time(false);
 	double  st_result = single_thread_test();
@@ -150,6 +172,7 @@ BOOST_AUTO_TEST_CASE(file_logger_speed_test)
 
 BOOST_AUTO_TEST_CASE(memory_logger_test)
 {
+	num_loops = 100000;
 	mlog::memory_logger<2048>* mem_log = new mlog::memory_logger<2048>();
 	mlog::mlogger.reset(mem_log);
 	mlog::mlogger->use_time(false);
@@ -169,4 +192,4 @@ BOOST_AUTO_TEST_CASE(memory_logger_test)
 	//std::cout << *mem_log << std::endl;
 
 }
-
+// */

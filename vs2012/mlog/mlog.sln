@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mlog", "mlog\mlog.vcxproj", "{A28FC55F-614F-409B-B2C4-D1ECC7A9107D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{B5F55684-3052-43B6-8FDD-3A41BDD3083D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A28FC55F-614F-409B-B2C4-D1ECC7A9107D} = {A28FC55F-614F-409B-B2C4-D1ECC7A9107D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

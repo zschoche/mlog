@@ -21,7 +21,11 @@ struct memory_entry
 	std::string text;
 };
 
+#ifdef _MSC_VER
+unsigned long log2(unsigned long x, unsigned long count = 0)
+#else
 constexpr unsigned long log2(unsigned long x, unsigned long count = 0)
+#endif
 {
 	return x < 2 ? count : log2((x>>1), count + 1);
 }
@@ -38,9 +42,16 @@ public:
 	m_size(N),
 	m_use_mutex(false)
 	{
+#ifdef _MSC_VER
+		unsigned long bits = mlog::log2(N - 1)+1;
+		unsigned long mask =  ((1 << bits) - 1);
+		if((N -1) != mask)
+			throw std::invalid_argument("N is not valid. Try 4, 8, 16, 32 ... 1024, 2048, 4096... and so on.");
+#else
 		constexpr unsigned long bits = mlog::log2(N - 1)+1;
 		constexpr unsigned long mask =  ((1 << bits) - 1);
 		static_assert((N -1) == mask, "N is not valid. Try 4, 8, 16, 32 ... 1024, 2048, 4096... and so on.");
+#endif
 		/*if((N -1) != mask) 
 		{
 			std::stringstream ss;
@@ -123,8 +134,14 @@ typedef memory_logger<static_cast<unsigned short>(-1)> memory_logger_big;
 typedef memory_logger_normal memory_logger_normal_thread_safe; //memory_logger is already thread-safe.
 typedef memory_logger_big memory_logger_big_thread_safe; //memory_logger is already thread-safe.
 
+
+#ifdef _MSC_VER
+template<unsigned long N>
+std::ostream& operator<<(std::ostream& lhs, memory_logger<N> & rhs)
+#else
 template<unsigned long N>
 constexpr std::ostream& operator<<(std::ostream& lhs, memory_logger<N> & rhs) 
+#endif
 { 
  	return rhs.output(lhs); 
 }
