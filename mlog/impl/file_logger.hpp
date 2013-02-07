@@ -16,7 +16,7 @@ file_logger::file_logger(std::string log_name, std::string log_directory, mlog_b
 m_log_directory(std::move(log_directory)),
 m_max_file_size(std::move(max_file_size)),
 m_offset(0),
-m_stream(get_next_logfile(log_directory, log_name, max_file_size, &m_offset), BOOST_IOS::app)
+m_stream(get_next_logfile(m_log_directory, m_log_name, max_file_size, &m_offset), BOOST_IOS::app)
 {
 }
 
@@ -83,7 +83,6 @@ std::string file_logger::get_next_logfile(const std::string& directory, const st
 		else
 			*offset = 0;
 	}
-
 	return result;
 }
 
