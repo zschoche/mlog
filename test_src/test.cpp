@@ -1,4 +1,3 @@
-#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test
 
 #include <boost/test/unit_test.hpp>
@@ -192,4 +191,11 @@ BOOST_AUTO_TEST_CASE(memory_logger_test)
 	//std::cout << *mem_log << std::endl;
 
 }
+
+#ifdef _MSC_VER
+BOOST_AUTO_TEST_CASE(memory_leak)
+{
+	std::cout << "msvc will detect a memory leak at the end of this program. - it's a false positive." << std::endl;
+}
+#endif
 // */
