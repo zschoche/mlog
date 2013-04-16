@@ -46,3 +46,6 @@ log.txt.4
 log.txt.5
 log.txt.6
 log.txt.7
+
+*.un~
+*.swp

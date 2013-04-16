@@ -18,9 +18,26 @@ class thread_safe : public logger_type
 {
 public:
 
-	template <typename... Args>
-	thread_safe(Args&&... args)
-	:logger_type(std::forward<Args>(args)...)
+	//template <typename... Args>
+	//thread_safe(Args&&... args)
+	//:logger_type(std::forward<Args>(args)...)
+	//{
+	//}
+
+	thread_safe()
+	:logger_type()
+	{
+	}
+
+	template <typename Arg>
+	thread_safe(Arg &&arg)
+	:logger_type(std::forward<Arg>(arg))
+	{
+	}
+
+	template <typename Arg1, typename Arg2>
+	thread_safe(Arg1 &&arg1, Arg2 &&arg2)
+	:logger_type(std::forward<Arg1>(arg1), std::forward<Arg2>(arg2))
 	{
 	}
 

@@ -39,8 +39,6 @@ std::string log_metadata::to_string() const
 
 		std::time_t timet = clocks::to_time_t(time);
 
-		uint64_t ms = std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count() - timet * 1000000000;
-
 #if _MSC_VER
 		tm tmm;
 		localtime_s(&tmm, &timet);
@@ -50,9 +48,9 @@ std::string log_metadata::to_string() const
 #endif
 		
 		if(use_thread_id) //2012-11-02 15:24:04.345 [24-0x7fff72ca8180]{warning}: 
-			snprintf(buffer, sizeof(buffer), "%04i-%02i-%02i %02i:%02i:%02i.%llu [%02i-%s]{%s}: ", 1900 + tm->tm_year, tm->tm_mon, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, ms, session_id, boost::lexical_cast<std::string>(thread_id).c_str(), level_to_string(level).c_str()); 
+			snprintf(buffer, sizeof(buffer), "%04i-%02i-%02i %02i:%02i:%02i [%02i-%s]{%s}: ", 1900 + tm->tm_year, tm->tm_mon, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, session_id, boost::lexical_cast<std::string>(thread_id).c_str(), level_to_string(level).c_str()); 
 		else //2012-11-02 15:24:04.345 [24]{warning}: 
-			snprintf(buffer, sizeof(buffer), "%04i-%02i-%02i %02i:%02i:%02i.%llu[%02i]{%s}: ", 1900 + tm->tm_year, tm->tm_mon, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, ms, session_id, level_to_string(level).c_str()); 
+			snprintf(buffer, sizeof(buffer), "%04i-%02i-%02i %02i:%02i:%02i [%02i]{%s}: ", 1900 + tm->tm_year, tm->tm_mon, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec, session_id, level_to_string(level).c_str()); 
 	}
 	else if(use_thread_id)	//[24-0x7fff72ca8180]{warning}: 
 		snprintf(buffer, sizeof(buffer), "[%02i-%s]{%s}: ", session_id, boost::lexical_cast<std::string>(thread_id).c_str(), level_to_string(level).c_str()); 
