@@ -45,3 +45,10 @@ if(MLOG_WITH_TEST)
     
     target_link_libraries(test mlog boost_system boost_filesystem boost_unit_test_framework)
 endif()    
+
+install(
+    TARGETS mlog
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
