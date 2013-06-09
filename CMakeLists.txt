@@ -20,7 +20,12 @@ aux_source_directory(./libs mlog_src)
 
 
 #librarys
-add_library(mlog ${mlog_src})
+add_library(mlog STATIC ${mlog_src})
+set_target_properties(
+    mlog
+    PROPERTIES
+    DEBUG_POSTFIX _d
+    )
 
 acmake_boost_support(mlog)
 
