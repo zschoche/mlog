@@ -28,7 +28,7 @@ session_id(std::move(session_id))
 		time = clocks::now(); 
 
 	if(use_thread_id)
-		thread_id = std::this_thread::get_id();
+		thread_id = THREAD_GET_ID();
 }
 
 std::string log_metadata::to_string() const

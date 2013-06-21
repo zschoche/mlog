@@ -10,7 +10,22 @@
 
 
 #include <string>
+#if defined(_GLIBCXX_HAS_GTHREADS)
 #include <thread>
+#define THREAD_GET_ID() std::this_thread::get_id()
+#else
+#include <boost/thread.hpp>
+
+namespace std {
+  using boost::mutex;
+  using boost::recursive_mutex;
+  using boost::lock_guard;
+  using boost::condition_variable;
+  using boost::unique_lock;
+  using boost::thread;
+}
+#define THREAD_GET_ID() boost::this_thread::get_id()
+#endif
 #include <chrono>
 #include <boost/format.hpp>
 
