@@ -39,7 +39,7 @@ std::string log_metadata::to_string() const
 
 		std::time_t timet = clocks::to_time_t(time);
 
-		uint64_t ms = std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count() - timet * 1000000000;
+		unsigned long long ms = std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count() - timet * 1000000000;
 
 #if _MSC_VER
 		tm tmm;

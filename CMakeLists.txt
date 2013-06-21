@@ -8,6 +8,7 @@ add_definitions("-O3")
 
 add_definitions(-DMLOGDEBUG)
 add_definitions(-DMLOGTRACE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")	
 #add_definitions(-DMLOG_NO_LIB)
 
 
@@ -25,15 +26,28 @@ add_library(mlog ${mlog_src})
 #programs
 add_executable(test test_src/test.cpp)
 
-#if ("${CMAKE_CXX_COMPILER} ${CMAKE_CXX_COMPILER_ARG1}" MATCHES ".*clang")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")	
-       # add_definitions("-std=c++11")
+
+if (CMAKE_CXX_COMPILER MATCHES ".*clang")
+ 	message("using clang.")
         add_definitions("-stdlib=libc++")
 	add_definitions("-fexceptions")
         target_link_libraries(test c++)
-#else()
-
-#endif()
+	#add_definitions(-DBOOST_TEST_DYN_LINK) 
+else()
+ 	message("using gcc.")
+	add_definitions(-DBOOST_TEST_DYN_LINK)
+endif()
 
 target_link_libraries(test mlog boost_system boost_filesystem boost_unit_test_framework)
+
+install(
+    TARGETS mlog
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    )
+
+
+enable_testing()
+add_test(unittests test)
 
