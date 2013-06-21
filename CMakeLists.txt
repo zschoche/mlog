@@ -19,12 +19,11 @@ include_directories(.)
 #source directorys
 aux_source_directory(./libs mlog_src)
 
-
 #librarys
 add_library(mlog ${mlog_src})
 
 #programs
-add_executable(test test_src/test.cpp)
+add_executable(test EXCLUDE_FROM_ALL test_src/test.cpp)
 
 
 if (CMAKE_CXX_COMPILER MATCHES ".*clang")
@@ -46,8 +45,6 @@ install(
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
     )
-
-
-enable_testing()
-add_test(unittests test)
-
+install(DIRECTORY mlog DESTINATION include)
+#enable_testing()
+#ADD_TEST(unittest test)
