@@ -12,7 +12,7 @@ I thought a bit about logging in general and decided to create a lightweight log
 
 ## What makes this library lightweight?
 
- - The preprocessor `MLOG_NO_LIB` makes this library header-only.
+ - The preprocessor flag `MLOG_NO_LIB` make this library header-only.
 
  - Here are the speed test results on my MacBook Air (1.86 GHz Intel Core 2 Duo, 4GB RAM):
 
