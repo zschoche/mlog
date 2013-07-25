@@ -7,6 +7,7 @@
 #define __THREAD_SAFE_HPP__
 
 #include <boost/detail/lightweight_mutex.hpp>
+#include <boost/config.hpp>
 #include "logger.hpp"
 
 namespace mlog 
@@ -18,11 +19,20 @@ class thread_safe : public logger_type
 {
 public:
 
+#if ! defined( BOOST_NO_CXX11_VARIADIC_TEMPLATES )
+
 	template <typename... Args>
 	thread_safe(Args&&... args)
 	:logger_type(std::forward<Args>(args)...)
 	{
 	}
+
+#else
+	thread_safe()
+	:logger_type()
+	{
+	}
+#endif // ! defined( BOOST_NO_CXX11_VARIADIC_TEMPLATES )
 
 	virtual ~thread_safe()
 	{
