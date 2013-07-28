@@ -88,6 +88,10 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test)
 	double st_result_thread_id = single_thread_test();
 	mlog::mlogger->use_time(true);
 	double st_result_thread_id_time = single_thread_test();
+	mlog::mlogger->use_position(true);
+	double st_result_thread_id_time_pos = single_thread_test();
+	exit(1);
+
 		
 	mlog::mlogger.reset(new mlog::standard_logger_thread_safe());
 	double mt_result = multi_thread_test();
@@ -101,6 +105,7 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test)
 	std::cout << st_result << "ms for each log statment." << std::endl;
 	std::cout << st_result_thread_id << "ms for each log statment with thread id." << std::endl;
 	std::cout << st_result_thread_id_time << "ms for each log statment with thread id and timestamp." << std::endl;
+	std::cout << st_result_thread_id_time_pos << "ms for each log statment with thread id, timestamp and position." << std::endl;
 	std::cout << std::endl;
 	std::cout << "### multi-threaded standard logger test ###" << std::endl;
 	std::cout << mt_result << "ms for each log statment." << std::endl;
@@ -125,6 +130,7 @@ BOOST_AUTO_TEST_CASE(memory_logger_speed_test)
 	mlog::mlogger->use_time(true);
 	double mt_result_thread_id_time = multi_thread_test();
 
+	
 	std::cout << std::endl;	
 	std::cout << "### single-threaded memory logger test ###" << std::endl;
 	std::cout << st_result << "ms for each log statment." << std::endl;
