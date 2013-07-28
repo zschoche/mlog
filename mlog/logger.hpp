@@ -10,7 +10,7 @@
 
 
 #include <string>
-#if defined(_GLIBCXX_HAS_GTHREADS) || defined(__clang__)
+#if defined(_GLIBCXX_HAS_GTHREADS) || defined(__clang__) || (defined( _MSC_VER ) && ( _MSC_VER >= 1700 ))
 #include <thread>
 #define THREAD_GET_ID() std::this_thread::get_id()
 #else
