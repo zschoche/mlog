@@ -15,7 +15,7 @@ I thought a bit about logging in general and decided to create a lightweight log
  - The preprocessor flag `MLOG_NO_LIB` make this library header-only.
 
  - Here are the speed test results on my MacBook Air (1,3 GHz Intel Core i5, 8GB RAM, SSD):
-
+```
 >	### single-threaded standard logger test ###
 >	0.003ms for each log statment.
 >	0.003ms for each log statment with thread id.
@@ -51,7 +51,7 @@ I thought a bit about logging in general and decided to create a lightweight log
 >	0.015715ms for each log statment with thread id.
 >	0.01851ms for each log statment with thread id and timestamp.
 >	0.018715ms for each log statment with thread id, timestamp and position.
-
+```
 ## What makes this library comfortable?
 
 Basically you just have to include the __mlog/mlog.hpp__ and use one of the logging macro functions.
