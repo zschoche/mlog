@@ -16,41 +16,41 @@ I thought a bit about logging in general and decided to create a lightweight log
 
  - Here are the speed test results on my MacBook Air (1,3 GHz Intel Core i5, 8GB RAM, SSD):
 ```
->	### single-threaded standard logger test ###
->	0.003ms for each log statment.
->	0.003ms for each log statment with thread id.
->	0.005ms for each log statment with thread id and timestamp.
->	0.0085ms for each log statment with thread id, timestamp and position.
->	
->	### multi-threaded standard logger test ###
->	0.017ms for each log statment.
->	0.026ms for each log statment with thread id.
->	0.0375ms for each log statment with thread id and timestamp.
->	0.043ms for each log statment with thread id, timestamp and position.
->	
->	### single-threaded memory logger test ###
->	0.000105ms for each log statment.
->	0.0001ms for each log statment with thread id.
->	0.000135ms for each log statment with thread id and timestamp.
->	0.000135ms for each log statment with thread id, timestamp and position.
->	
->	### multi-threaded memory logger test ###
->	0.000185ms for each log statment.
->	0.000175ms for each log statment with thread id.
->	0.000185ms for each log statment with thread id and timestamp.
->	0.000185ms for each log statment with thread id, timestamp and position.
->	
->	### single-threaded file logger test ###
->	0.0012ms for each log statment.
->	0.00159ms for each log statment with thread id.
->	0.002115ms for each log statment with thread id and timestamp.
->	0.00244ms for each log statment with thread id, timestamp and position.
->	
->	### multi-threaded file logger test ###
->	0.012135ms for each log statment.
->	0.015715ms for each log statment with thread id.
->	0.01851ms for each log statment with thread id and timestamp.
->	0.018715ms for each log statment with thread id, timestamp and position.
+	### single-threaded standard logger test ###
+	0.003ms for each log statment.
+	0.003ms for each log statment with thread id.
+	0.005ms for each log statment with thread id and timestamp.
+	0.0085ms for each log statment with thread id, timestamp and position.
+	
+	### multi-threaded standard logger test ###
+	0.017ms for each log statment.
+	0.026ms for each log statment with thread id.
+	0.0375ms for each log statment with thread id and timestamp.
+	0.043ms for each log statment with thread id, timestamp and position.
+	
+	### single-threaded memory logger test ###
+	0.000105ms for each log statment.
+	0.0001ms for each log statment with thread id.
+	0.000135ms for each log statment with thread id and timestamp.
+	0.000135ms for each log statment with thread id, timestamp and position.
+	
+	### multi-threaded memory logger test ###
+	0.000185ms for each log statment.
+	0.000175ms for each log statment with thread id.
+	0.000185ms for each log statment with thread id and timestamp.
+	0.000185ms for each log statment with thread id, timestamp and position.
+	
+	### single-threaded file logger test ###
+	0.0012ms for each log statment.
+	0.00159ms for each log statment with thread id.
+	0.002115ms for each log statment with thread id and timestamp.
+	0.00244ms for each log statment with thread id, timestamp and position.
+	
+	### multi-threaded file logger test ###
+	0.012135ms for each log statment.
+	0.015715ms for each log statment with thread id.
+	0.01851ms for each log statment with thread id and timestamp.
+	0.018715ms for each log statment with thread id, timestamp and position.
 ```
 ## What makes this library comfortable?
 
