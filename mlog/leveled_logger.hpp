@@ -19,8 +19,8 @@ extern char endl;
 class leveled_logger
 {
 public:
-	leveled_logger(mlog_level level, logger* log) :
-			m_log(log), m_has_content(false), m_level(level)
+	leveled_logger(mlog_level level, logger* log, log_position position) 
+	:m_log(log), m_has_content(false), m_level(level), m_position(std::move(position))
 	{
 	}
 
@@ -69,11 +69,12 @@ private:
 	logger* m_log;
 	bool m_has_content;
 	mlog_level m_level;
+	log_position m_position;
 	
 
 	void write_to_log()
 	{
-		m_log->write(level(), m_stream.str()); 
+		m_log->write(level(), m_stream.str(), m_position); 
 		m_has_content = false;
 	}
 

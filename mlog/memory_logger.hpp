@@ -80,14 +80,18 @@ public:
 			std::size_t index = (m_offset + m_offset_temp++)  & (N - 1);
 			boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
 			memory_entry& entry = m_log_entrys[index];
-			entry.metadata = std::move(metadata);
-			entry.text = std::move(log_text);
+			//entry.metadata = std::move(metadata);
+			//entry.text = std::move(log_text);
+			entry.metadata = metadata;
+			entry.text = log_text;
 		}
 		else
 		{
 			memory_entry& entry = m_log_entrys[m_offset++ & (N - 1)];
-			entry.metadata = std::move(metadata);
-			entry.text = std::move(log_text);
+			//entry.metadata = std::move(metadata);
+			//entry.text = std::move(log_text);
+			entry.metadata = metadata;
+			entry.text = log_text;
 		}
 	}
 	

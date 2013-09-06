@@ -10,7 +10,22 @@
 
 
 #include <string>
+#if defined(_GLIBCXX_HAS_GTHREADS) || defined(__clang__) || (defined( _MSC_VER ) && ( _MSC_VER >= 1700 ))
 #include <thread>
+#define THREAD_GET_ID() std::this_thread::get_id()
+#else
+#include <boost/thread.hpp>
+
+namespace std {
+  using boost::mutex;
+  using boost::recursive_mutex;
+  using boost::lock_guard;
+  using boost::condition_variable;
+  using boost::unique_lock;
+  using boost::thread;
+}
+#define THREAD_GET_ID() boost::this_thread::get_id()
+#endif
 #include <chrono>
 #include <boost/format.hpp>
 
@@ -39,6 +54,20 @@ inline std::string level_to_string(T&& level)
 		return "fatal";
 }
 
+struct log_position
+{
+	log_position()
+	{ }
+
+	log_position(std::string _filename, std::size_t _line_number)
+	:filename(std::move(_filename)),
+	line_number(std::move(_line_number))
+	{ }
+
+	std::string filename;
+	std::size_t line_number;
+};
+
 struct log_metadata
 {
 
@@ -47,20 +76,26 @@ struct log_metadata
 
 	bool use_time;
 	bool use_thread_id;
+	bool use_position;
 	mlog_level level;
 	short session_id;
 	std::chrono::time_point<clocks> time;
 	std::thread::id thread_id;
+	log_position position;
+	bool m_use_position;
 
 	log_metadata()
 	:use_time(true),
 	use_thread_id(false),
+	use_position(false),
 	level(info),
 	session_id(0)
 	{
 	}
 
 	log_metadata(mlog_level&& lvl, short session_id, bool _use_time, bool _use_thread_id);
+	log_metadata(mlog_level&& lvl, short session_id, bool _use_time, bool _use_thread_id, log_position&& position, bool _use_position);
+	log_metadata(mlog_level&& lvl, short session_id, bool _use_time, bool _use_thread_id, const log_position& position, bool _use_position);
 	
 	std::string to_string() const;
 
@@ -75,24 +110,29 @@ public:
 	virtual ~logger();
 		
 
-	inline void write(mlog_level&& level, boost::format&& format)
+	inline void write(mlog_level&& level, boost::format&& format, log_position&& pos)
 	{
-		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id), boost::str(format));
+		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id, std::move(pos), m_use_position), boost::str(format));
 	}
 	
-	inline void write(mlog_level&& level, const boost::format& format)
+	inline void write(mlog_level&& level, const boost::format& format, log_position&& pos)
 	{
-		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id), boost::str(format));
+		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id, std::move(pos), m_use_position), boost::str(format));
 	}
 
-	inline void write(mlog_level&& level, std::string&& log_text)
+	inline void write(mlog_level&& level, std::string&& log_text, log_position&& pos)
 	{
-		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id), std::move(log_text));
+		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id, std::move(pos), m_use_position), std::move(log_text));
 	}
 
-	inline void write(mlog_level&& level, const std::string& log_text)
+	inline void write(mlog_level&& level, const std::string& log_text, log_position&& pos)
 	{
-		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id), std::string(log_text));
+		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id, std::move(pos), m_use_position), std::string(log_text));
+	}
+	
+	inline void write(mlog_level&& level, const std::string& log_text, const log_position& pos)
+	{
+		write_to_log(log_metadata(std::move(level), m_session, m_use_time, m_use_thread_id, pos, m_use_position), std::string(log_text));
 	}
 
 	//virtual void flush() = 0;
@@ -120,10 +160,22 @@ public:
 		return m_use_time;
 	}
 
+	template<typename T>
+	inline void use_position(T&& value)
+	{
+		m_use_position = std::forward<T>(value);
+	}
+
+	inline bool use_position() const
+	{
+		return m_use_position;
+	}
+
 private:
 	short m_session;
 	bool m_use_time;
 	bool m_use_thread_id;
+	bool m_use_position;
 };
 
 
