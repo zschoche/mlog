@@ -84,7 +84,7 @@ public:
 
 #ifdef MLOGTRACE
 #define MLOG_TRACE_STREAM(x1) ::mlog::log_trace(log_position(__FILE__, __LINE__)) << x1
-#define MLOG_TRACE(x1) ::mlog::mlogger->write(mlog_level::trace, x1, log_position(__FILE__, __LINE__))
+#define MLOG_TRACE(x1) ::mlog::mlogger->write(mlog_level::trace, x1, ::mlog::log_position(__FILE__, __LINE__))
 
 #else
 #define MLOG_TRACE_STREAM(x1)
