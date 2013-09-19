@@ -40,6 +40,7 @@ add_executable(test EXCLUDE_FROM_ALL test_src/test.cpp)
 
 
 if (CMAKE_CXX_COMPILER MATCHES ".*clang")
+    	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")	
  	message("using clang.")
         add_definitions("-stdlib=libc++")
 	add_definitions("-fexceptions")
