@@ -44,7 +44,7 @@ if (CMAKE_CXX_COMPILER MATCHES ".*clang")
         target_link_libraries(test c++)
 	#add_definitions(-DBOOST_TEST_DYN_LINK) 
 else()
-    if(GCC)
+    if(CMAKE_COMPILER_IS_GNUCXX)
 	execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
                 OUTPUT_VARIABLE GCC_VERSION)
 	if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
