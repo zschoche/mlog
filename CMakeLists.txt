@@ -4,14 +4,11 @@ project(mlog)
 #defines
 add_definitions("-Wall")
 #add_definitions("-O3")
-#add_definitions("-g")
+add_definitions("-g")
 
 add_definitions(-DMLOGDEBUG)
 add_definitions(-DMLOGTRACE)
 
-if(GCC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")	
-endif()
 #add_definitions(-DMLOG_NO_LIB)
 
 # boost
@@ -49,6 +46,7 @@ if (CMAKE_CXX_COMPILER MATCHES ".*clang")
 else()
     if(GCC)
         message("using gcc.")
+    	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")	
     elseif(MSVC)
         message("using msvc.")
     else()
@@ -66,5 +64,5 @@ install(
     ARCHIVE DESTINATION lib
     )
 install(DIRECTORY mlog DESTINATION include)
-#enable_testing()
-#ADD_TEST(unittest test)
+enable_testing()
+ADD_TEST(unittest test)
