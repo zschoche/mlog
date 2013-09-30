@@ -1,11 +1,6 @@
 language: cpp
 compiler:
-  - clang
-
-before_install: 
-        - svn co http://llvm.org/svn/llvm-project/libcxx/trunk/include libcxx_include 
-        - echo $CPATH
-        - export CPATH=/home/travis/build/zschoche/mlog/libcxx_include
+  - gcc
 
 ## Install prerequisites
 install: 
