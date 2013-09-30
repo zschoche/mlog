@@ -1,4 +1,3 @@
----
 # BasedOnStyle:  LLVM
 AccessModifierOffset: -2
 ConstructorInitializerIndentWidth: 4
@@ -39,5 +38,3 @@ SpaceInEmptyParentheses: false
 SpacesInCStyleCastParentheses: false
 SpaceAfterControlStatementKeyword: true
 SpaceBeforeAssignmentOperators: true
-...
-
