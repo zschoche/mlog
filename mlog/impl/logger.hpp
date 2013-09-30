@@ -132,15 +132,18 @@ std::string log_metadata::to_string() const {
 }
 
 std::ostream &log_metadata::output(std::ostream &stream) const {
+
   stream << to_string();
   return stream;
 }
 
 logger::logger()
     : m_use_time(false), m_use_thread_id(false), m_use_position(false) {
-  boost::random::mt19937 rng(std::time(0));
-  boost::random::uniform_int_distribution<> six(0, 100);
-  m_session = six(rng);
+	using namespace boost;
+	using namespace boost::random;
+  	mt19937 rng(std::time(0));
+  	uniform_int_distribution<> six(0, 100);
+  	m_session = six(rng);
 }
 
 logger::~logger() {}
