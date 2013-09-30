@@ -9,11 +9,9 @@
 #define __LEVELED_LOGGER_IPP__
 #include "../leveled_logger.hpp"
 
+namespace mlog {
 
-namespace mlog
-{
-
-	char endl = '\0';
+char endl = '\0';
 }
 
 #endif

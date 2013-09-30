@@ -1,8 +1,8 @@
 /*
- * log.cpp
+ * mlog.cpp
  *
  *  Created on: Aug 12, 2012
- *      Author: philipp
+ *  Author: philipp
  */
 
 #ifndef __MLOG_IPP__
@@ -10,13 +10,9 @@
 
 #include "../mlog.hpp"
 
-namespace mlog
-{
+namespace mlog {
 
 std::unique_ptr<logger> mlogger(new standard_logger());
-
-
-
 }
 
 #endif

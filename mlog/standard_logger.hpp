@@ -6,45 +6,31 @@
 #ifndef __STANDARD_LOGGER_HPP__
 #define __STANDARD_LOGGER_HPP__
 
-
 #include "logger.hpp"
 #include "thread_safe.hpp"
 #include <iostream>
 
-namespace mlog 
-{
+namespace mlog {
 
-class standard_logger : public logger
-{
-public:
+class standard_logger : public logger {
+      public:
 
-	standard_logger()
-	:logger()
-	{
+	standard_logger() : logger() {}
 
-	}
-	
-	virtual ~standard_logger()
-	{
-	}
+	virtual ~standard_logger() {}
 
-	void flush()
-	{
-		std::cout.flush();	
-	}
+	void flush() { std::cout.flush(); }
 
-	void write_to_log(log_metadata&& metadata, std::string&& log_text) override 
-	{
+	void write_to_log(log_metadata &&metadata,
+			  std::string &&log_text) override {
 		metadata.output(std::cout) << log_text << std::endl;
 	}
-	
-private:
 
+      private:
 };
 
-typedef thread_safe<standard_logger> 	standard_logger_thread_safe;
-	
-} /* mlog */
+typedef thread_safe<standard_logger> standard_logger_thread_safe;
 
+} /* mlog */
 
 #endif /* __STANDARD_LOGGER_HPP__ */

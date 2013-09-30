@@ -17,7 +17,7 @@ typedef std::size_t mlog_bytes;
 /*
 constexpr mlog_bytes operator"" _KB(int kb)
 {
-	return kb * 1024; 
+	return kb * 1024;
 }
 
 constexpr mlog_bytes operator"" _MB(std::size_t mb)
@@ -32,47 +32,41 @@ constexpr mlog_bytes operator"" _GB(std::size_t bg)
 
 */
 
-namespace mlog 
-{
+namespace mlog {
 
+class file_logger : public logger {
+      public:
 
-class file_logger : public logger  
-{
-public:
-	
-	file_logger(std::string log_name, std::string log_directory = ".", mlog_bytes max_file_size = 5 * 1024 * 1024 /*5_MB*/);
+	file_logger(std::string log_name, std::string log_directory = ".",
+		    mlog_bytes max_file_size = 5 * 1024 * 1024 /*5_MB*/);
 	virtual ~file_logger();
-	void write_to_log(log_metadata&& metadata, std::string&& log_text) override; 
+	void write_to_log(log_metadata &&metadata,
+			  std::string &&log_text) override;
 
-	template<typename T>
-	inline void max_file_size(T value) 
-	{
+	template <typename T> inline void max_file_size(T value) {
 		m_max_file_size = std::forward<T>(value);
 	}
-		
-	inline std::size_t max_file_size() const
-	{
-		return m_max_file_size;
-	}
 
-	inline bool is_open() const
-	{
-		return m_stream.is_open();
-	}
+	inline std::size_t max_file_size() const { return m_max_file_size; }
+
+	inline bool is_open() const { return m_stream.is_open(); }
 
 	virtual void flush();
-private:
+
+      private:
 	boost::iostreams::file_sink m_stream;
-	std::string m_log_name;		
+	std::string m_log_name;
 	std::string m_log_directory;
 	mlog_bytes m_max_file_size;
-	mlog_bytes m_offset;	
-	
-	
-	static std::string get_next_logfile(const std::string& directory, const std::string name, mlog_bytes max_file_size, mlog_bytes* offset = 0);
+	mlog_bytes m_offset;
+
+	static std::string get_next_logfile(const std::string &directory,
+					    const std::string name,
+					    mlog_bytes max_file_size,
+					    mlog_bytes *offset = 0);
 };
 
-typedef thread_safe<file_logger> file_logger_thread_safe; 
+typedef thread_safe<file_logger> file_logger_thread_safe;
 
 } /* mlog */
 
@@ -81,4 +75,3 @@ typedef thread_safe<file_logger> file_logger_thread_safe;
 #ifdef MLOG_NO_LIB
 #include "impl/file_logger.hpp"
 #endif
-

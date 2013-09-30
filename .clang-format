@@ -29,9 +29,9 @@ PointerBindsToType: false
 SpacesBeforeTrailingComments: 1
 Cpp11BracedListStyle: false
 Standard:        Cpp03
-IndentWidth:     2
+IndentWidth:     8
 TabWidth:        8
-UseTab:          Never
+UseTab:          Always
 BreakBeforeBraces: Attach
 IndentFunctionDeclarationAfterType: false
 SpacesInParentheses: false

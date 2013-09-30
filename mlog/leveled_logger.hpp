@@ -11,38 +11,30 @@
 #include "logger.hpp"
 #include <sstream>
 
-namespace mlog
-{
+namespace mlog {
 
 extern char endl;
 
-class leveled_logger
-{
-public:
-	leveled_logger(mlog_level level, logger* log, log_position position) 
-	:m_log(log), m_has_content(false), m_level(level), m_position(std::move(position))
-	{
-	}
+class leveled_logger {
+      public:
+	leveled_logger(mlog_level level, logger *log, log_position position)
+	    : m_log(log), m_has_content(false), m_level(level),
+	      m_position(std::move(position)) {}
 
-	virtual ~leveled_logger()
-	{
+	virtual ~leveled_logger() {
 		if (m_has_content)
 			write_to_log();
-
 	}
 
-	template<typename T>
-	leveled_logger& operator<<(T rhs)
-	{
-		//if (!m_has_content)
+	template <typename T> leveled_logger &operator<<(T rhs) {
+		// if (!m_has_content)
 		//	init_line();
 		m_has_content = true;
 		m_stream << rhs;
 		return *this;
 	}
 
-	leveled_logger& operator<<(char rhs)
-	{
+	leveled_logger &operator<<(char rhs) {
 		m_has_content = true;
 
 		if (rhs == mlog::endl)
@@ -53,31 +45,22 @@ public:
 		return *this;
 	}
 
-	inline mlog_level level() const
-	{
-		return m_level;
-	}
+	inline mlog_level level() const { return m_level; }
 
-protected:
-	inline logger* get_logger()
-	{
-		return m_log;
-	}
+      protected:
+	inline logger *get_logger() { return m_log; }
 
-private:
+      private:
 	std::stringstream m_stream;
-	logger* m_log;
+	logger *m_log;
 	bool m_has_content;
 	mlog_level m_level;
 	log_position m_position;
-	
 
-	void write_to_log()
-	{
-		m_log->write(level(), m_stream.str(), m_position); 
+	void write_to_log() {
+		m_log->write(level(), m_stream.str(), m_position);
 		m_has_content = false;
 	}
-
 };
 
 } /* namespace mlog */
@@ -86,4 +69,3 @@ private:
 #ifdef MLOG_NO_LIB
 #include "impl/leveled_logger.hpp"
 #endif
-
