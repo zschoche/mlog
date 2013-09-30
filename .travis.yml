@@ -4,8 +4,7 @@ compiler:
 
 before_install: 
         - svn co http://llvm.org/svn/llvm-project/libcxx/trunk/include libcxx_include 
-        - pwd
-        - export CPATH=$CPATH;$(pwd)\libcxx_include
+        - export CPATH=$CPATH;/home/travis/build/zschoche/mlog/libcxx_include
         - echo $CPATH
 
 ## Install prerequisites
