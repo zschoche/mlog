@@ -7,12 +7,12 @@ before_install:
         - ls -al /usr/include 
         - ls -al /usr/include/c++ 
         - ls -al /usr/local/include 
-        - ls -al /usr/local/include/c++ 
 
 ## Install prerequisites
 install: 
   - sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 16126D3A3E5C1192
   - sudo apt-get update -qq
   - sudo apt-get install -qq libboost-all-dev
+  - sudo apt-get install -qq libclang-dev
   
 script: cmake -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX && make && make test
