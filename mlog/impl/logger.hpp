@@ -142,8 +142,16 @@ logger::logger()
 	using namespace boost;
 	using namespace boost::random;
   	mt19937 rng(std::time(0));
+
+#ifdef BOOST_HAS_TR1_RANDOM
   	uniform_int_distribution<> six(0, 100);
   	m_session = six(rng);
+#elseif
+	boost::uniform_int<> six(0,100);    
+	boost::variate_generator<boost::mt19937&, boost::uniform_int<> >
+        die(rng, six);
+	m_session = die();                 
+#endif
 }
 
 logger::~logger() {}
