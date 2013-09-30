@@ -71,5 +71,5 @@ install(
     ARCHIVE DESTINATION lib
     )
 install(DIRECTORY mlog DESTINATION include)
-enable_testing()
-ADD_TEST(unittest test)
+#enable_testing()
+#ADD_TEST(unittest test)
