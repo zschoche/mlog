@@ -3,7 +3,11 @@ compiler:
   - gcc
   - clang
 
-before_install: gcc -v -x c++ /dev/null -fsyntax-only
+before_install: 
+        - ls -al /usr/include 
+        - ls -al /usr/include/c++ 
+        - ls -al /usr/local/include 
+        - ls -al /usr/local/include/c++ 
 
 ## Install prerequisites
 install: 
