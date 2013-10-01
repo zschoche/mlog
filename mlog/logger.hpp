@@ -107,42 +107,35 @@ class logger {
 
 	inline void write(mlog_level &&level, boost::format &&format,
 			  log_position &&pos) {
-		write_to_log(log_metadata(std::move(level), m_session,
-					  m_use_time, m_use_thread_id,
-					  std::move(pos), m_use_position),
-			     boost::str(format));
+		log_metadata metadata(std::move(level), m_session, m_use_time,
+				      m_use_thread_id, std::move(pos),
+				      m_use_position);
+		write_to_log(std::move(metadata), boost::str(format));
 	}
 
 	inline void write(mlog_level &&level, const boost::format &format,
 			  log_position &&pos) {
-		write_to_log(log_metadata(std::move(level), m_session,
-					  m_use_time, m_use_thread_id,
-					  std::move(pos), m_use_position),
-			     boost::str(format));
+		log_metadata metadata(std::move(level), m_session, m_use_time,
+				      m_use_thread_id, std::move(pos),
+				      m_use_position);
+		write_to_log(std::move(metadata), boost::str(format));
 	}
 
 	inline void write(mlog_level &&level, std::string &&log_text,
 			  log_position &&pos) {
-		write_to_log(log_metadata(std::move(level), m_session,
-					  m_use_time, m_use_thread_id,
-					  std::move(pos), m_use_position),
-			     std::move(log_text));
+
+		log_metadata metadata(std::move(level), m_session, m_use_time,
+				      m_use_thread_id, std::move(pos),
+				      m_use_position);
+		write_to_log(std::move(metadata), std::move(log_text));
 	}
 
-	inline void write(mlog_level &&level, const std::string &log_text,
-			  log_position &&pos) {
-		write_to_log(log_metadata(std::move(level), m_session,
-					  m_use_time, m_use_thread_id,
-					  std::move(pos), m_use_position),
-			     std::string(log_text));
-	}
-
-	inline void write(mlog_level &&level, const std::string &log_text,
-			  const log_position &pos) {
-		write_to_log(
-		    log_metadata(std::move(level), m_session, m_use_time,
-				 m_use_thread_id, pos, m_use_position),
-		    std::string(log_text));
+	template <typename T>
+	void write(mlog_level &&level, const std::string &log_text, T &&pos) {
+		log_metadata metadata(std::move(level), m_session, m_use_time,
+				      m_use_thread_id, std::forward<T>(pos),
+				      m_use_position);
+		write_to_log(std::move(metadata), std::string(log_text));
 	}
 
 	// virtual void flush() = 0;
