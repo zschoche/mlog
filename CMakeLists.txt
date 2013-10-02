@@ -5,7 +5,6 @@ project(mlog)
 add_definitions("-Wall")
 add_definitions("-O3")
 #add_definitions("-g")
-
 add_definitions(-DMLOGDEBUG)
 add_definitions(-DMLOGTRACE)
 
@@ -48,7 +47,7 @@ else()
 	execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
                 OUTPUT_VARIABLE GCC_VERSION)
 	if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
-        	message("using gcc with -std=c++11")
+        	message("using gcc with -std=c++0x")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")	
 	else()
         	message("using gcc with -std=gnu++0x")
