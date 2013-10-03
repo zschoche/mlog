@@ -1,6 +1,7 @@
 language: cpp
 compiler:
   - gcc
+  - gcc
 
 ## Install prerequisites
 install: 
