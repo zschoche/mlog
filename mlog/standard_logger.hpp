@@ -22,7 +22,7 @@ class standard_logger : public logger {
 	void flush() { std::cout.flush(); }
 
 	void write_to_log(log_metadata &&metadata,
-			  std::string &&log_text) override {
+			  std::string &&log_text) {
 		metadata.output(std::cout) << log_text << std::endl;
 	}
 
