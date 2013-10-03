@@ -227,6 +227,19 @@ BOOST_AUTO_TEST_CASE(memory_logger_test) {
 	// std::cout << *mem_log << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
+	num_loops = 100000;
+	mlog::memory_logger<4> *mem_log = new mlog::memory_logger<4>();
+	mlog::mlogger.reset(mem_log);
+	mlog::mlogger->use_time(false);
+	mlog::mlogger->use_thread_id(false);
+	mlog::mlogger->use_time(false);
+
+	for (std::size_t i = 0; i < 1024*1024; i++) {
+		MLOG_INFO(boost::format("%1%") % i);
+	}
+
+}
 #ifdef _MSC_VER
 BOOST_AUTO_TEST_CASE(memory_leak) {
 	std::cout << "msvc will detect a memory leak at the end of this "
