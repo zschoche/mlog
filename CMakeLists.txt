@@ -59,7 +59,7 @@ else()
         message("using known compiler.")
     endif()
 
-    if(TRAVIS)
+    if(DEFINED TRAVIS)
 	    message("building on travis-ci")
     else()
 	    message("using BOOST_TEST_DYN_LINK")
