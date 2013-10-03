@@ -87,6 +87,7 @@ struct log_metadata {
 
 	log_metadata(mlog_level &&lvl, short session_id, bool _use_time,
 		     bool _use_thread_id);
+
 	log_metadata(mlog_level &&lvl, short session_id, bool _use_time,
 		     bool _use_thread_id, log_position &&position,
 		     bool _use_position);
@@ -123,7 +124,6 @@ class logger {
 
 	inline void write(mlog_level &&level, std::string &&log_text,
 			  log_position &&pos) {
-
 		log_metadata metadata(std::move(level), m_session, m_use_time,
 				      m_use_thread_id, std::move(pos),
 				      m_use_position);
