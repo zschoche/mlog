@@ -63,7 +63,7 @@ template <unsigned long N> class memory_logger : public logger {
 	virtual ~memory_logger() {}
 
 	void write_to_log(log_metadata &&metadata,
-			  std::string &&log_text) override {
+			  std::string &&log_text) {
 
 		if (m_use_mutex) {
 			std::size_t index =
