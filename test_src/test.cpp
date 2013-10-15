@@ -220,8 +220,7 @@ BOOST_AUTO_TEST_CASE(memory_logger_test) {
 	}
 
 	for (std::size_t i = 0; i < 2048; i++) {
-		BOOST_CHECK_EQUAL(
-		    boost::lexical_cast<std::size_t>((*mem_log)[i].text), i);
+		BOOST_CHECK_EQUAL(std::atoi((*mem_log)[i].text.c_str()), i);
 	}
 
 	// std::cout << *mem_log << std::endl;

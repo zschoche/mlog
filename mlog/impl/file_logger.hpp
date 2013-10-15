@@ -5,7 +5,6 @@
 #include "../file_logger.hpp"
 #include <sstream>
 #include <string>
-#include <boost/lexical_cast.hpp>
 
 namespace mlog {
 
@@ -61,7 +60,7 @@ std::string file_logger::get_next_logfile(const std::string &directory,
 		do {
 			new_path.reset(new boost::filesystem::path(
 			    path.string() + "." +
-			    boost::lexical_cast<std::string>(i)));
+			    std::to_string(i)));
 			i++;
 			exists = boost::filesystem::exists(*new_path);
 		} while (exists && (max_file_size == 0 ||

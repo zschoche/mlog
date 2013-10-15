@@ -9,13 +9,23 @@
 
 #include "../logger.hpp"
 #include <boost/random.hpp>
-#include <boost/lexical_cast.hpp>
 #include <cstdio>
 #if _MSC_VER
 #define snprintf _snprintf_s
 #endif
 
+#include <sstream>
+
 namespace mlog {
+
+
+template<typename T>
+	std::string thread_id_to_string(T&& thread_id) {
+		std::stringstream ss;
+	ss << thread_id;
+	return ss.str();
+}
+
 
 log_metadata::log_metadata(mlog_level &&lvl, short session_id, bool _use_time,
 			   bool _use_thread_id)
@@ -86,7 +96,7 @@ std::string log_metadata::to_string() const {
 				    tm->tm_hour, tm->tm_min, tm->tm_sec, ms,
 				    position.filename.c_str(),
 				    position.line_number, session_id,
-				    boost::lexical_cast<std::string>(thread_id)
+				    thread_id_to_string(thread_id)
 					.c_str(),
 				    level_to_string(level).c_str());
 			else // 2012-11-02 15:24:04.345
@@ -97,7 +107,7 @@ std::string log_metadata::to_string() const {
 					 1900 + tm->tm_year, tm->tm_mon,
 					 tm->tm_mday, tm->tm_hour, tm->tm_min,
 					 tm->tm_sec, ms, session_id,
-					 boost::lexical_cast<std::string>(
+					 thread_id_to_string(
 					     thread_id).c_str(),
 					 level_to_string(level).c_str());
 		} else // 2012-11-02 15:24:04.345 [24]{warning}:
@@ -128,11 +138,11 @@ std::string log_metadata::to_string() const {
 			    buffer, sizeof(buffer), "[%s:%li %02i-%s]{%s}: ",
 			    position.filename.c_str(), position.line_number,
 			    session_id,
-			    boost::lexical_cast<std::string>(thread_id).c_str(),
+			    thread_id_to_string(thread_id).c_str(),
 			    level_to_string(level).c_str());
 		else
 			snprintf(buffer, sizeof(buffer), "[%02i-%s]{%s}: ",
-				 session_id, boost::lexical_cast<std::string>(
+				 session_id, thread_id_to_string(
 						 thread_id).c_str(),
 				 level_to_string(level).c_str());
 	} else if (use_position) {
