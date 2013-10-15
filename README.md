@@ -92,7 +92,7 @@ I just recommand you to use [Boost.Format](http://www.boost.org/doc/libs/1_52_0/
 ## Dependences
 
  * [Boost System Library](www.boost.org/libs/system/)
- * [Boost Format library](www.boost.org/libs/format/)
+ * [Boost Format Library](www.boost.org/libs/format/)
  * [Boost.Random](www.boost.org/libs/random/)
  
 
