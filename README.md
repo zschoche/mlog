@@ -89,6 +89,13 @@ __Example:__ `MLOG_INFO_STREAM("how to log " << "with a stream");`
 The trace and debug log statments only work if __MLOGDEBUG__ and __MLOGTRACE__ are defined as a preprocessor flag. If this is not the case the debug and trace statments will be ignored completely. These statements won't affect the performance of your program any more.
 I just recommand you to use [Boost.Format](http://www.boost.org/doc/libs/1_52_0/libs/format/) is stead of the std::stringstream version. It's faster.
 
+## Dependences
+
+ * [Boost System Library](www.boost.org/libs/system/)
+ * [Boost Format Library](www.boost.org/libs/format/)
+ * [Boost.Random](www.boost.org/libs/random/)
+ 
+
 ## Building with CMake
 
 To build the library and with CMake, you will need to
