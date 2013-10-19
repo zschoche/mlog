@@ -156,11 +156,11 @@ This library is already shipped with the followed logger types:
   </tr>
   <tr>
     <td>mlog::memory_logger_normal</td>
-    <td>Is logging thread safe into the memory<br>(holds the last 4096 log entrys)</td>
+    <td>Is logging thread safe into the memory<br>(holds the last 4096 log entries)</td>
   </tr>
   <tr>
     <td>mlog::memory_logger_big</td>
-    <td>Is logging thread safe into the memory<br>(holds the last 65535 log entrys)</td>
+    <td>Is logging thread safe into the memory<br>(holds the last 65535 log entries)</td>
   </tr>
 </table>
 
