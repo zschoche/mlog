@@ -41,8 +41,8 @@ template <typename T> class async_logger : public T {
 	void write_to_log(log_metadata &&metadata, std::string &&log_text) {
 		if (m_result.valid())
 			m_result.wait();
-		m_result = std::async([&](log_metadata && md,
-			      std::string && text) {
+		m_result = std::async([&](log_metadata md,
+			      std::string text) {
 				T::write_to_log(std::move(md),
 							std::move(text));
 			   },
