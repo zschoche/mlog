@@ -43,6 +43,10 @@ class file_logger : public logger {
 	void write_to_log(log_metadata &&metadata,
 			  std::string &&log_text);
 
+	virtual void write_to_log(const log_metadata& metadata,
+				  const std::string& log_text);
+
+
 	template <typename T> inline void max_file_size(T value) {
 		m_max_file_size = std::forward<T>(value);
 	}

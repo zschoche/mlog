@@ -84,6 +84,26 @@ template <unsigned long N> class memory_logger : public logger {
 			// entry.text = log_text;
 		}
 	}
+	
+		
+	void write_to_log(const log_metadata& metadata,
+				  const std::string& log_text) {
+
+		if (m_use_mutex) {
+			std::size_t index =
+			    (m_offset + m_offset_temp++) & (N - 1);
+			boost::detail::lightweight_mutex::scoped_lock lock(
+			    m_mutex);
+			memory_entry &entry = m_log_entrys[index];
+			entry.metadata = metadata;
+			entry.text = log_text;
+		} else {
+			memory_entry &entry =
+			    m_log_entrys[m_offset++ & (N - 1)];
+			entry.metadata = metadata;
+			entry.text = log_text;
+		}
+	}
 
 	std::ostream &output(std::ostream &stream) {
 		m_offset_temp = 0;

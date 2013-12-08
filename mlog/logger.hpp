@@ -142,6 +142,9 @@ class logger {
 	virtual void write_to_log(log_metadata &&metadata,
 				  std::string &&log_text) = 0;
 
+	virtual void write_to_log(const log_metadata& metadata,
+				  const std::string& log_text) = 0;
+
 	template <typename T> inline void use_thread_id(T &&value) {
 		m_use_thread_id = std::forward<T>(value);
 	}

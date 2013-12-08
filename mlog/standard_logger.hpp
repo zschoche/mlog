@@ -21,8 +21,11 @@ class standard_logger : public logger {
 
 	void flush() { std::cout.flush(); }
 
-	void write_to_log(log_metadata &&metadata,
-			  std::string &&log_text) {
+	void write_to_log(log_metadata &&metadata, std::string &&log_text) {
+		metadata.output(std::cout) << std::move(log_text) << std::endl;
+	}
+	void write_to_log(const log_metadata &metadata,
+			  const std::string &log_text) {
 		metadata.output(std::cout) << log_text << std::endl;
 	}
 
