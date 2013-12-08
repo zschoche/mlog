@@ -12,6 +12,11 @@
 
 namespace   mlog 
 {
+
+
+
+
+
 	class   multiple_loggers : public logger 
 	{
 	public:
@@ -25,13 +30,19 @@ namespace   mlog
 		}
 		void write_to_log(const log_metadata& metadata,
 				  const std::string& log_text) {
-			for( auto& l : m_loggers) {
-				l.write_to_log(metadata, log_text);
-			}
 
+			std::vector<std::future<void>> r(m_loggers.size());
+			for(logger* item : m_loggers) {
+				r.push_back(std::move(std::async([&](logger* l) { l->write_to_log(metadata, log_text); }, item)));
+			}
+			for(std::future<void>& item : r) {
+				if(item.valid()) {
+					item.wait();
+				}
+			}
 		}
 		
-		std::vector<logger> m_loggers;
+		std::vector<logger*> m_loggers;
 	
 	};
 	

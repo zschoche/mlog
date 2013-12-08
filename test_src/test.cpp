@@ -6,6 +6,7 @@
 #include <mlog/memory_logger.hpp>
 #include <mlog/file_logger.hpp>
 #include <thread>
+#include <mlog/multiple_loggers.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <cmath>
 
@@ -71,6 +72,28 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
 	BOOST_CHECK_EQUAL((*log)[1].text, "2");
 	BOOST_CHECK_EQUAL((*log)[2].text, "1"); // overflow
 }
+
+
+BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
+	auto* log = new mlog::multiple_loggers();
+	std::unique_ptr<mlog::memory_logger<2>> log1(new mlog::memory_logger<2>());
+	std::unique_ptr<mlog::memory_logger<2>> log2(new mlog::memory_logger<2>());
+	std::unique_ptr<mlog::memory_logger<2>> log3(new mlog::memory_logger<2>());
+	log->m_loggers.push_back(log1.get());
+	log->m_loggers.push_back(log2.get());
+	log->m_loggers.push_back(log3.get());
+	mlog::mlogger.reset(log);
+	MLOG_INFO("TEST1");
+	MLOG_INFO("TEST2");
+	BOOST_CHECK_EQUAL((*log1)[0].text, "TEST1");
+	BOOST_CHECK_EQUAL((*log1)[1].text, "TEST2");
+	BOOST_CHECK_EQUAL((*log2)[0].text, "TEST1");
+	BOOST_CHECK_EQUAL((*log2)[1].text, "TEST2");
+	BOOST_CHECK_EQUAL((*log3)[0].text, "TEST1");
+	BOOST_CHECK_EQUAL((*log3)[1].text, "TEST2");
+
+}
+
 
 
 BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
