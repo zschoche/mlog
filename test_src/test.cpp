@@ -20,7 +20,7 @@ double log2(double n) {
 #endif
 
 const int num_threads = 2;
-int num_loops = 1000000000;
+int num_loops = 100000;
 
 void write_some_log_entrys() {
 	for (int i = 0; i < num_loops; i++)
