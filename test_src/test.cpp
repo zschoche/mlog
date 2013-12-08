@@ -5,6 +5,7 @@
 #include <mlog/mlog.hpp>
 #include <mlog/memory_logger.hpp>
 #include <mlog/file_logger.hpp>
+#include <mlog/async_logger.hpp>
 #include <thread>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <cmath>
@@ -19,7 +20,7 @@ double log2(double n) {
 #endif
 
 const int num_threads = 2;
-int num_loops = 100000;
+int num_loops = 1000000000;
 
 void write_some_log_entrys() {
 	for (int i = 0; i < num_loops; i++)
@@ -72,6 +73,7 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
 	BOOST_CHECK_EQUAL((*log)[2].text, "1"); // overflow
 }
 
+
 BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	num_loops = 1000;
 	mlog::mlogger.reset(new mlog::standard_logger());
@@ -83,6 +85,16 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	mlog::mlogger->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
+	mlog::mlogger.reset(new mlog::async_logger<mlog::standard_logger>());
+	double st_async_result = single_thread_test();
+	mlog::mlogger->use_thread_id(true);
+	double st_async_result_thread_id = single_thread_test();
+	mlog::mlogger->use_time(true);
+	double st_async_result_thread_id_time = single_thread_test();
+	mlog::mlogger->use_position(true);
+	double st_async_result_thread_id_time_pos = single_thread_test();
+
+
 	mlog::mlogger.reset(new mlog::standard_logger_thread_safe());
 	double mt_result = multi_thread_test();
 	mlog::mlogger->use_thread_id(true);
@@ -91,6 +103,18 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	double mt_result_thread_id_time = multi_thread_test();
 	mlog::mlogger->use_position(true);
 	double mt_result_thread_id_time_pos = multi_thread_test();
+	
+
+	mlog::mlogger.reset(new mlog::thread_safe<mlog::async_logger<mlog::standard_logger>>());
+	double mt_async_result = multi_thread_test();
+	mlog::mlogger->use_thread_id(true);
+	double mt_async_result_thread_id = multi_thread_test();
+	mlog::mlogger->use_time(true);
+	double mt_async_result_thread_id_time = multi_thread_test();
+	mlog::mlogger->use_position(true);
+	double mt_async_result_thread_id_time_pos = multi_thread_test();
+
+
 
 	std::cout << std::endl;
 	std::cout << "### single-threaded standard logger test ###"
@@ -105,6 +129,18 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 		  << "ms for each log statment with thread id, timestamp and "
 		     "position." << std::endl;
 	std::cout << std::endl;
+	std::cout << "### single-threaded standard logger test (async) ###"
+		  << std::endl;
+	std::cout << st_async_result << "ms for each log statment." << std::endl;
+	std::cout << st_async_result_thread_id
+		  << "ms for each log statment with thread id." << std::endl;
+	std::cout << st_async_result_thread_id_time
+		  << "ms for each log statment with thread id and timestamp."
+		  << std::endl;
+	std::cout << st_async_result_thread_id_time_pos
+		  << "ms for each log statment with thread id, timestamp and "
+		     "position." << std::endl;
+	std::cout << std::endl;
 	std::cout << "### multi-threaded standard logger test ###" << std::endl;
 	std::cout << mt_result << "ms for each log statment." << std::endl;
 	std::cout << mt_result_thread_id
@@ -113,6 +149,17 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 		  << "ms for each log statment with thread id and timestamp."
 		  << std::endl;
 	std::cout << mt_result_thread_id_time_pos
+		  << "ms for each log statment with thread id, timestamp and "
+		     "position." << std::endl;
+	std::cout << std::endl;
+	std::cout << "### multi-threaded standard logger test (async) ###" << std::endl;
+	std::cout << mt_async_result << "ms for each log statment." << std::endl;
+	std::cout << mt_async_result_thread_id
+		  << "ms for each log statment with thread id." << std::endl;
+	std::cout << mt_async_result_thread_id_time
+		  << "ms for each log statment with thread id and timestamp."
+		  << std::endl;
+	std::cout << mt_async_result_thread_id_time_pos
 		  << "ms for each log statment with thread id, timestamp and "
 		     "position." << std::endl;
 }
