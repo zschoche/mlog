@@ -12,12 +12,7 @@
 
 namespace   mlog 
 {
-
-
-
-
-
-	class   multiple_loggers : public logger 
+	class multiple_loggers : public logger 
 	{
 	public:
 	
@@ -35,7 +30,7 @@ namespace   mlog
 			for(logger* item : m_loggers) {
 				r.push_back(std::move(std::async([&](logger* l) { l->write_to_log(metadata, log_text); }, item)));
 			}
-			for(std::future<void>& item : r) {
+			for(auto&& item : r) {
 				if(item.valid()) {
 					item.wait();
 				}

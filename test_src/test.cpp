@@ -61,6 +61,7 @@ BOOST_AUTO_TEST_CASE(mlog_log2_test) {
 	for (unsigned long i = 1; i < 1024 * 1024; i++)
 		BOOST_CHECK_EQUAL(static_cast<unsigned long>(std::log2(i)),
 				  mlog::log2(i));
+	std::cout << "mlog_log2_test passed." << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
@@ -71,6 +72,44 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
 	BOOST_CHECK_EQUAL((*log)[0].text, "1");
 	BOOST_CHECK_EQUAL((*log)[1].text, "2");
 	BOOST_CHECK_EQUAL((*log)[2].text, "1"); // overflow
+	std::cout << "mlog_memory_logger_1_test passed." << std::endl;
+}
+
+
+
+BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
+	
+	auto *log = new mlog::memory_logger_normal();
+	mlog::mlogger.reset(log);
+	const std::size_t t = 8;
+	std::thread threads[t];
+
+	for (int i = 0; i < t; ++i)
+		threads[i] = std::thread([&]() {
+			for (int k = 0;k < 512;k++) { // (log size) / 8 = 512
+			  	MLOG_INFO(boost::lexical_cast<std::string>(k));
+		}
+		});
+
+	for (auto &t : threads)
+		t.join();
+	
+
+	int result[512];
+	for(auto&& i : result) {
+		i = 0;
+	}
+
+	for(int i = 0; i <  log->size(); i++) {
+		std::string s = (*log)[i].text;
+		int n = std::atoi(s.c_str());
+		result[n]++;
+	}
+	
+	for(auto&& i : result) {
+		BOOST_CHECK_EQUAL(i, 8);
+	}
+	std::cout << "mlog_memory_logger_atomic_test passed." << std::endl;
 }
 
 
@@ -91,13 +130,14 @@ BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	BOOST_CHECK_EQUAL((*log2)[1].text, "TEST2");
 	BOOST_CHECK_EQUAL((*log3)[0].text, "TEST1");
 	BOOST_CHECK_EQUAL((*log3)[1].text, "TEST2");
+	std::cout << "multiple_loggers_test passed." << std::endl;
 
 }
 
 
 
 BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
-	num_loops = 1000;
+	num_loops = 100;
 	mlog::mlogger.reset(new mlog::standard_logger());
 	double st_result = single_thread_test();
 	mlog::mlogger->use_thread_id(true);
@@ -108,13 +148,13 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	double st_result_thread_id_time_pos = single_thread_test();
 
 	mlog::mlogger.reset(new mlog::standard_logger_thread_safe());
-	double mt_result = multi_thread_test();
+	double mt_result = single_thread_test();
 	mlog::mlogger->use_thread_id(true);
-	double mt_result_thread_id = multi_thread_test();
+	double mt_result_thread_id = single_thread_test();
 	mlog::mlogger->use_time(true);
-	double mt_result_thread_id_time = multi_thread_test();
+	double mt_result_thread_id_time = single_thread_test();
 	mlog::mlogger->use_position(true);
-	double mt_result_thread_id_time_pos = multi_thread_test();
+	double mt_result_thread_id_time_pos = single_thread_test();
 	
 	std::cout << std::endl;
 	std::cout << "### single-threaded standard logger test ###"
@@ -153,16 +193,8 @@ BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
 	mlog::mlogger->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
-	double mt_result = multi_thread_test();
-	mlog::mlogger->use_thread_id(true);
-	double mt_result_thread_id = multi_thread_test();
-	mlog::mlogger->use_time(true);
-	double mt_result_thread_id_time = multi_thread_test();
-	mlog::mlogger->use_position(true);
-	double mt_result_thread_id_time_pos = multi_thread_test();
-
 	std::cout << std::endl;
-	std::cout << "### single-threaded memory logger test ###" << std::endl;
+	std::cout << "### memory logger test ###" << std::endl;
 	std::cout << st_result << "ms for each log statment." << std::endl;
 	std::cout << st_result_thread_id
 		  << "ms for each log statment with thread id." << std::endl;
@@ -173,17 +205,6 @@ BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
 		  << "ms for each log statment with thread id, timestamp and "
 		     "position." << std::endl;
 	std::cout << std::endl;
-	std::cout << "### multi-threaded memory logger test ###" << std::endl;
-	std::cout << mt_result << "ms for each log statment." << std::endl;
-	std::cout << mt_result_thread_id
-		  << "ms for each log statment with thread id." << std::endl;
-	std::cout << mt_result_thread_id_time
-		  << "ms for each log statment with thread id and timestamp."
-		  << std::endl;
-	std::cout << mt_result_thread_id_time_pos
-		  << "ms for each log statment with thread id, timestamp and "
-		     "position." << std::endl;
-	//*/
 }
 
 BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
@@ -200,13 +221,13 @@ BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
 
 	mlog::mlogger.reset(new mlog::file_logger_thread_safe("log.txt"));
 	mlog::mlogger->use_time(false);
-	double mt_result = multi_thread_test();
+	double mt_result = single_thread_test();
 	mlog::mlogger->use_thread_id(true);
-	double mt_result_thread_id = multi_thread_test();
+	double mt_result_thread_id = single_thread_test();
 	mlog::mlogger->use_time(true);
-	double mt_result_thread_id_time = multi_thread_test();
+	double mt_result_thread_id_time = single_thread_test();
 	mlog::mlogger->use_position(true);
-	double mt_result_thread_id_time_pos = multi_thread_test();
+	double mt_result_thread_id_time_pos = single_thread_test();
 
 	std::cout << std::endl;
 	std::cout << "### single-threaded file logger test ###" << std::endl;
@@ -247,6 +268,7 @@ BOOST_AUTO_TEST_CASE(memory_logger_test) {
 	for (std::size_t i = 0; i < 2048; i++) {
 		BOOST_CHECK_EQUAL(std::atoi((*mem_log)[i].text.c_str()), i);
 	}
+	std::cout << "memory_logger_test passed." << std::endl;
 
 	// std::cout << *mem_log << std::endl;
 }
@@ -262,6 +284,7 @@ BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
 	for (std::size_t i = 0; i < 1024*1024; i++) {
 		MLOG_INFO(boost::format("%1%") % i);
 	}
+	std::cout << "memory_logger_test_small passed." << std::endl;
 
 }
 #ifdef _MSC_VER

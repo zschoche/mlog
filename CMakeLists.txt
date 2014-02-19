@@ -3,7 +3,7 @@ project(mlog)
 
 #defines
 add_definitions("-Wall")
-add_definitions("-O3")
+add_definitions("-O3") 
 #add_definitions("-g")
 add_definitions(-DMLOGDEBUG)
 add_definitions(-DMLOGTRACE)

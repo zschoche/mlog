@@ -47,13 +47,6 @@ template <unsigned long N> class memory_logger : public logger {
 					       "32 ... 1024, 2048, 4096... and "
 					       "so on.");
 #endif
-		/*if((N -1) != mask)
-		{
-			std::stringstream ss;
-			ss << "Invalid template argument mlog::memory_logger::N.
-		Next valid entry count is " << mask+1 << ".";
-			throw std::invalid_argument(ss.str());
-		}*/
 	}
 
 	inline bool is_lock_free() {
@@ -65,44 +58,22 @@ template <unsigned long N> class memory_logger : public logger {
 	void write_to_log(log_metadata &&metadata,
 			  std::string &&log_text) {
 
-		if (m_use_mutex) {
-			std::size_t index =
-			    (m_offset + m_offset_temp++) & (N - 1);
-			boost::detail::lightweight_mutex::scoped_lock lock(
-			    m_mutex);
-			memory_entry &entry = m_log_entrys[index];
-			entry.metadata = std::move(metadata);
-			entry.text = std::move(log_text);
-			// entry.metadata = metadata;
-			// entry.text = log_text;
-		} else {
-			memory_entry &entry =
-			    m_log_entrys[m_offset++ & (N - 1)];
-			entry.metadata = std::move(metadata);
-			entry.text = std::move(log_text);
-			// entry.metadata = metadata;
-			// entry.text = log_text;
-		}
+		std::size_t offset = get_offset();
+		memory_entry& entry = m_log_entrys[offset];
+		//entry.metadata = std::move(metadata); //odd errors on clang 
+		//entry.text = std::move(log_text); //odd errors on clang
+		entry.metadata = metadata;
+		entry.text = log_text;
 	}
 	
 		
 	void write_to_log(const log_metadata& metadata,
 				  const std::string& log_text) {
 
-		if (m_use_mutex) {
-			std::size_t index =
-			    (m_offset + m_offset_temp++) & (N - 1);
-			boost::detail::lightweight_mutex::scoped_lock lock(
-			    m_mutex);
-			memory_entry &entry = m_log_entrys[index];
-			entry.metadata = metadata;
-			entry.text = log_text;
-		} else {
-			memory_entry &entry =
-			    m_log_entrys[m_offset++ & (N - 1)];
-			entry.metadata = metadata;
-			entry.text = log_text;
-		}
+		std::size_t offset = get_offset();
+		memory_entry& entry = m_log_entrys[offset];
+		entry.metadata = metadata;
+		entry.text = log_text;
 	}
 
 	std::ostream &output(std::ostream &stream) {
@@ -118,19 +89,32 @@ template <unsigned long N> class memory_logger : public logger {
 		for (unsigned long index = 0; index < offset; index++)
 			m_log_entrys[index].metadata.output(stream)
 			    << m_log_entrys[index].text << std::endl;
-
+		
 		return stream;
 	}
 
 	const memory_entry &operator[](std::size_t const &index) const {
-		return m_log_entrys[(m_offset + index) & (N - 1)];
+		return m_log_entrys[(m_offset + index) & N_1];
+	}
+
+	inline unsigned long size() const {
+		return m_size; 
 	}
 
       private:
 
+	inline unsigned long get_offset() {
+		if(m_use_mutex) {
+			auto r = m_offset + m_offset_temp.fetch_add(1) & N_1;
+			boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
+			return r;
+		} else
+			return  m_offset.fetch_add(1) & N_1;
+	}
+
 	const unsigned long m_size;
 
-	// const unsigned long m_size = N;
+	static const unsigned long N_1 = N - 1;
 
 	memory_entry m_log_entrys[N];
 	std::atomic<unsigned long> m_offset;
