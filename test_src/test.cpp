@@ -5,10 +5,14 @@
 #include <mlog/mlog.hpp>
 #include <mlog/memory_logger.hpp>
 #include <mlog/file_logger.hpp>
+#include <mlog/syslog_logger.hpp>
 #include <thread>
 #include <mlog/multiple_loggers.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <cmath>
+#include <boost/random.hpp>
+#include <boost/generator_iterator.hpp>
+#include <boost/algorithm/string.hpp>
 
 #ifdef _MSC_VER
 namespace std {
@@ -75,6 +79,48 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
 	std::cout << "mlog_memory_logger_1_test passed." << std::endl;
 }
 
+#if !defined(_WIN32) && (defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__)))
+BOOST_AUTO_TEST_CASE(mlog_syslog_test) {
+
+      boost::mt19937 rng;
+      rng.seed(static_cast<unsigned int>(std::time(0)));
+      boost::variate_generator< boost::mt19937, boost::uniform_int<> > dice(rng, boost::uniform_int<>(1, 1024*1024));
+	
+      int id = dice();
+
+	auto *log = new mlog::syslog_logger("mlog_syslog_test");
+	mlog::mlogger.reset(log);
+
+	std::string debug = boost::str(boost::format("This is a debug test (%1%)") % id);
+	std::string trace = boost::str(boost::format("This is a trace test (%1%)") % id);
+	std::string info = boost::str(boost::format("This is a info test (%1%)") % id);
+	std::string error = boost::str(boost::format("This is a error test (%1%)") % id);
+	std::string warning = boost::str(boost::format("This is a warning test (%1%)") % id);
+	;std::string fatal = boost::str(boost::format("This is a fatal test (%1%)") % id);
+
+	MLOG_TRACE(trace);
+	MLOG_DEBUG(debug);
+	MLOG_INFO(info);
+	MLOG_ERROR(error);
+	MLOG_WARNING(warning);
+	MLOG_FATAL(fatal);
+	mlog::mlogger.reset();
+
+	std::vector<std::string> strs = { debug, trace, info, error, warning, fatal };
+
+	std::ifstream file("/var/log/system.log", std::ios_base::in | std::ios_base::binary);
+        for(std::string str; std::getline(file, str); )
+        {
+		for(int i = strs.size() - 1; i >= 0; i--) {
+			if(boost::algorithm::contains(str, strs[i])) {
+				strs.erase(strs.begin()+i);
+			}
+		}
+        }
+	BOOST_CHECK_EQUAL(strs.size(), 0);
+	std::cout << "mlog_syslog_test passed." << std::endl;
+}
+#endif
 
 
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
@@ -287,6 +333,8 @@ BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
 	std::cout << "memory_logger_test_small passed." << std::endl;
 
 }
+
+
 #ifdef _MSC_VER
 BOOST_AUTO_TEST_CASE(memory_leak) {
 	std::cout << "msvc will detect a memory leak at the end of this "
