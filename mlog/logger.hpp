@@ -95,7 +95,7 @@ struct log_metadata {
 		     bool _use_thread_id, const log_position &position,
 		     bool _use_position);
 
-	std::string to_string() const;
+	std::string to_string(const std::string& end_string = std::string()) const;
 
 	std::ostream &output(std::ostream &stream) const;
 };

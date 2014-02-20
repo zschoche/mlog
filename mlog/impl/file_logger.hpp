@@ -22,17 +22,11 @@ file_logger::~file_logger() {}
 
 void file_logger::write_to_log(log_metadata &&metadata,
 			       std::string &&log_text) {
-	std::string metadata_str = metadata.to_string();
-	std::size_t md_len = metadata_str.size();
-	std::size_t length = log_text.size() + md_len;
 
-	char *buffer = new char[length + 1];
-	memcpy(buffer, metadata_str.c_str(), md_len);
-	memcpy(&buffer[md_len], log_text.c_str(), log_text.size());
-	buffer[length] = '\n';
-	m_stream.write(buffer, length + 1);
-	delete[] buffer;
-	m_offset += length;
+	std::string str = metadata.to_string(log_text);
+	m_stream.write(str.c_str(), str.size());
+	boost::iostreams::put(m_stream, '\n');
+	m_offset += str.size() + 1;
 
 	flush();
 
@@ -46,18 +40,11 @@ void file_logger::write_to_log(log_metadata &&metadata,
 void file_logger::write_to_log(const log_metadata& metadata,
 				  const std::string& log_text) {
 
-	std::string metadata_str = metadata.to_string();
-	std::size_t md_len = metadata_str.size();
-	std::size_t length = log_text.size() + md_len;
-
-	char *buffer = new char[length + 1];
-	memcpy(buffer, metadata_str.c_str(), md_len);
-	memcpy(&buffer[md_len], log_text.c_str(), log_text.size());
-	buffer[length] = '\n';
-	m_stream.write(buffer, length + 1);
-	delete[] buffer;
-	m_offset += length;
-
+	std::string str = metadata.to_string(log_text);
+	m_stream.write(str.c_str(), str.size());
+	boost::iostreams::put(m_stream, '\n');
+	m_offset += str.size() + 1;
+	
 	flush();
 
 	if (max_file_size() != 0 && m_offset > max_file_size()) {

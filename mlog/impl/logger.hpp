@@ -65,7 +65,7 @@ log_metadata::log_metadata(mlog_level &&lvl, short session_id, bool _use_time,
 		thread_id = THREAD_GET_ID();
 }
 
-std::string log_metadata::to_string() const {
+std::string log_metadata::to_string(const std::string& end_string) const {
 	char buffer[1024];
 	if (use_time) {
 
@@ -154,8 +154,18 @@ std::string log_metadata::to_string() const {
 		snprintf(buffer, sizeof(buffer), "[%02i]{%s}: ", session_id,
 			 level_to_string(level).c_str());
 	}
-
-	return std::string(buffer);
+	
+	if(end_string.empty()) {
+		return std::string(buffer);
+	} else {
+		std::size_t len = strlen(buffer);
+		std::string result;
+		result.resize(len + end_string.size());
+		char* rbuf = const_cast<char*>(result.c_str());
+		memcpy(rbuf, buffer, len);
+		memcpy(&rbuf[len], end_string.c_str(), end_string.size());
+		return result;
+	}
 }
 
 std::ostream &log_metadata::output(std::ostream &stream) const {
