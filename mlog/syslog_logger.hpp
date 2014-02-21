@@ -35,7 +35,6 @@ namespace   mlog
 
 		virtual ~syslog_logger() {
 			closelog();
-			logger::~logger();
 		}
 
 		void write_to_log(log_metadata &&metadata,
