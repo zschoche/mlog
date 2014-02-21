@@ -11,6 +11,7 @@
 #include "logger.hpp"
 #include "thread_safe.hpp"
 #include "standard_logger.hpp"
+#include <atomic>
 #include <memory>
 
 namespace mlog {
