@@ -12,7 +12,8 @@
 
 namespace mlog {
 
-std::unique_ptr<logger> mlogger(new standard_logger());
+	// This should not be cleaned up https://github.com/zschoche/mlog/issues/11
+	mlog_manager* manager = new mlog_manager();
 }
 
 #endif

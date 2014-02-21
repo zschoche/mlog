@@ -191,7 +191,10 @@ logger::logger()
 #endif
 }
 
-logger::~logger() {}
+logger::~logger() {
+	if(mlog::manager->log() == this)
+		mlog::manager->unset_log();
+}
 
 } /* mlog */
 
