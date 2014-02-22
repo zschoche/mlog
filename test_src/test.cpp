@@ -91,52 +91,6 @@ BOOST_AUTO_TEST_CASE(mlog_logger_cleanup_test) {
 
 
 
-
-#if !defined(_WIN32) && (defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__)))
-BOOST_AUTO_TEST_CASE(mlog_syslog_test) {
-
-      boost::mt19937 rng;
-      rng.seed(static_cast<unsigned int>(std::time(0)));
-      boost::variate_generator< boost::mt19937, boost::uniform_int<> > dice(rng, boost::uniform_int<>(1, 1024*1024));
-	
-      int id = dice();
-
-
-	std::string debug = boost::str(boost::format("This is a debug test (%1%)") % id);
-	std::string trace = boost::str(boost::format("This is a trace test (%1%)") % id);
-	std::string info = boost::str(boost::format("This is a info test (%1%)") % id);
-	std::string error = boost::str(boost::format("This is a error test (%1%)") % id);
-	std::string warning = boost::str(boost::format("This is a warning test (%1%)") % id);
-	std::string fatal = boost::str(boost::format("This is a fatal test (%1%)") % id);
-	{
-		mlog::syslog_logger log("mlog_syslog_test");
-		mlog::manager->set_log(&log);
-
-		MLOG_TRACE(trace);
-		MLOG_DEBUG(debug);
-		MLOG_INFO(info);
-		MLOG_ERROR(error);
-		MLOG_WARNING(warning);
-		MLOG_FATAL(fatal);
-	}
-
-	std::vector<std::string> strs = { debug, trace, info, error, warning, fatal };
-
-	std::ifstream file("/var/log/system.log", std::ios_base::in | std::ios_base::binary);
-        for(std::string str; std::getline(file, str); )
-        {
-		for(int i = strs.size() - 1; i >= 0; i--) {
-			if(boost::algorithm::contains(str, strs[i])) {
-				strs.erase(strs.begin()+i);
-			}
-		}
-        }
-	BOOST_CHECK_EQUAL(strs.size(), 0);
-	std::cout << "mlog_syslog_test passed." << std::endl;
-}
-#endif
-
-
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
 	
 	mlog::memory_logger_normal log;
@@ -356,6 +310,63 @@ BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
 	std::cout << "memory_logger_test_small passed." << std::endl;
 
 }
+
+
+void find_log_messages(std::string&& log, std::vector<std::string>& strs) {
+	std::ifstream file(log, std::ios_base::in | std::ios_base::binary);
+	if(file.is_open()) {
+        	for(std::string str; std::getline(file, str); )
+        	{
+			for(int i = strs.size() - 1; i >= 0; i--) {
+				if(boost::algorithm::contains(str, strs[i])) {
+					strs.erase(strs.begin()+i);
+				}
+			}
+        	}
+	}
+}
+
+
+
+#if !defined(_WIN32) && (defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__)))
+BOOST_AUTO_TEST_CASE(mlog_syslog_test) {
+
+      boost::mt19937 rng;
+      rng.seed(static_cast<unsigned int>(std::time(0)));
+      boost::variate_generator< boost::mt19937, boost::uniform_int<> > dice(rng, boost::uniform_int<>(1, 1024*1024));
+	
+      int id = dice();
+
+
+	std::string debug = boost::str(boost::format("This is a debug test (%1%)") % id);
+	std::string trace = boost::str(boost::format("This is a trace test (%1%)") % id);
+	std::string info = boost::str(boost::format("This is a info test (%1%)") % id);
+	std::string error = boost::str(boost::format("This is a error test (%1%)") % id);
+	std::string warning = boost::str(boost::format("This is a warning test (%1%)") % id);
+	std::string fatal = boost::str(boost::format("This is a fatal test (%1%)") % id);
+	{
+		mlog::syslog_logger log("mlog_syslog_test");
+		mlog::manager->set_log(&log);
+
+		MLOG_TRACE(trace);
+		MLOG_DEBUG(debug);
+		MLOG_INFO(info);
+		MLOG_ERROR(error);
+		MLOG_WARNING(warning);
+		MLOG_FATAL(fatal);
+	}
+
+	std::vector<std::string> strs = { debug, trace, info, error, warning, fatal };
+
+
+	find_log_messages("/var/log/system.log", strs);
+	find_log_messages("/var/log/messages", strs);
+	find_log_messages("/var/log/syslog", strs);
+	BOOST_CHECK_EQUAL(strs.size(), 0);
+	std::cout << "mlog_syslog_test passed." << std::endl;
+}
+#endif
+
 
 
 #ifdef _MSC_VER
