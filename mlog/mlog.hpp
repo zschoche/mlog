@@ -23,16 +23,16 @@ struct mlog_manager {
 			// This should not be cleaned up https://github.com/zschoche/mlog/issues/11
 		}
 
-		inline logger* log() {
+		inline logger_base* log() {
 			return m_log;
 		}
 
-		void set_log(logger& log) {
+		void set_log(logger_base& log) {
 			set_log(&log);
 		}
 
-		void set_log(logger* log) {
-			logger* old_log = m_log;
+		void set_log(logger_base* log) {
+			logger_base* old_log = m_log;
 
 			if(log == nullptr) {
 				m_log = new standard_logger();
@@ -50,7 +50,7 @@ struct mlog_manager {
 		}
 
 	private:
-		std::atomic<logger*> m_log;
+		std::atomic<logger_base*> m_log;
 		std::atomic<bool> m_is_valid;
 
 

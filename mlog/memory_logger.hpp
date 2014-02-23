@@ -29,10 +29,10 @@ unsigned long log2(unsigned long x, unsigned long count = 0)
 }
 
 // writing is already thread-safe.
-template <unsigned long N> class memory_logger : public logger {
+template <unsigned long N> class memory_logger : public logger<memory_logger<N> > {
       public:
 
-	memory_logger() : logger(), m_size(N), m_offset(0), m_use_mutex(false)  {
+	memory_logger() : logger<memory_logger<N> >(), m_size(N), m_offset(0), m_use_mutex(false)  {
 #ifdef _MSC_VER
 		unsigned long bits = mlog::log2(N - 1) + 1;
 		unsigned long mask = ((1 << bits) - 1);

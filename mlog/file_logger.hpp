@@ -34,18 +34,28 @@ constexpr mlog_bytes operator"" _GB(std::size_t bg)
 
 namespace mlog {
 
-class file_logger : public logger {
+class file_logger : public logger<file_logger> {
       public:
 
 	file_logger(std::string log_name, std::string log_directory = ".",
 		    mlog_bytes max_file_size = 5 * 1024 * 1024 /*5_MB*/);
 	virtual ~file_logger();
-	void write_to_log(log_metadata &&metadata,
-			  std::string &&log_text);
 
-	virtual void write_to_log(const log_metadata& metadata,
-				  const std::string& log_text);
+	template <typename M, typename T>
+	void write_to_log(M &&metadata, T &&log_text) {
+		std::string str = metadata.to_string(std::forward<T>(log_text));
+		m_stream.write(str.c_str(), str.size());
+		boost::iostreams::put(m_stream, '\n');
+		m_offset += str.size() + 1;
 
+		flush();
+
+		if (max_file_size() != 0 && m_offset > max_file_size()) {
+			m_stream.open(
+			    get_next_logfile(m_log_directory, m_log_name,
+					     max_file_size(), &m_offset));
+		}
+	}
 
 	template <typename T> inline void max_file_size(T value) {
 		m_max_file_size = std::forward<T>(value);

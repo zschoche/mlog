@@ -174,7 +174,7 @@ std::ostream &log_metadata::output(std::ostream &stream) const {
 	return stream;
 }
 
-logger::logger()
+logger_base::logger_base()
     : m_use_time(false), m_use_thread_id(false), m_use_position(false) {
 	using namespace boost;
 	using namespace boost::random;
@@ -191,7 +191,7 @@ logger::logger()
 #endif
 }
 
-logger::~logger() {
+logger_base::~logger_base() {
 	if(mlog::manager->log() == this)
 		mlog::manager->unset_log();
 }
