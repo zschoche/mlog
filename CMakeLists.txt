@@ -59,7 +59,7 @@ else()
         message("using known compiler.")
     endif()
 
-    if(TRAVIS)
+    if(DEFINED $ENV{TRAVIS})
 	    message("building on travis-ci")
 	    execute_process(COMMAND ls -al /var/log)
 	    execute_process(COMMAND ls -al /etc/rsyslog.d)
