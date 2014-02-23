@@ -69,19 +69,7 @@ The follow macro functions accept `char*`, `std::string` and `boost::format`:
 
 __Example:__ `MLOG_INFO("how to log");` and `MLOG_INFO(boost::format("how to log with format: %1%.") % 23);`
 
-The next functions work with `std::stringstream`:
-
-    MLOG_TRACE_STREAM()
-    MLOG_DEBUG_STREAM()
-    MLOG_INFO_STREAM()
-    MLOG_WARNING_STREAM()
-    MLOG_ERROR_STREAM()
-    MLOG_FATAL_STREAM()
-
-__Example:__ `MLOG_INFO_STREAM("how to log " << "with a stream");`
-
 The trace and debug log statments only work if __MLOGDEBUG__ and __MLOGTRACE__ are defined as a preprocessor flag. If this is not the case the debug and trace statments will be ignored completely. These statements won't affect the performance of your program any more.
-I just recommand you to use [Boost.Format](http://www.boost.org/doc/libs/1_52_0/libs/format/) is stead of the std::stringstream version. It's faster.
 
 ## Dependences
 
@@ -111,8 +99,8 @@ you can now build the library.
 
 ## Log Destination
 
-The `mlog::mlogger` is a static `std::unique_ptr<mlog::logger>` and contains the current log destination.
-The standard destination is a `mlog::standard_logger`. Reset the `mlog::mlogger` to use another destination.
+The `mlog::manager` is pointing to the the current log destination.
+The standard destination is a `mlog::standard_logger`. use `mlog::manager->set_log(...)` to set your own log destination.
 
 Example:
 ```c++
@@ -121,7 +109,8 @@ Example:
     
 //...
     
-mlog::mlogger.reset(new mlog::file_logger("log.txt"));
+mlog::file_logger logfile("log.txt");
+mlog::manager->set_log(logfile);
 MLOG_TRACE("Write this into log.txt");
 ```
 
@@ -156,6 +145,10 @@ This library is already shipped with the followed logger types:
     <td>mlog::memory_logger_big</td>
     <td>Is logging thread safe into the memory<br>(holds the last 65535 log entries)</td>
   </tr>
+  <tr>
+    <td>mlog::syslog_logger</td>
+    <td>It's using the syslog() <br>(unix only)</td>
+  </tr>
 </table>
 
 ### Custom Log Infrastructure
@@ -172,6 +165,7 @@ namespace mlog
 	public:
 
 		virtual void write_to_log(log_metadata&& metadata, std::string&& log_text) = 0;
+		virtual void write_to_log(const log_metadata& metadata, const std::string& log_text) = 0;
 	};
 }
 
