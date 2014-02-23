@@ -100,11 +100,11 @@ struct log_metadata {
 	std::ostream &output(std::ostream &stream) const;
 };
 
-class logger {
-      public:
-	logger();
+struct logger_base {
+    
+	logger_base();
 
-	virtual ~logger();
+	virtual ~logger_base();
 
 	inline void write(mlog_level &&level, boost::format &&format,
 			  log_position &&pos) {
@@ -169,6 +169,21 @@ class logger {
 	bool m_use_thread_id;
 	bool m_use_position;
 };
+
+template<typename T>
+struct logger : logger_base {
+
+	virtual void write_to_log(log_metadata &&metadata,
+				  std::string &&log_text) {
+		static_cast<T*>(this)->write_to_log(std::move(metadata), std::move(log_text));
+	}
+
+	virtual void write_to_log(const log_metadata& metadata,
+				  const std::string& log_text) {
+		static_cast<T*>(this)->write_to_log(metadata, log_text);
+	}
+};
+
 }
 #endif /* LOGGER_HPP_ */
 

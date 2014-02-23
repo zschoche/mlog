@@ -13,7 +13,7 @@
 #include "logger.hpp"
 
 namespace mlog {
-class syslog_logger : public logger {
+class syslog_logger : public logger<syslog_logger> {
       public:
 	enum syslog_level {
 		EMERG = LOG_EMERG,     /* system is unusable */
@@ -37,14 +37,11 @@ class syslog_logger : public logger {
 
 	virtual ~syslog_logger() { closelog(); }
 
-	void write_to_log(log_metadata &&metadata, std::string &&log_text) {
-		syslog(level, "%s", metadata.to_string(log_text).c_str());
+	template<typename M, typename T>
+	void write_to_log(M&& metadata, T&& log_text) {
+		syslog(level, "%s", metadata.to_string(std::forward<T>(log_text)).c_str());
 	}
 
-	void write_to_log(const log_metadata &metadata,
-			  const std::string &log_text) {
-		syslog(level, "%s", metadata.to_string(log_text).c_str());
-	}
 
 	syslog_level level;
 };

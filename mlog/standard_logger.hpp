@@ -12,24 +12,15 @@
 
 namespace mlog {
 
-class standard_logger : public logger {
-      public:
-
-	standard_logger() : logger() {}
-
-	virtual ~standard_logger() {}
+struct standard_logger : logger<standard_logger> {
 
 	void flush() { std::cout.flush(); }
 
-	void write_to_log(log_metadata &&metadata, std::string &&log_text) {
-		metadata.output(std::cout) << std::move(log_text) << std::endl;
-	}
-	void write_to_log(const log_metadata &metadata,
-			  const std::string &log_text) {
-		metadata.output(std::cout) << log_text << std::endl;
+	template<typename M,typename T>
+	void write_to_log(M&& metadata, T&& log_text) {
+		metadata.output(std::cout) << std::forward<T>(log_text) << std::endl;
 	}
 
-      private:
 };
 
 typedef thread_safe<standard_logger> standard_logger_thread_safe;

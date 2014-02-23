@@ -12,23 +12,16 @@
 
 namespace   mlog 
 {
-	class multiple_loggers : public logger 
+	class multiple_loggers : public logger<multiple_loggers> 
 	{
 	public:
-	
-		  multiple_loggers() { }
-		virtual ~multiple_loggers() { }
-		void write_to_log(log_metadata &&metadata,
-				  std::string &&log_text) {
-			write_to_log(metadata, log_text);	
-
-		}
-		void write_to_log(const log_metadata& metadata,
-				  const std::string& log_text) {
+		template<typename M, typename T>	
+		inline	void write_to_log(M&& metadata,
+				  T&& log_text) {
 
 			std::vector<std::future<void>> r(m_loggers.size());
-			for(logger* item : m_loggers) {
-				r.push_back(std::move(std::async([&](logger* l) { l->write_to_log(metadata, log_text); }, item)));
+			for(auto&& item : m_loggers) {
+				r.push_back(std::move(std::async([&](logger_base* l) { l->write_to_log(std::forward<M>(metadata), std::forward<T>(log_text)); }, item)));
 			}
 			for(auto&& item : r) {
 				if(item.valid()) {
@@ -37,7 +30,7 @@ namespace   mlog
 			}
 		}
 		
-		std::vector<logger*> m_loggers;
+		std::vector<logger_base*> m_loggers;
 	
 	};
 	

@@ -20,39 +20,6 @@ file_logger::file_logger(std::string log_name, std::string log_directory,
 file_logger::~file_logger() {}
 
 
-void file_logger::write_to_log(log_metadata &&metadata,
-			       std::string &&log_text) {
-
-	std::string str = metadata.to_string(log_text);
-	m_stream.write(str.c_str(), str.size());
-	boost::iostreams::put(m_stream, '\n');
-	m_offset += str.size() + 1;
-
-	flush();
-
-	if (max_file_size() != 0 && m_offset > max_file_size()) {
-		flush();
-		m_stream.open(get_next_logfile(m_log_directory, m_log_name,
-					       max_file_size(), &m_offset));
-	}
-}
-
-void file_logger::write_to_log(const log_metadata& metadata,
-				  const std::string& log_text) {
-
-	std::string str = metadata.to_string(log_text);
-	m_stream.write(str.c_str(), str.size());
-	boost::iostreams::put(m_stream, '\n');
-	m_offset += str.size() + 1;
-	
-	flush();
-
-	if (max_file_size() != 0 && m_offset > max_file_size()) {
-		flush();
-		m_stream.open(get_next_logfile(m_log_directory, m_log_name,
-					       max_file_size(), &m_offset));
-	}
-}
 
 
 void file_logger::flush() { m_stream.flush(); }
