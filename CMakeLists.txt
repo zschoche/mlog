@@ -59,11 +59,14 @@ else()
         message("using known compiler.")
     endif()
 
-    if(DEFINED TRAVIS)
+    set(TRAVIS "$ENV{TRAVIS}")
+    if(TRAVIS)
 	    message("building on travis-ci")
+       add_definitions(-DBOOST_TEST_DYN_LINK)
     else()
 	    message("using BOOST_TEST_DYN_LINK")
-    	add_definitions(-DBOOST_TEST_DYN_LINK)
+       add_definitions(-DBOOST_TEST_DYN_LINK)
+
     endif()
 endif()
 

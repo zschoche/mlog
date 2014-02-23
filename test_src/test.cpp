@@ -69,105 +69,72 @@ BOOST_AUTO_TEST_CASE(mlog_log2_test) {
 }
 
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
-	auto *log = new mlog::memory_logger<2>();
-	mlog::mlogger.reset(log);
+	mlog::memory_logger<2> log;
+	mlog::manager->set_log(&log);
 	MLOG_INFO("1");
 	MLOG_INFO("2");
-	BOOST_CHECK_EQUAL((*log)[0].text, "1");
-	BOOST_CHECK_EQUAL((*log)[1].text, "2");
-	BOOST_CHECK_EQUAL((*log)[2].text, "1"); // overflow
+	BOOST_CHECK_EQUAL(log[0].text, "1");
+	BOOST_CHECK_EQUAL(log[1].text, "2");
+	BOOST_CHECK_EQUAL(log[2].text, "1"); // overflow
 	std::cout << "mlog_memory_logger_1_test passed." << std::endl;
 }
 
-#if !defined(_WIN32) && (defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__)))
-BOOST_AUTO_TEST_CASE(mlog_syslog_test) {
+BOOST_AUTO_TEST_CASE(mlog_logger_cleanup_test) {
 
-      boost::mt19937 rng;
-      rng.seed(static_cast<unsigned int>(std::time(0)));
-      boost::variate_generator< boost::mt19937, boost::uniform_int<> > dice(rng, boost::uniform_int<>(1, 1024*1024));
-	
-      int id = dice();
-
-	auto *log = new mlog::syslog_logger("mlog_syslog_test");
-	mlog::mlogger.reset(log);
-
-	std::string debug = boost::str(boost::format("This is a debug test (%1%)") % id);
-	std::string trace = boost::str(boost::format("This is a trace test (%1%)") % id);
-	std::string info = boost::str(boost::format("This is a info test (%1%)") % id);
-	std::string error = boost::str(boost::format("This is a error test (%1%)") % id);
-	std::string warning = boost::str(boost::format("This is a warning test (%1%)") % id);
-	;std::string fatal = boost::str(boost::format("This is a fatal test (%1%)") % id);
-
-	MLOG_TRACE(trace);
-	MLOG_DEBUG(debug);
-	MLOG_INFO(info);
-	MLOG_ERROR(error);
-	MLOG_WARNING(warning);
-	MLOG_FATAL(fatal);
-	mlog::mlogger.reset();
-
-	std::vector<std::string> strs = { debug, trace, info, error, warning, fatal };
-
-	std::ifstream file("/var/log/system.log", std::ios_base::in | std::ios_base::binary);
-        for(std::string str; std::getline(file, str); )
-        {
-		for(int i = strs.size() - 1; i >= 0; i--) {
-			if(boost::algorithm::contains(str, strs[i])) {
-				strs.erase(strs.begin()+i);
-			}
-		}
-        }
-	BOOST_CHECK_EQUAL(strs.size(), 0);
-	std::cout << "mlog_syslog_test passed." << std::endl;
+	auto *log = new mlog::memory_logger<2>();
+	mlog::manager->set_log(log);
+	MLOG_INFO("1");
+	delete log;
+	MLOG_INFO("this gos to the cout.");
+	std::cout << "mlog_logger_cleanup_test passed." << std::endl;
 }
-#endif
-
 
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
-	
-	auto *log = new mlog::memory_logger_normal();
-	mlog::mlogger.reset(log);
+
+	mlog::memory_logger_normal log;
+	mlog::manager->set_log(log);
 	const std::size_t t = 8;
 	std::thread threads[t];
 
 	for (int i = 0; i < t; ++i)
 		threads[i] = std::thread([&]() {
-			for (int k = 0;k < 512;k++) { // (log size) / 8 = 512
-			  	MLOG_INFO(boost::lexical_cast<std::string>(k));
-		}
+			for (int k = 0; k < 512; k++) { // (log size) / 8 = 512
+				MLOG_INFO(boost::lexical_cast<std::string>(k));
+			}
 		});
 
 	for (auto &t : threads)
 		t.join();
-	
 
 	int result[512];
-	for(auto&& i : result) {
+	for (auto &&i : result) {
 		i = 0;
 	}
 
-	for(int i = 0; i <  log->size(); i++) {
-		std::string s = (*log)[i].text;
+	for (int i = 0; i < log.size(); i++) {
+		std::string s = log[i].text;
 		int n = std::atoi(s.c_str());
 		result[n]++;
 	}
-	
-	for(auto&& i : result) {
+
+	for (auto &&i : result) {
 		BOOST_CHECK_EQUAL(i, 8);
 	}
 	std::cout << "mlog_memory_logger_atomic_test passed." << std::endl;
 }
 
-
 BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
-	auto* log = new mlog::multiple_loggers();
-	std::unique_ptr<mlog::memory_logger<2>> log1(new mlog::memory_logger<2>());
-	std::unique_ptr<mlog::memory_logger<2>> log2(new mlog::memory_logger<2>());
-	std::unique_ptr<mlog::memory_logger<2>> log3(new mlog::memory_logger<2>());
-	log->m_loggers.push_back(log1.get());
-	log->m_loggers.push_back(log2.get());
-	log->m_loggers.push_back(log3.get());
-	mlog::mlogger.reset(log);
+	mlog::multiple_loggers log;
+	std::unique_ptr<mlog::memory_logger<2> > log1(
+	    new mlog::memory_logger<2>());
+	std::unique_ptr<mlog::memory_logger<2> > log2(
+	    new mlog::memory_logger<2>());
+	std::unique_ptr<mlog::memory_logger<2> > log3(
+	    new mlog::memory_logger<2>());
+	log.m_loggers.push_back(log1.get());
+	log.m_loggers.push_back(log2.get());
+	log.m_loggers.push_back(log3.get());
+	mlog::manager->set_log(log);
 	MLOG_INFO("TEST1");
 	MLOG_INFO("TEST2");
 	BOOST_CHECK_EQUAL((*log1)[0].text, "TEST1");
@@ -177,31 +144,30 @@ BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	BOOST_CHECK_EQUAL((*log3)[0].text, "TEST1");
 	BOOST_CHECK_EQUAL((*log3)[1].text, "TEST2");
 	std::cout << "multiple_loggers_test passed." << std::endl;
-
 }
-
-
 
 BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	num_loops = 100;
-	mlog::mlogger.reset(new mlog::standard_logger());
+	mlog::standard_logger stdlog;
+	mlog::manager->set_log(stdlog);
 	double st_result = single_thread_test();
-	mlog::mlogger->use_thread_id(true);
+	mlog::manager->log()->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
-	mlog::mlogger->use_time(true);
+	mlog::manager->log()->use_time(true);
 	double st_result_thread_id_time = single_thread_test();
-	mlog::mlogger->use_position(true);
+	mlog::manager->log()->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
-	mlog::mlogger.reset(new mlog::standard_logger_thread_safe());
+	mlog::standard_logger_thread_safe stdlog_thread_safe;
+	mlog::manager->set_log(stdlog_thread_safe);
 	double mt_result = single_thread_test();
-	mlog::mlogger->use_thread_id(true);
+	mlog::manager->log()->use_thread_id(true);
 	double mt_result_thread_id = single_thread_test();
-	mlog::mlogger->use_time(true);
+	mlog::manager->log()->use_time(true);
 	double mt_result_thread_id_time = single_thread_test();
-	mlog::mlogger->use_position(true);
+	mlog::manager->log()->use_position(true);
 	double mt_result_thread_id_time_pos = single_thread_test();
-	
+
 	std::cout << std::endl;
 	std::cout << "### single-threaded standard logger test ###"
 		  << std::endl;
@@ -230,13 +196,14 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 
 BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
 	num_loops = 100000;
-	mlog::mlogger.reset(new mlog::memory_logger_normal());
+	mlog::memory_logger_normal log;
+	mlog::manager->set_log(log);
 	double st_result = single_thread_test();
-	mlog::mlogger->use_thread_id(true);
+	mlog::manager->log()->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
-	mlog::mlogger->use_time(true);
+	mlog::manager->log()->use_time(true);
 	double st_result_thread_id_time = single_thread_test();
-	mlog::mlogger->use_position(true);
+	mlog::manager->log()->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
 	std::cout << std::endl;
@@ -255,24 +222,26 @@ BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
 
 BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
 	num_loops = 100000;
-	mlog::mlogger.reset(new mlog::file_logger("log.txt"));
-	mlog::mlogger->use_time(false);
+	mlog::file_logger log("log.txt");
+	mlog::manager->set_log(log);
+	mlog::manager->log()->use_time(false);
 	double st_result = single_thread_test();
-	mlog::mlogger->use_thread_id(true);
+	mlog::manager->log()->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
-	mlog::mlogger->use_time(true);
+	mlog::manager->log()->use_time(true);
 	double st_result_thread_id_time = single_thread_test();
-	mlog::mlogger->use_position(true);
+	mlog::manager->log()->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
-	mlog::mlogger.reset(new mlog::file_logger_thread_safe("log.txt"));
-	mlog::mlogger->use_time(false);
+	mlog::file_logger_thread_safe log_thread_safe("log.txt");
+	mlog::manager->set_log(log_thread_safe);
+	mlog::manager->log()->use_time(false);
 	double mt_result = single_thread_test();
-	mlog::mlogger->use_thread_id(true);
+	mlog::manager->log()->use_thread_id(true);
 	double mt_result_thread_id = single_thread_test();
-	mlog::mlogger->use_time(true);
+	mlog::manager->log()->use_time(true);
 	double mt_result_thread_id_time = single_thread_test();
-	mlog::mlogger->use_position(true);
+	mlog::manager->log()->use_position(true);
 	double mt_result_thread_id_time_pos = single_thread_test();
 
 	std::cout << std::endl;
@@ -301,39 +270,98 @@ BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
 
 BOOST_AUTO_TEST_CASE(memory_logger_test) {
 	num_loops = 100000;
-	mlog::memory_logger<2048> *mem_log = new mlog::memory_logger<2048>();
-	mlog::mlogger.reset(mem_log);
-	mlog::mlogger->use_time(false);
-	mlog::mlogger->use_thread_id(false);
-	mlog::mlogger->use_time(false);
+	mlog::memory_logger<2048> log;
+	mlog::manager->set_log(log);
+	mlog::manager->log()->use_time(false);
+	mlog::manager->log()->use_thread_id(false);
+	mlog::manager->log()->use_time(false);
 
 	for (std::size_t i = 0; i < 2048; i++) {
 		MLOG_INFO(boost::format("%1%") % i);
 	}
 
 	for (std::size_t i = 0; i < 2048; i++) {
-		BOOST_CHECK_EQUAL(std::atoi((*mem_log)[i].text.c_str()), i);
+		BOOST_CHECK_EQUAL(std::atoi(log[i].text.c_str()), i);
 	}
 	std::cout << "memory_logger_test passed." << std::endl;
-
-	// std::cout << *mem_log << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
 	num_loops = 100000;
-	mlog::memory_logger<4> *mem_log = new mlog::memory_logger<4>();
-	mlog::mlogger.reset(mem_log);
-	mlog::mlogger->use_time(false);
-	mlog::mlogger->use_thread_id(false);
-	mlog::mlogger->use_time(false);
+	mlog::memory_logger<4> mem_log;
+	mlog::manager->set_log(mem_log);
+	mlog::manager->log()->use_time(false);
+	mlog::manager->log()->use_thread_id(false);
+	mlog::manager->log()->use_time(false);
 
-	for (std::size_t i = 0; i < 1024*1024; i++) {
+	for (std::size_t i = 0; i < 1024 * 1024; i++) {
 		MLOG_INFO(boost::format("%1%") % i);
 	}
 	std::cout << "memory_logger_test_small passed." << std::endl;
-
 }
 
+void find_log_messages(std::string &&log, std::vector<std::string> &strs) {
+	std::ifstream file(log, std::ios_base::in | std::ios_base::binary);
+	if (file.is_open()) {
+		for (std::string str; std::getline(file, str);) {
+			for (int i = strs.size() - 1; i >= 0; i--) {
+				if (boost::algorithm::contains(str, strs[i])) {
+					strs.erase(strs.begin() + i);
+				}
+			}
+		}
+	}
+}
+
+#if !defined(TRAVIS) && !defined(_WIN32) &&                                    \
+    (defined(__unix__) || defined(__unix) ||                                   \
+     (defined(__APPLE__) && defined(__MACH__)))
+BOOST_AUTO_TEST_CASE(mlog_syslog_test) {
+
+	if (std::getenv("TRAVIS") == nullptr) {
+
+		boost::mt19937 rng;
+		rng.seed(static_cast<unsigned int>(std::time(0)));
+		boost::variate_generator<boost::mt19937, boost::uniform_int<> >
+		dice(rng, boost::uniform_int<>(1, 1024 * 1024));
+
+		int id = dice();
+
+		std::string debug = boost::str(
+		    boost::format("This is a debug test (%1%)") % id);
+		std::string trace = boost::str(
+		    boost::format("This is a trace test (%1%)") % id);
+		std::string info =
+		    boost::str(boost::format("This is a info test (%1%)") % id);
+		std::string error = boost::str(
+		    boost::format("This is a error test (%1%)") % id);
+		std::string warning = boost::str(
+		    boost::format("This is a warning test (%1%)") % id);
+		std::string fatal = boost::str(
+		    boost::format("This is a fatal test (%1%)") % id);
+		{
+			mlog::syslog_logger log("mlog_syslog_test");
+			mlog::manager->set_log(&log);
+
+			MLOG_TRACE(trace);
+			MLOG_DEBUG(debug);
+			MLOG_INFO(info);
+			MLOG_ERROR(error);
+			MLOG_WARNING(warning);
+			MLOG_FATAL(fatal);
+		}
+
+		std::vector<std::string> strs = { debug, trace,   info,
+						  error, warning, fatal };
+
+		find_log_messages("/var/log/system.log", strs);
+		find_log_messages("/var/log/messages", strs);
+		find_log_messages("/var/log/syslog", strs);
+		BOOST_CHECK_EQUAL(strs.size(), 0);
+		std::cout << "mlog_syslog_test passed." << std::endl;
+	}
+}
+#endif
 
 #ifdef _MSC_VER
 BOOST_AUTO_TEST_CASE(memory_leak) {
