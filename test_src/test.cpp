@@ -80,8 +80,8 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
 }
 
 BOOST_AUTO_TEST_CASE(mlog_logger_cleanup_test) {
-		
-	auto* log = new mlog::memory_logger<2>();
+
+	auto *log = new mlog::memory_logger<2>();
 	mlog::manager->set_log(log);
 	MLOG_INFO("1");
 	delete log;
@@ -89,10 +89,8 @@ BOOST_AUTO_TEST_CASE(mlog_logger_cleanup_test) {
 	std::cout << "mlog_logger_cleanup_test passed." << std::endl;
 }
 
-
-
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
-	
+
 	mlog::memory_logger_normal log;
 	mlog::manager->set_log(log);
 	const std::size_t t = 8;
@@ -100,39 +98,39 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
 
 	for (int i = 0; i < t; ++i)
 		threads[i] = std::thread([&]() {
-			for (int k = 0;k < 512;k++) { // (log size) / 8 = 512
-			  	MLOG_INFO(boost::lexical_cast<std::string>(k));
-		}
+			for (int k = 0; k < 512; k++) { // (log size) / 8 = 512
+				MLOG_INFO(boost::lexical_cast<std::string>(k));
+			}
 		});
 
 	for (auto &t : threads)
 		t.join();
-	
 
 	int result[512];
-	for(auto&& i : result) {
+	for (auto &&i : result) {
 		i = 0;
 	}
 
-	for(int i = 0; i <  log.size(); i++) {
+	for (int i = 0; i < log.size(); i++) {
 		std::string s = log[i].text;
 		int n = std::atoi(s.c_str());
 		result[n]++;
 	}
-	
-	for(auto&& i : result) {
+
+	for (auto &&i : result) {
 		BOOST_CHECK_EQUAL(i, 8);
 	}
 	std::cout << "mlog_memory_logger_atomic_test passed." << std::endl;
 }
 
-
-
 BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	mlog::multiple_loggers log;
-	std::unique_ptr<mlog::memory_logger<2>> log1(new mlog::memory_logger<2>());
-	std::unique_ptr<mlog::memory_logger<2>> log2(new mlog::memory_logger<2>());
-	std::unique_ptr<mlog::memory_logger<2>> log3(new mlog::memory_logger<2>());
+	std::unique_ptr<mlog::memory_logger<2> > log1(
+	    new mlog::memory_logger<2>());
+	std::unique_ptr<mlog::memory_logger<2> > log2(
+	    new mlog::memory_logger<2>());
+	std::unique_ptr<mlog::memory_logger<2> > log3(
+	    new mlog::memory_logger<2>());
 	log.m_loggers.push_back(log1.get());
 	log.m_loggers.push_back(log2.get());
 	log.m_loggers.push_back(log3.get());
@@ -146,10 +144,7 @@ BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	BOOST_CHECK_EQUAL((*log3)[0].text, "TEST1");
 	BOOST_CHECK_EQUAL((*log3)[1].text, "TEST2");
 	std::cout << "multiple_loggers_test passed." << std::endl;
-
 }
-
-
 
 BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	num_loops = 100;
@@ -172,7 +167,7 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	double mt_result_thread_id_time = single_thread_test();
 	mlog::manager->log()->use_position(true);
 	double mt_result_thread_id_time_pos = single_thread_test();
-	
+
 	std::cout << std::endl;
 	std::cout << "### single-threaded standard logger test ###"
 		  << std::endl;
@@ -199,9 +194,6 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	std::cout << std::endl;
 }
 
-
-
-
 BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
 	num_loops = 100000;
 	mlog::memory_logger_normal log;
@@ -227,8 +219,6 @@ BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
 		     "position." << std::endl;
 	std::cout << std::endl;
 }
-
-
 
 BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
 	num_loops = 100000;
@@ -304,70 +294,74 @@ BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
 	mlog::manager->log()->use_thread_id(false);
 	mlog::manager->log()->use_time(false);
 
-	for (std::size_t i = 0; i < 1024*1024; i++) {
+	for (std::size_t i = 0; i < 1024 * 1024; i++) {
 		MLOG_INFO(boost::format("%1%") % i);
 	}
 	std::cout << "memory_logger_test_small passed." << std::endl;
-
 }
 
-
-void find_log_messages(std::string&& log, std::vector<std::string>& strs) {
+void find_log_messages(std::string &&log, std::vector<std::string> &strs) {
 	std::ifstream file(log, std::ios_base::in | std::ios_base::binary);
-	if(file.is_open()) {
-        	for(std::string str; std::getline(file, str); )
-        	{
-			for(int i = strs.size() - 1; i >= 0; i--) {
-				if(boost::algorithm::contains(str, strs[i])) {
-					strs.erase(strs.begin()+i);
+	if (file.is_open()) {
+		for (std::string str; std::getline(file, str);) {
+			for (int i = strs.size() - 1; i >= 0; i--) {
+				if (boost::algorithm::contains(str, strs[i])) {
+					strs.erase(strs.begin() + i);
 				}
 			}
-        	}
+		}
 	}
 }
 
-
-
-#if !defined(_WIN32) && (defined(__unix__) || defined(__unix) || (defined(__APPLE__) && defined(__MACH__)))
+#if !defined(TRAVIS) && !defined(_WIN32) &&                                    \
+    (defined(__unix__) || defined(__unix) ||                                   \
+     (defined(__APPLE__) && defined(__MACH__)))
 BOOST_AUTO_TEST_CASE(mlog_syslog_test) {
 
-      boost::mt19937 rng;
-      rng.seed(static_cast<unsigned int>(std::time(0)));
-      boost::variate_generator< boost::mt19937, boost::uniform_int<> > dice(rng, boost::uniform_int<>(1, 1024*1024));
-	
-      int id = dice();
+	if (std::getenv("TRAVIS") == nullptr) {
 
+		boost::mt19937 rng;
+		rng.seed(static_cast<unsigned int>(std::time(0)));
+		boost::variate_generator<boost::mt19937, boost::uniform_int<> >
+		dice(rng, boost::uniform_int<>(1, 1024 * 1024));
 
-	std::string debug = boost::str(boost::format("This is a debug test (%1%)") % id);
-	std::string trace = boost::str(boost::format("This is a trace test (%1%)") % id);
-	std::string info = boost::str(boost::format("This is a info test (%1%)") % id);
-	std::string error = boost::str(boost::format("This is a error test (%1%)") % id);
-	std::string warning = boost::str(boost::format("This is a warning test (%1%)") % id);
-	std::string fatal = boost::str(boost::format("This is a fatal test (%1%)") % id);
-	{
-		mlog::syslog_logger log("mlog_syslog_test");
-		mlog::manager->set_log(&log);
+		int id = dice();
 
-		MLOG_TRACE(trace);
-		MLOG_DEBUG(debug);
-		MLOG_INFO(info);
-		MLOG_ERROR(error);
-		MLOG_WARNING(warning);
-		MLOG_FATAL(fatal);
+		std::string debug = boost::str(
+		    boost::format("This is a debug test (%1%)") % id);
+		std::string trace = boost::str(
+		    boost::format("This is a trace test (%1%)") % id);
+		std::string info =
+		    boost::str(boost::format("This is a info test (%1%)") % id);
+		std::string error = boost::str(
+		    boost::format("This is a error test (%1%)") % id);
+		std::string warning = boost::str(
+		    boost::format("This is a warning test (%1%)") % id);
+		std::string fatal = boost::str(
+		    boost::format("This is a fatal test (%1%)") % id);
+		{
+			mlog::syslog_logger log("mlog_syslog_test");
+			mlog::manager->set_log(&log);
+
+			MLOG_TRACE(trace);
+			MLOG_DEBUG(debug);
+			MLOG_INFO(info);
+			MLOG_ERROR(error);
+			MLOG_WARNING(warning);
+			MLOG_FATAL(fatal);
+		}
+
+		std::vector<std::string> strs = { debug, trace,   info,
+						  error, warning, fatal };
+
+		find_log_messages("/var/log/system.log", strs);
+		find_log_messages("/var/log/messages", strs);
+		find_log_messages("/var/log/syslog", strs);
+		BOOST_CHECK_EQUAL(strs.size(), 0);
+		std::cout << "mlog_syslog_test passed." << std::endl;
 	}
-
-	std::vector<std::string> strs = { debug, trace, info, error, warning, fatal };
-
-
-	find_log_messages("/var/log/system.log", strs);
-	find_log_messages("/var/log/messages", strs);
-	find_log_messages("/var/log/syslog", strs);
-	BOOST_CHECK_EQUAL(strs.size(), 0);
-	std::cout << "mlog_syslog_test passed." << std::endl;
 }
 #endif
-
-
 
 #ifdef _MSC_VER
 BOOST_AUTO_TEST_CASE(memory_leak) {
