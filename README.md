@@ -153,20 +153,28 @@ This library is already shipped with the followed logger types:
 
 ### Custom Log Infrastructure
 
-It is possible to create your own logger class if you want to write your log at some place in the network or something like that. You just have to write a logger class and overload the `mlog::logger::write_to_log()` function.
+It is possible to create your own logger class if you want to write your log at some place in the network or something like that. You just have to write a custom logger class and inherit from the `logger` tempalte clase by using the [CRTP](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 
-__mlog::logger interface:__
+__Example:__
 ```c++
-namespace mlog
+struct custom_logger : mlog::logger<custom_logger>
 {
+	template<typename M, typename T>
+	virtual void write_to_log(M&& metadata, T&& log_text) {
+		// write into your log.	
+	}
+};
 
-	class logger
-	{
-	public:
+//...
 
-		virtual void write_to_log(log_metadata&& metadata, std::string&& log_text) = 0;
-		virtual void write_to_log(const log_metadata& metadata, const std::string& log_text) = 0;
-	};
+int main() {
+	custom_logger log;
+	mlog::manager->set_log(log);
+	
+	MLOG_INFO("It's done.");
+	
+	return 0;
 }
+
 
 ```
