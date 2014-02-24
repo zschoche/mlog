@@ -41,11 +41,11 @@ template <class logger_type> class thread_safe : public logger_type {
 
 	virtual ~thread_safe() {}
 
-	virtual void write_to_log(log_metadata &&metadata,
-				  std::string &&log_text) {
+	template<typename M, typename T>
+	void write_to_log(M&& metadata, T&& log_text) {
 		boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
-		logger_type::write_to_log(std::move(metadata),
-					  std::move(log_text));
+		static_cast<logger_type*>(this)->write_to_log(std::forward<M>(metadata),
+					  std::forward<T>(log_text));
 	}
 
       private:
