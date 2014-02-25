@@ -8,7 +8,6 @@
 
 #include <boost/detail/lightweight_mutex.hpp>
 #include <boost/config.hpp>
-#include "queue.hpp"
 #include <boost/lockfree/queue.hpp>
 #include "logger.hpp"
 
