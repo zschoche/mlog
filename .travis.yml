@@ -11,7 +11,7 @@ install:
         - sudo apt-get install -qq libboost1.48-all-dev        
         - wget http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.gz\?r\=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.55.0%2F\&ts\=1393354422\&use_mirror\=heanet -O boost_1_55_0.tar.gz
         - tar -xzf boost_1_55_0.tar.gz
-        - export CPLUS_INCLUDE_PATH=/home/travis/build/zschoche/mlog/boost_1_55_0/boost:${CPLUS_INCLUDE_PATH} 
+        - sudo cp -rf boost_1_55_0/boost /usr/local/include/boost
         - sudo apt-get install -qq gcc-4.8        
         - sudo apt-get install -qq g++-4.8        
 script: cmake -DCMAKE_C_COMPILER=gcc-4.8 -DCMAKE_CXX_COMPILER=$CXX && make && make test && ./test
