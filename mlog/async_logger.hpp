@@ -50,7 +50,7 @@ struct async_logger : logger<async_logger<logger_type> > {
 		m_queue.push(queue_item(std::forward<M>(metadata), std::forward<T>(log_text)));
 		if(!m_working) {
 			m_working = true;
-			std::thread([&] { worker(); }).detach();
+			std::thread(&async_logger<logger_type>::worker, this).detach();
 		}
 	}
 	
