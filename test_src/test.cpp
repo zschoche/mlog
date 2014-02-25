@@ -141,8 +141,7 @@ BOOST_AUTO_TEST_CASE(mlog_async_test) {
 
 	for (auto &t : threads)
 		t.join();
-
-	mlog::manager->unset_log();
+	log.flush();
 
 	int result[512];
 	for (auto &&i : result) {
@@ -155,10 +154,12 @@ BOOST_AUTO_TEST_CASE(mlog_async_test) {
 		result[n]++;
 	}
 
+	std::cout << "1" << std::endl;
 	for (auto &&i : result) {
 		BOOST_CHECK_EQUAL(i, 8);
 	}
 	std::cout << "mlog_async_test passed." << std::endl;
+	exit(1);
 }
 BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	mlog::multiple_loggers log;

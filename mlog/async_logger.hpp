@@ -9,6 +9,7 @@
 #include <boost/detail/lightweight_mutex.hpp>
 #include <boost/config.hpp>
 #include "queue.hpp"
+#include <boost/lockfree/queue.hpp>
 #include "logger.hpp"
 
 namespace mlog {
@@ -20,7 +21,7 @@ struct async_logger : logger<async_logger<logger_type> > {
 
 	template <typename... Args>
 	async_logger(Args &&... args)
-	    : m_logger(std::forward<Args>(args)...),m_working(false), m_done(false) {
+	    : m_logger(std::forward<Args>(args)...),m_worker(0), m_queue(128) {
 	    }
 
 #else
@@ -29,7 +30,7 @@ struct async_logger : logger<async_logger<logger_type> > {
 	BOOST_PP_IF(n, template <, ) BOOST_PP_ENUM_PARAMS(n, typename Arg)     \
 		    BOOST_PP_IF(n, >, )                                        \
 		    async_logger(BOOST_PP_ENUM_BINARY_PARAMS(n, Arg, arg))      \
-	    : m_logger(BOOST_PP_ENUM_PARAMS(n, arg)), m_working(false), m_done(false) {}
+	    : m_logger(BOOST_PP_ENUM_PARAMS(n, arg)), m_working(0), m_queue(128) {}
 
 	BOOST_PP_REPEAT(5, CTOR, ~)
 #undef CTOR
@@ -40,17 +41,19 @@ struct async_logger : logger<async_logger<logger_type> > {
 	typedef std::pair<log_metadata, std::string> queue_item;
 
 	~async_logger() {
-		m_done = true;
-		boost::detail::lightweight_mutex::scoped_lock lock(m_worker_mutex);
+		flush();
 	}
 
 	template<typename M, typename T>
 	void write_to_log(M&& metadata, T&& log_text) {
-		boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
-		m_queue.push(queue_item(std::forward<M>(metadata), std::forward<T>(log_text)));
-		if(!m_working) {
-			m_working = true;
-			std::thread(&async_logger<logger_type>::worker, this).detach();
+		queue_item* item = new queue_item(std::forward<M>(metadata), std::forward<T>(log_text));
+		while(!m_queue.push(item));
+		if(m_worker == 0) {
+			boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
+			if(m_worker == 0) {
+				m_worker++;
+				std::thread(&async_logger<logger_type>::worker, this).detach();
+			}
 		}
 	}
 	
@@ -58,32 +61,38 @@ struct async_logger : logger<async_logger<logger_type> > {
 		return m_logger;
 	}
 
+	void flush() {
+		while(m_worker > 0) {
+			boost::detail::lightweight_mutex::scoped_lock lock(m_worker_mutex);
+		}
+	}
+
       private:
 	logger_type m_logger;
-	std::atomic<bool> m_working;
-	std::atomic<bool> m_done;
+	std::atomic<unsigned int> m_worker;
+	boost::lockfree::queue<queue_item*> m_queue;
 
 	boost::detail::lightweight_mutex m_mutex;
 	boost::detail::lightweight_mutex m_worker_mutex;
-	mlog::queue<queue_item> m_queue;
+	//mlog::queue<queue_item> m_queue;
 
 	void worker() {
 		boost::detail::lightweight_mutex::scoped_lock lock(m_worker_mutex);
-		if(!m_done) {
 			dowork();
 			set_working_false();
 			dowork();
-		}
 	}
+
 	void set_working_false() {
 		boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
-		m_working = false;
+		m_worker--;
 	}
 
 	void dowork() {
-		queue_item item;
+		queue_item* item;
 		while(m_queue.pop(item)) {
-			m_logger.write_to_log(item.first, item.second);
+			m_logger.write_to_log(item->first, item->second);
+			delete item;
 		}
 	}
 
