@@ -7,11 +7,7 @@
 #endif
 
 #include <boost/detail/lightweight_mutex.hpp>
-#include <boost/thread/locks.hpp> 
-#include <boost/thread/lock_guard.hpp> 
 #include <boost/config.hpp>
-#include <future>
-#include <boost/lockfree/queue.hpp>
 #include "queue.hpp"
 #include "logger.hpp"
 
