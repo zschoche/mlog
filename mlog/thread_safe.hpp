@@ -39,7 +39,7 @@ template <class logger_type> class thread_safe : public logger_type {
 
 #endif // ! defined( BOOST_NO_CXX11_VARIADIC_TEMPLATES )
 
-	virtual ~thread_safe() {}
+	~thread_safe() {}
 
 	template<typename M, typename T>
 	void write_to_log(M&& metadata, T&& log_text) {

@@ -6,6 +6,7 @@
 #include <mlog/memory_logger.hpp>
 #include <mlog/file_logger.hpp>
 #include <mlog/syslog_logger.hpp>
+#include <mlog/async_logger.hpp>
 #include <thread>
 #include <mlog/multiple_loggers.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -13,6 +14,7 @@
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
 #include <boost/algorithm/string.hpp>
+
 
 #ifdef _MSC_VER
 namespace std {
@@ -85,12 +87,12 @@ BOOST_AUTO_TEST_CASE(mlog_logger_cleanup_test) {
 	mlog::manager->set_log(log);
 	MLOG_INFO("1");
 	delete log;
-	MLOG_INFO("this gos to the cout.");
+	MLOG_INFO("this goes to the cout.");
 	std::cout << "mlog_logger_cleanup_test passed." << std::endl;
 }
 
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
-
+	
 	mlog::memory_logger_normal log;
 	mlog::manager->set_log(log);
 	const std::size_t t = 8;
@@ -123,6 +125,41 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
 	std::cout << "mlog_memory_logger_atomic_test passed." << std::endl;
 }
 
+BOOST_AUTO_TEST_CASE(mlog_async_test) {
+	
+	mlog::async_logger<mlog::memory_logger_normal> log;
+	mlog::manager->set_log(log);
+	const std::size_t t = 8;
+	std::thread threads[t];
+
+	for (int i = 0; i < t; ++i)
+		threads[i] = std::thread([&]() {
+			for (int k = 0; k < 512; k++) { // (log size) / 8 = 512
+				MLOG_INFO(boost::lexical_cast<std::string>(k));
+			}
+		});
+
+	for (auto &t : threads)
+		t.join();
+
+	mlog::manager->unset_log();
+
+	int result[512];
+	for (auto &&i : result) {
+		i = 0;
+	}
+
+	for (int i = 0; i < log.get().size(); i++) {
+		std::string s = log.get()[i].text;
+		int n = std::atoi(s.c_str());
+		result[n]++;
+	}
+
+	for (auto &&i : result) {
+		BOOST_CHECK_EQUAL(i, 8);
+	}
+	std::cout << "mlog_async_test passed." << std::endl;
+}
 BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	mlog::multiple_loggers log;
 	std::unique_ptr<mlog::memory_logger<2> > log1(
@@ -206,7 +243,6 @@ BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
 	mlog::manager->log()->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
-	std::cout << std::endl;
 	std::cout << "### memory logger test ###" << std::endl;
 	std::cout << st_result << "ms for each log statment." << std::endl;
 	std::cout << st_result_thread_id
@@ -234,6 +270,7 @@ BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
 	double st_result_thread_id_time_pos = single_thread_test();
 
 	mlog::file_logger_thread_safe log_thread_safe("log.txt");
+	//mlog::async_logger<mlog::file_logger_thread_safe> log_thread_safe("log.txt");
 	mlog::manager->set_log(log_thread_safe);
 	mlog::manager->log()->use_time(false);
 	double mt_result = single_thread_test();
@@ -244,7 +281,6 @@ BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
 	mlog::manager->log()->use_position(true);
 	double mt_result_thread_id_time_pos = single_thread_test();
 
-	std::cout << std::endl;
 	std::cout << "### single-threaded file logger test ###" << std::endl;
 	std::cout << st_result << "ms for each log statment." << std::endl;
 	std::cout << st_result_thread_id
@@ -312,6 +348,8 @@ void find_log_messages(std::string &&log, std::vector<std::string> &strs) {
 		}
 	}
 }
+
+
 
 #if !defined(TRAVIS) && !defined(_WIN32) &&                                    \
     (defined(__unix__) || defined(__unix) ||                                   \
