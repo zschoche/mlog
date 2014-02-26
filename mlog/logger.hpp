@@ -28,6 +28,7 @@ using boost::thread;
 #endif
 #include <chrono>
 #include <boost/format.hpp>
+#include "manager.hpp"
 
 enum mlog_level {
 	trace,
@@ -39,6 +40,8 @@ enum mlog_level {
 };
 
 namespace mlog {
+
+extern mlog_manager *manager;
 
 template <typename T> inline std::string level_to_string(T &&level) {
 	if (level == mlog_level::trace)
@@ -108,33 +111,33 @@ struct logger_base {
 
 	inline void write(mlog_level &&level, boost::format &&format,
 			  log_position &&pos) {
-		log_metadata metadata(std::move(level), m_session, m_use_time,
-				      m_use_thread_id, std::move(pos),
-				      m_use_position);
+		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
+				      mlog::manager->use_thread_id(), std::move(pos),
+				      mlog::manager->use_position());
 		write_to_log(std::move(metadata), boost::str(format));
 	}
 
 	inline void write(mlog_level &&level, const boost::format &format,
 			  log_position &&pos) {
-		log_metadata metadata(std::move(level), m_session, m_use_time,
-				      m_use_thread_id, std::move(pos),
-				      m_use_position);
+		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
+				       mlog::manager->use_thread_id(), std::move(pos),
+				      mlog::manager->use_position());
 		write_to_log(std::move(metadata), boost::str(format));
 	}
 
 	inline void write(mlog_level &&level, std::string &&log_text,
 			  log_position &&pos) {
-		log_metadata metadata(std::move(level), m_session, m_use_time,
-				      m_use_thread_id, std::move(pos),
-				      m_use_position);
+		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
+				      mlog::manager->use_thread_id(), std::move(pos),
+				      mlog::manager->use_position());
 		write_to_log(std::move(metadata), std::move(log_text));
 	}
 
 	template <typename T>
 	void write(mlog_level &&level, const std::string &log_text, T &&pos) {
-		log_metadata metadata(std::move(level), m_session, m_use_time,
-				      m_use_thread_id, std::forward<T>(pos),
-				      m_use_position);
+		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
+				       mlog::manager->use_thread_id(), std::forward<T>(pos),
+				      mlog::manager->use_position());
 		write_to_log(std::move(metadata), std::string(log_text));
 	}
 
@@ -145,29 +148,7 @@ struct logger_base {
 	virtual void write_to_log(const log_metadata& metadata,
 				  const std::string& log_text) = 0;
 
-	template <typename T> inline void use_thread_id(T &&value) {
-		m_use_thread_id = std::forward<T>(value);
-	}
 
-	inline bool use_thread_id() const { return m_use_thread_id; }
-
-	template <typename T> inline void use_time(T &&value) {
-		m_use_time = std::forward<T>(value);
-	}
-
-	inline bool use_time() const { return m_use_time; }
-
-	template <typename T> inline void use_position(T &&value) {
-		m_use_position = std::forward<T>(value);
-	}
-
-	inline bool use_position() const { return m_use_position; }
-
-      private:
-	short m_session;
-	bool m_use_time;
-	bool m_use_thread_id;
-	bool m_use_position;
 };
 
 template<typename T>

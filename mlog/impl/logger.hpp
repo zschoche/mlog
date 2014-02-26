@@ -8,7 +8,6 @@
 #define __LOGGER_IPP__
 
 #include "../logger.hpp"
-#include <boost/random.hpp>
 #include <cstdio>
 #if _MSC_VER
 #define snprintf _snprintf_s
@@ -174,22 +173,7 @@ std::ostream &log_metadata::output(std::ostream &stream) const {
 	return stream;
 }
 
-logger_base::logger_base()
-    : m_use_time(false), m_use_thread_id(false), m_use_position(false) {
-	using namespace boost;
-	using namespace boost::random;
-	mt19937 rng(std::time(0));
-
-#ifdef BOOST_HAS_TR1_RANDOM
-	uniform_int_distribution<> six(0, 100);
-	m_session = six(rng);
-#elseif
-	boost::uniform_int<> six(0, 100);
-	boost::variate_generator<boost::mt19937 &, boost::uniform_int<> > die(
-	    rng, six);
-	m_session = die();
-#endif
-}
+logger_base::logger_base() { }
 
 logger_base::~logger_base() {
 	if(mlog::manager->log() == this)

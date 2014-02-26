@@ -188,21 +188,21 @@ BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
 	mlog::standard_logger stdlog;
 	mlog::manager->set_log(stdlog);
 	double st_result = single_thread_test();
-	mlog::manager->log()->use_thread_id(true);
+	mlog::manager->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
-	mlog::manager->log()->use_time(true);
+	mlog::manager->use_time(true);
 	double st_result_thread_id_time = single_thread_test();
-	mlog::manager->log()->use_position(true);
+	mlog::manager->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
 	mlog::standard_logger_thread_safe stdlog_thread_safe;
 	mlog::manager->set_log(stdlog_thread_safe);
 	double mt_result = single_thread_test();
-	mlog::manager->log()->use_thread_id(true);
+	mlog::manager->use_thread_id(true);
 	double mt_result_thread_id = single_thread_test();
-	mlog::manager->log()->use_time(true);
+	mlog::manager->use_time(true);
 	double mt_result_thread_id_time = single_thread_test();
-	mlog::manager->log()->use_position(true);
+	mlog::manager->use_position(true);
 	double mt_result_thread_id_time_pos = single_thread_test();
 
 	std::cout << std::endl;
@@ -236,11 +236,11 @@ BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
 	mlog::memory_logger_normal log;
 	mlog::manager->set_log(log);
 	double st_result = single_thread_test();
-	mlog::manager->log()->use_thread_id(true);
+	mlog::manager->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
-	mlog::manager->log()->use_time(true);
+	mlog::manager->use_time(true);
 	double st_result_thread_id_time = single_thread_test();
-	mlog::manager->log()->use_position(true);
+	mlog::manager->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
 	std::cout << "### memory logger test ###" << std::endl;
@@ -260,25 +260,25 @@ BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
 	num_loops = 100000;
 	mlog::file_logger log("log.txt");
 	mlog::manager->set_log(log);
-	mlog::manager->log()->use_time(false);
+	mlog::manager->use_time(false);
 	double st_result = single_thread_test();
-	mlog::manager->log()->use_thread_id(true);
+	mlog::manager->use_thread_id(true);
 	double st_result_thread_id = single_thread_test();
-	mlog::manager->log()->use_time(true);
+	mlog::manager->use_time(true);
 	double st_result_thread_id_time = single_thread_test();
-	mlog::manager->log()->use_position(true);
+	mlog::manager->use_position(true);
 	double st_result_thread_id_time_pos = single_thread_test();
 
 	mlog::file_logger_thread_safe log_thread_safe("log.txt");
 	//mlog::async_logger<mlog::file_logger_thread_safe> log_thread_safe("log.txt");
 	mlog::manager->set_log(log_thread_safe);
-	mlog::manager->log()->use_time(false);
+	mlog::manager->use_time(false);
 	double mt_result = single_thread_test();
-	mlog::manager->log()->use_thread_id(true);
+	mlog::manager->use_thread_id(true);
 	double mt_result_thread_id = single_thread_test();
-	mlog::manager->log()->use_time(true);
+	mlog::manager->use_time(true);
 	double mt_result_thread_id_time = single_thread_test();
-	mlog::manager->log()->use_position(true);
+	mlog::manager->use_position(true);
 	double mt_result_thread_id_time_pos = single_thread_test();
 
 	std::cout << "### single-threaded file logger test ###" << std::endl;
@@ -308,9 +308,9 @@ BOOST_AUTO_TEST_CASE(memory_logger_test) {
 	num_loops = 100000;
 	mlog::memory_logger<2048> log;
 	mlog::manager->set_log(log);
-	mlog::manager->log()->use_time(false);
-	mlog::manager->log()->use_thread_id(false);
-	mlog::manager->log()->use_time(false);
+	mlog::manager->use_time(false);
+	mlog::manager->use_thread_id(false);
+	mlog::manager->use_time(false);
 
 	for (std::size_t i = 0; i < 2048; i++) {
 		MLOG_INFO(boost::format("%1%") % i);
@@ -326,9 +326,9 @@ BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
 	num_loops = 100000;
 	mlog::memory_logger<4> mem_log;
 	mlog::manager->set_log(mem_log);
-	mlog::manager->log()->use_time(false);
-	mlog::manager->log()->use_thread_id(false);
-	mlog::manager->log()->use_time(false);
+	mlog::manager->use_time(false);
+	mlog::manager->use_thread_id(false);
+	mlog::manager->use_time(false);
 
 	for (std::size_t i = 0; i < 1024 * 1024; i++) {
 		MLOG_INFO(boost::format("%1%") % i);
