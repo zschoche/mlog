@@ -16,4 +16,5 @@ install:
         - cd boost_1_55_0
         - ./bootstrap.sh --with-libraries=filesystem,system,random
         - sudo ./b2 install
+        - cd ..
 script: cmake -DCMAKE_C_COMPILER=gcc-4.8 -DCMAKE_CXX_COMPILER=$CXX && make && make test && ./test
