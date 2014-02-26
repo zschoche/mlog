@@ -11,11 +11,11 @@ install:
         #- sudo apt-get install -qq libboost1.48-all-dev        
         - sudo apt-get install -qq gcc-4.8        
         - sudo apt-get install -qq g++-4.8        
-        - rm /usr/bin/cc /usr/bin/gcc /usr/bin/c++ /usr/bin/g++
-        - ln -s /usr/bin/gcc-4.8 /usr/bin/cc
-        - ln -s /usr/bin/gcc-4.8 /usr/bin/gcc
-        - ln -s /usr/bin/c++-4.8 /usr/bin/c++
-        - ln -s /usr/bin/g++-4.8 /usr/bin/g++
+        - sudo rm /usr/bin/cc /usr/bin/gcc /usr/bin/c++ /usr/bin/g++
+        - sudo ln -s /usr/bin/gcc-4.8 /usr/bin/cc
+        - sudo ln -s /usr/bin/gcc-4.8 /usr/bin/gcc
+        - sudo ln -s /usr/bin/c++-4.8 /usr/bin/c++
+        - sudo ln -s /usr/bin/g++-4.8 /usr/bin/g++
         - wget http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.gz\?r\=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.55.0%2F\&ts\=1393354422\&use_mirror\=heanet -O boost_1_55_0.tar.gz
         - tar -xzf boost_1_55_0.tar.gz
         - cd boost_1_55_0
