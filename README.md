@@ -1,6 +1,6 @@
-# mlog
+# mlog [![Build Status](https://travis-ci.org/zschoche/mlog.png?branch=master)](https://travis-ci.org/zschoche/mlog)
 
-Comfortable lightweight C++ logging library -- header-only, cross-platform, C++11.
+Comfortable lightweight C++ logging library -- header-only, cross-platform, C++11. 
 
 ## Prolog
 
