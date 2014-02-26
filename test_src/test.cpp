@@ -159,7 +159,6 @@ BOOST_AUTO_TEST_CASE(mlog_async_test) {
 		BOOST_CHECK_EQUAL(i, 8);
 	}
 	std::cout << "mlog_async_test passed." << std::endl;
-	exit(1);
 }
 BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	mlog::multiple_loggers log;
