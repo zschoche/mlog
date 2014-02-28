@@ -14,6 +14,7 @@
 #include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/regex.hpp>
 
 
 #ifdef _MSC_VER
@@ -91,7 +92,7 @@ BOOST_AUTO_TEST_CASE(mlog_logger_cleanup_test) {
 	std::cout << "mlog_logger_cleanup_test passed." << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE(mlog_memory_logger_atomic_test) {
+BOOST_AUTO_TEST_CASE(mlog_memory_logger_mt_test) {
 	
 	mlog::memory_logger_normal log;
 	mlog::manager->set_log(log);
@@ -154,12 +155,161 @@ BOOST_AUTO_TEST_CASE(mlog_async_test) {
 		result[n]++;
 	}
 
-	std::cout << "1" << std::endl;
 	for (auto &&i : result) {
 		BOOST_CHECK_EQUAL(i, 8);
 	}
 	std::cout << "mlog_async_test passed." << std::endl;
 }
+
+BOOST_AUTO_TEST_CASE(mlog_marco_test) {
+	const std::string filename = "macro_test.log";
+	std::remove(filename.c_str());
+	mlog::file_logger_thread_safe log(filename);
+	mlog::manager->set_log(log);
+
+	MLOG_INFO("info");
+	MLOG_DEBUG("debug");
+	MLOG_ERROR("error");
+	MLOG_FATAL("fatal");
+	MLOG_TRACE("trace");
+	MLOG_WARNING("warning");
+	log.get().flush();
+
+	std::ifstream file(filename, std::ios_base::in | std::ios_base::binary);
+	BOOST_CHECK_EQUAL(file.is_open(), true);
+	std::string str; 
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9].\\]\\{info\\}: info$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9].\\]\\{debug\\}: debug$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9].\\]\\{error\\}: error$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9].\\]\\{fatal\\}: fatal$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9].\\]\\{trace\\}: trace$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9].\\]\\{warning\\}: warning$") ), true);
+	std::remove(filename.c_str());
+	std::cout << "mlog_marco_test passed." << std::endl;
+}
+
+BOOST_AUTO_TEST_CASE(mlog_options_test) {
+	const std::string filename = "options_test.log";
+	std::remove(filename.c_str());
+	mlog::file_logger_thread_safe log(filename);
+	mlog::manager->set_log(log);
+	MLOG_INFO("none");
+	mlog::manager->use_thread_id(true);
+	MLOG_INFO("thread_id");
+	mlog::manager->use_thread_id(false);
+	mlog::manager->use_time(true);	
+	MLOG_INFO("time");
+	mlog::manager->use_time(false);	
+	mlog::manager->use_position(true);
+	MLOG_INFO("position");
+	mlog::manager->use_thread_id(true);
+	mlog::manager->use_time(true);	
+	MLOG_INFO("all");
+	mlog::manager->set_default_settings();
+	log.get().flush();
+	std::ifstream file(filename, std::ios_base::in | std::ios_base::binary);
+	BOOST_CHECK_EQUAL(file.is_open(), true);
+	std::string str; 
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9]*\\]\\{info\\}: none$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9]*-.*\\]\\{info\\}: thread_id$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^.*\\[[0-9].\\]\\{info\\}: time$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[^:]*:[0-9]* [0-9]*\\]\\{info\\}: position$") ), true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^.*\\[[^:]*:[0-9]* [0-9]*-.*\\]\\{info\\}: all$") ), true);
+	std::remove(filename.c_str());
+	std::cout << "mlog_marco_test passed." << std::endl;
+}
+
+
+
+boost::regex stdline("^\\[[0-9].\\]\\{(info|debung|trace|warning|error|fatal)\\}: [0-9]*$");
+
+BOOST_AUTO_TEST_CASE(mlog_file_logger_test) {
+
+	const std::string filename = "file_logger_test.log";
+	std::remove(filename.c_str());
+	mlog::file_logger_thread_safe log(filename);
+	mlog::manager->set_log(log);
+	for(int i = 0;i < 512; i++) {
+		MLOG_INFO(boost::lexical_cast<std::string>(i));
+	}
+
+	log.get().flush();
+	std::ifstream file(filename, std::ios_base::in | std::ios_base::binary);
+	BOOST_CHECK_EQUAL(file.is_open(), true);
+
+	int i = 0;
+	for (std::string str; std::getline(file, str);i++) {
+		int index = str.find_last_of(" ");
+		BOOST_CHECK(index != std::string::npos); 
+		std::string num = str.substr(index+1);
+		BOOST_CHECK_EQUAL(std::atoi(num.c_str()), i);
+		BOOST_CHECK_EQUAL(boost::regex_match(str,stdline), true);
+	}
+	std::remove(filename.c_str());
+	std::cout << "mlog_file_logger_test passed." << std::endl;
+}
+
+
+
+
+BOOST_AUTO_TEST_CASE(mlog_file_logger_mt_test) {
+
+	const std::string filename = "file_logger_test.log";
+	std::remove(filename.c_str());
+	mlog::file_logger_thread_safe log(filename);
+	mlog::manager->set_log(log);
+	const std::size_t t = 8;
+	std::thread threads[t];
+
+	for (int i = 0; i < t; ++i)
+		threads[i] = std::thread([&]() {
+			for (int k = 0; k < 512; k++) { // (log size) / 8 = 512
+				MLOG_INFO(boost::lexical_cast<std::string>(k));
+			}
+		});
+
+	for (auto &t : threads)
+		t.join();
+	
+	log.get().flush();
+
+	int result[512];
+	for (auto &&i : result) {
+		i = 0;
+	}
+
+	
+	std::ifstream file(filename, std::ios_base::in | std::ios_base::binary);
+	BOOST_CHECK_EQUAL(file.is_open(), true);
+	
+	for (std::string str; std::getline(file, str);) {
+		int index = str.find_last_of(" ");
+		BOOST_CHECK(index != std::string::npos); 
+		std::string num = str.substr(index+1);
+		int n = std::atoi(num.c_str());
+		result[n]++;
+		BOOST_CHECK_EQUAL(boost::regex_match(str,stdline), true);
+		
+	}
+
+	for (auto &&i : result) {
+		BOOST_CHECK_EQUAL(i, 8);
+	}
+	std::cout << "mlog_file_logger_mt_test passed." << std::endl;
+}
+
+
 BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	mlog::multiple_loggers log;
 	std::unique_ptr<mlog::memory_logger<2> > log1(
@@ -303,7 +453,6 @@ BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
 		  << "ms for each log statment with thread id, timestamp and "
 		     "position." << std::endl;
 }
-
 BOOST_AUTO_TEST_CASE(memory_logger_test) {
 	num_loops = 100000;
 	mlog::memory_logger<2048> log;

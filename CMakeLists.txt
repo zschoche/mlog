@@ -12,7 +12,7 @@ add_definitions(-DMLOGTRACE)
 
 # boost
 # you should define BOOST_ROOT first
-find_package(Boost COMPONENTS system filesystem unit_test_framework random)
+find_package(Boost COMPONENTS system filesystem unit_test_framework random regex)
 include_directories(Boost_INCLUDE_DIR ${Boost_INCLUDE_DIRS})
 if(MSVC)
     # disable auto link on windows

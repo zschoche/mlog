@@ -10,7 +10,8 @@ namespace mlog {
 
 file_logger::file_logger(std::string log_name, std::string log_directory,
 			 mlog_bytes max_file_size)
-    : m_stream(get_next_logfile(log_directory, log_name, max_file_size,
+    : m_flush_immediately(true),
+      m_stream(get_next_logfile(log_directory, log_name, max_file_size,
 				&m_offset),
 	       BOOST_IOS::app),
       m_log_name(std::move(log_name)),
@@ -18,9 +19,6 @@ file_logger::file_logger(std::string log_name, std::string log_directory,
       m_max_file_size(std::move(max_file_size)), m_offset(0) {}
 
 file_logger::~file_logger() {}
-
-
-
 
 void file_logger::flush() { m_stream.flush(); }
 
@@ -40,8 +38,7 @@ std::string file_logger::get_next_logfile(const std::string &directory,
 		bool exists(false);
 		do {
 			new_path.reset(new boost::filesystem::path(
-			    path.string() + "." +
-			    std::to_string(i)));
+			    path.string() + "." + std::to_string(i)));
 			i++;
 			exists = boost::filesystem::exists(*new_path);
 		} while (exists && (max_file_size == 0 ||

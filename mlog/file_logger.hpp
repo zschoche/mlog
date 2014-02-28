@@ -43,12 +43,13 @@ class file_logger : public logger<file_logger> {
 
 	template <typename M, typename T>
 	void write_to_log(M &&metadata, T &&log_text) {
-		std::string str = metadata.to_string(std::forward<T>(log_text));
+		std::string str = metadata.to_string(std::forward<T>(log_text), true);
 		m_stream.write(str.c_str(), str.size());
-		boost::iostreams::put(m_stream, '\n');
-		m_offset += str.size() + 1;
+		//boost::iostreams::put(m_stream, '\n');
+		m_offset += str.size(); // + 1;
 
-		flush();
+		if(m_flush_immediately)
+			flush();
 
 		if (max_file_size() != 0 && m_offset > max_file_size()) {
 			m_stream.open(
@@ -65,9 +66,24 @@ class file_logger : public logger<file_logger> {
 
 	inline bool is_open() const { return m_stream.is_open(); }
 
-	virtual void flush();
+	void flush();
+
+	inline bool flush_immediately() const {
+		return m_flush_immediately;
+	}
+
+	template<typename T>
+	void flush_immediately(T&& value) {
+		m_flush_immediately = value;
+	}
+	
+
+
 
       private:
+
+	bool m_flush_immediately;
+
 	boost::iostreams::file_sink m_stream;
 	std::string m_log_name;
 	std::string m_log_directory;
