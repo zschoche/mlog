@@ -19,7 +19,8 @@ install:
         - wget http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.gz\?r\=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.55.0%2F\&ts\=1393354422\&use_mirror\=heanet -O boost_1_55_0.tar.gz
         - tar -xzf boost_1_55_0.tar.gz
         - cd boost_1_55_0
-        - ./bootstrap.sh -prefix=/usr --with-libraries=filesystem,system,random,test
+        - ./bootstrap.sh -prefix=/usr --with-libraries=filesystem,system,random,test,regex
+        - ./b2 --prefix=/usr
         - sudo ./b2 install --prefix=/usr
         - cd ..
 script: cmake -DCMAKE_C_COMPILER=gcc-4.8 -DCMAKE_CXX_COMPILER=$CXX && make && make test && ./test
