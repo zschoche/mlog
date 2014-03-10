@@ -11,7 +11,6 @@
 #include <mlog/multiple_loggers.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <cmath>
-#include <boost/random.hpp>
 #include <boost/generator_iterator.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
@@ -507,12 +506,8 @@ BOOST_AUTO_TEST_CASE(mlog_syslog_test) {
 
 	if (std::getenv("TRAVIS") == nullptr) {
 
-		boost::mt19937 rng;
-		rng.seed(static_cast<unsigned int>(std::time(0)));
-		boost::variate_generator<boost::mt19937, boost::uniform_int<> >
-		dice(rng, boost::uniform_int<>(1, 1024 * 1024));
 
-		int id = dice();
+		int id = mlog::pseudo_random_number(1024*1024);
 
 		std::string debug = boost::str(
 		    boost::format("This is a debug test (%1%)") % id);

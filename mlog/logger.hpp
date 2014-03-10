@@ -28,6 +28,7 @@ using boost::thread;
 #endif
 #include <chrono>
 #include <boost/format.hpp>
+#include <cstdlib>
 #include "manager.hpp"
 
 enum mlog_level {
@@ -40,6 +41,8 @@ enum mlog_level {
 };
 
 namespace mlog {
+
+
 
 extern mlog_manager *manager;
 

@@ -1,4 +1,5 @@
 /*
+ * 
  * mlog.hpp
  *
  *  Created on: Aug 12, 2012
@@ -19,6 +20,8 @@ namespace mlog {
 
 // This should not be cleaned up https://github.com/zschoche/mlog/issues/11
 extern mlog_manager *manager;
+
+unsigned int pseudo_random_number(unsigned int max = 99);
 
 }; /* namespace mlog */
 
