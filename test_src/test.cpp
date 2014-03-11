@@ -25,41 +25,6 @@ double log2(double n) {
 }
 #endif
 
-const int num_threads = 2;
-int num_loops = 100000;
-
-void write_some_log_entrys() {
-	for (int i = 0; i < num_loops; i++)
-		MLOG_INFO("this is a test.");
-}
-
-double single_thread_test() {
-	boost::posix_time::ptime start =
-	    boost::posix_time::microsec_clock::universal_time();
-	write_some_log_entrys();
-	boost::posix_time::time_duration time =
-	    boost::posix_time::microsec_clock::universal_time() - start;
-	double ms = time.total_milliseconds() /
-		    static_cast<double>(num_loops * num_threads);
-	return ms;
-}
-
-double multi_thread_test() {
-	std::thread threads[num_threads];
-
-	boost::posix_time::ptime start =
-	    boost::posix_time::microsec_clock::universal_time();
-	for (int i = 0; i < num_threads; ++i)
-		threads[i] = std::thread([]() { write_some_log_entrys(); });
-
-	for (auto &t : threads)
-		t.join();
-	boost::posix_time::time_duration time =
-	    boost::posix_time::microsec_clock::universal_time() - start;
-	double ms = time.total_milliseconds() /
-		    static_cast<double>(num_loops * num_threads);
-	return ms;
-}
 
 BOOST_AUTO_TEST_CASE(mlog_empty_test) {}
 
@@ -332,128 +297,7 @@ BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	std::cout << "multiple_loggers_test passed." << std::endl;
 }
 
-BOOST_AUTO_TEST_CASE(standard_logger_speed_test) {
-	num_loops = 100;
-	mlog::standard_logger stdlog;
-	mlog::manager->set_log(stdlog);
-	double st_result = single_thread_test();
-	mlog::manager->use_thread_id(true);
-	double st_result_thread_id = single_thread_test();
-	mlog::manager->use_time(true);
-	double st_result_thread_id_time = single_thread_test();
-	mlog::manager->use_position(true);
-	double st_result_thread_id_time_pos = single_thread_test();
-
-	mlog::standard_logger_thread_safe stdlog_thread_safe;
-	mlog::manager->set_log(stdlog_thread_safe);
-	double mt_result = single_thread_test();
-	mlog::manager->use_thread_id(true);
-	double mt_result_thread_id = single_thread_test();
-	mlog::manager->use_time(true);
-	double mt_result_thread_id_time = single_thread_test();
-	mlog::manager->use_position(true);
-	double mt_result_thread_id_time_pos = single_thread_test();
-
-	std::cout << std::endl;
-	std::cout << "### single-threaded standard logger test ###"
-		  << std::endl;
-	std::cout << st_result << "ms for each log statment." << std::endl;
-	std::cout << st_result_thread_id
-		  << "ms for each log statment with thread id." << std::endl;
-	std::cout << st_result_thread_id_time
-		  << "ms for each log statment with thread id and timestamp."
-		  << std::endl;
-	std::cout << st_result_thread_id_time_pos
-		  << "ms for each log statment with thread id, timestamp and "
-		     "position." << std::endl;
-	std::cout << std::endl;
-	std::cout << "### multi-threaded standard logger test ###" << std::endl;
-	std::cout << mt_result << "ms for each log statment." << std::endl;
-	std::cout << mt_result_thread_id
-		  << "ms for each log statment with thread id." << std::endl;
-	std::cout << mt_result_thread_id_time
-		  << "ms for each log statment with thread id and timestamp."
-		  << std::endl;
-	std::cout << mt_result_thread_id_time_pos
-		  << "ms for each log statment with thread id, timestamp and "
-		     "position." << std::endl;
-	std::cout << std::endl;
-}
-
-BOOST_AUTO_TEST_CASE(memory_logger_speed_test) {
-	num_loops = 100000;
-	mlog::memory_logger_normal log;
-	mlog::manager->set_log(log);
-	double st_result = single_thread_test();
-	mlog::manager->use_thread_id(true);
-	double st_result_thread_id = single_thread_test();
-	mlog::manager->use_time(true);
-	double st_result_thread_id_time = single_thread_test();
-	mlog::manager->use_position(true);
-	double st_result_thread_id_time_pos = single_thread_test();
-
-	std::cout << "### memory logger test ###" << std::endl;
-	std::cout << st_result << "ms for each log statment." << std::endl;
-	std::cout << st_result_thread_id
-		  << "ms for each log statment with thread id." << std::endl;
-	std::cout << st_result_thread_id_time
-		  << "ms for each log statment with thread id and timestamp."
-		  << std::endl;
-	std::cout << st_result_thread_id_time_pos
-		  << "ms for each log statment with thread id, timestamp and "
-		     "position." << std::endl;
-	std::cout << std::endl;
-}
-
-BOOST_AUTO_TEST_CASE(file_logger_speed_test) {
-	num_loops = 100000;
-	mlog::file_logger log("log.txt");
-	mlog::manager->set_log(log);
-	mlog::manager->use_time(false);
-	double st_result = single_thread_test();
-	mlog::manager->use_thread_id(true);
-	double st_result_thread_id = single_thread_test();
-	mlog::manager->use_time(true);
-	double st_result_thread_id_time = single_thread_test();
-	mlog::manager->use_position(true);
-	double st_result_thread_id_time_pos = single_thread_test();
-
-	mlog::file_logger_thread_safe log_thread_safe("log.txt");
-	//mlog::async_logger<mlog::file_logger_thread_safe> log_thread_safe("log.txt");
-	mlog::manager->set_log(log_thread_safe);
-	mlog::manager->use_time(false);
-	double mt_result = single_thread_test();
-	mlog::manager->use_thread_id(true);
-	double mt_result_thread_id = single_thread_test();
-	mlog::manager->use_time(true);
-	double mt_result_thread_id_time = single_thread_test();
-	mlog::manager->use_position(true);
-	double mt_result_thread_id_time_pos = single_thread_test();
-
-	std::cout << "### single-threaded file logger test ###" << std::endl;
-	std::cout << st_result << "ms for each log statment." << std::endl;
-	std::cout << st_result_thread_id
-		  << "ms for each log statment with thread id." << std::endl;
-	std::cout << st_result_thread_id_time
-		  << "ms for each log statment with thread id and timestamp."
-		  << std::endl;
-	std::cout << st_result_thread_id_time_pos
-		  << "ms for each log statment with thread id, timestamp and "
-		     "position." << std::endl;
-	std::cout << std::endl;
-	std::cout << "### multi-threaded file logger test ###" << std::endl;
-	std::cout << mt_result << "ms for each log statment." << std::endl;
-	std::cout << mt_result_thread_id
-		  << "ms for each log statment with thread id." << std::endl;
-	std::cout << mt_result_thread_id_time
-		  << "ms for each log statment with thread id and timestamp."
-		  << std::endl;
-	std::cout << mt_result_thread_id_time_pos
-		  << "ms for each log statment with thread id, timestamp and "
-		     "position." << std::endl;
-}
 BOOST_AUTO_TEST_CASE(memory_logger_test) {
-	num_loops = 100000;
 	mlog::memory_logger<2048> log;
 	mlog::manager->set_log(log);
 	mlog::manager->use_time(false);
@@ -471,7 +315,6 @@ BOOST_AUTO_TEST_CASE(memory_logger_test) {
 }
 
 BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
-	num_loops = 100000;
 	mlog::memory_logger<4> mem_log;
 	mlog::manager->set_log(mem_log);
 	mlog::manager->use_time(false);
