@@ -73,15 +73,15 @@ The trace and debug log statments only work if __MLOGDEBUG__ and __MLOGTRACE__ a
 
 ## Dependences
 
- * all:
+ * all
  	- [Boost Format Library](www.boost.org/libs/format/)
- * all pre C++11:
+ * all pre C++11
  	- [Boost.Thread](www.boost.org/libs/thread/)
 	- [Boost System Library](www.boost.org/libs/system/)
- * mlog::file_logger:
+ * mlog::file_logger
 	- [Boost System Library](www.boost.org/libs/system/)
 	- [Boost Filesystem Library](www.boost.org/libs/filesystem/)
- * test suite:
+ * test suite
  	- [Boost.Regex](www.boost.org/libs/regex/)
 	- [Boost Test Library](www.boost.org/libs/test/)
  
