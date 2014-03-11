@@ -9,6 +9,8 @@
 #include <cmath>
 #include <boost/generator_iterator.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 #ifdef _MSC_VER
 namespace std {
@@ -27,6 +29,7 @@ void write_some_log_entrys() {
 		MLOG_INFO("this is a test.");
 }
 
+
 double single_thread_test() {
 	boost::posix_time::ptime start =
 	    boost::posix_time::microsec_clock::universal_time();
@@ -37,6 +40,24 @@ double single_thread_test() {
 		    static_cast<double>(num_loops * num_threads);
 	return ms;
 }
+
+
+void write_some_log_entrys_boost() {
+	for (int i = 0; i < num_loops; i++) {
+		BOOST_LOG_TRIVIAL(info) << "this is a test.";
+	}
+}
+double single_thread_test_boost() {
+	boost::posix_time::ptime start =
+	    boost::posix_time::microsec_clock::universal_time();
+	write_some_log_entrys_boost();
+	boost::posix_time::time_duration time =
+	    boost::posix_time::microsec_clock::universal_time() - start;
+	double ms = time.total_milliseconds() /
+		    static_cast<double>(num_loops * num_threads);
+	return ms;
+}
+
 
 
 struct result {
@@ -175,6 +196,7 @@ result memory_logger()
 	 r.with_time = single_thread_test();
 	mlog::manager->set_default_settings();
 	mlog::manager->use_position(true);
+	mlog::manager->set_default_settings();
 	 r.with_pos = single_thread_test();
 
 	std::cout << "memory tests:" << std::endl;
@@ -186,10 +208,50 @@ result memory_logger()
 	return r;
 }
 
+void init()
+{
+	boost::log::add_file_log("boost.log");
 
+	boost::log::core::get()->set_filter
+    (
+        boost::log::trivial::severity >= boost::log::trivial::info
+    );
+}
+
+void compare_with_boost() {
+	mlog::standard_logger_thread_safe log_ts;
+	mlog::manager->set_log(log_ts);
+	mlog::manager->use_thread_id(true);
+	mlog::manager->use_time(true);
+	double m = single_thread_test();
+	double b = single_thread_test_boost();
+
+	std::cout << "boost.log:\t" << b << "ms" << std::endl;
+	std::cout << "mlog:\t\t" << m << "ms" << std::endl;
+
+	std::remove("boost.log");
+	std::remove("mlog.log");
+	init();
+	mlog::file_logger_thread_safe logfile("mlog.log");
+	logfile.get().flush_immediately(false);
+	mlog::manager->set_log(logfile);
+	b = single_thread_test_boost();
+	m = single_thread_test();
+	
+	std::cout << "boost.log:\t" << b << "ms" << std::endl;
+	std::cout << "mlog:\t\t" << m << "ms" << std::endl;
+
+	std::remove("boost.log");
+	std::remove("mlog.log");
+
+
+}
 
 
 int main() {
+
+	compare_with_boost();
+	return 0;
 	
 	cout_logger();
 	file_logger();

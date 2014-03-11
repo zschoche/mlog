@@ -72,7 +72,7 @@ else()
 endif()
 
 target_link_libraries(test mlog ${Boost_LIBRARIES})
-target_link_libraries(benchmark mlog ${Boost_LIBRARIES})
+target_link_libraries(benchmark mlog ${Boost_LIBRARIES} boost_log boost_thread)
 
 install(
     TARGETS mlog
