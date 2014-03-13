@@ -63,6 +63,7 @@ struct empty_logger : mlog::logger<empty_logger>
 {
     	template<typename M, typename T>
     	void write_to_log(M&& metadata, T&& log_text) {
+		metadata.to_string(log_text);
 	}
 
 };
@@ -217,6 +218,22 @@ result memory_logger()
 	return r;
 }
 
+
+void frontend() {
+	std::cout << "frontend tests:" << std::endl;
+	empty_logger onlyfrontend;
+	mlog::manager->set_log(onlyfrontend);
+	mlog::manager->set_default_settings();
+	std::cout << "default settings =>\t" << single_thread_test() << "ms" << std::endl; 
+	mlog::manager->use_thread_id(true);
+	std::cout << "added thread id =>\t" << single_thread_test() << "ms" << std::endl; 
+	mlog::manager->use_time(true);
+	std::cout << "added time =>\t\t" << single_thread_test() << "ms" << std::endl; 
+	mlog::manager->use_position(true);
+	std::cout << "added position time =>\t" << single_thread_test() << "ms" << std::endl; 
+
+}
+
 void init()
 {
 	boost::log::add_file_log("boost.log");
@@ -233,7 +250,9 @@ void compare_with_boost() {
 	mlog::manager->use_thread_id(true);
 	mlog::manager->use_time(true);
 	double m = single_thread_test();
+	m = single_thread_test();
 	double b = single_thread_test_boost();
+	b = single_thread_test_boost();
 
 	std::cout << "boost.log:\t" << b << "ms" << std::endl;
 	std::cout << "mlog:\t\t" << m << "ms" << std::endl;
@@ -244,9 +263,11 @@ void compare_with_boost() {
 	init();
 
 	mlog::file_logger_thread_safe logfile("mlog.log");
-	logfile.get().flush_immediately(false);
+	logfile.get().flush_immediately(true);
 	mlog::manager->set_log(logfile);
 	b = single_thread_test_boost();
+	b = single_thread_test_boost();
+	m = single_thread_test();
 	m = single_thread_test();
 	std::remove("boost.log");
 	std::remove("mlog.log");
@@ -256,12 +277,6 @@ void compare_with_boost() {
 
 
 
-	empty_logger onlyfrontend;
-	mlog::manager->set_log(onlyfrontend);
-	b = single_thread_test_boost();
-	m = single_thread_test();
-	std::cout << "boost.log:\t" << b << "ms" << std::endl;
-	std::cout << "mlog:\t\t" << m << "ms" << std::endl;
 	
 	
 
@@ -273,6 +288,7 @@ void compare_with_boost() {
 int main() {
 
 	compare_with_boost();
+	frontend();
 	return 0;
 	
 	cout_logger();
