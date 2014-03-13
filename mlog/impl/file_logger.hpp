@@ -13,7 +13,7 @@ file_logger::file_logger(std::string log_name, std::string log_directory,
     : m_flush_immediately(true),
       m_stream(get_next_logfile(log_directory, log_name, max_file_size,
 				&m_offset),
-	       BOOST_IOS::app),
+	       std::ios::app | std::ios::binary ),
       m_log_name(std::move(log_name)),
       m_log_directory(std::move(log_directory)),
       m_max_file_size(std::move(max_file_size)), m_offset(0) {}

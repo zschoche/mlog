@@ -224,13 +224,13 @@ void frontend() {
 	empty_logger onlyfrontend;
 	mlog::manager->set_log(onlyfrontend);
 	mlog::manager->set_default_settings();
-	std::cout << "default settings =>\t" << single_thread_test() << "ms" << std::endl; 
+	std::cout << "\tdefault settings =>\t" << single_thread_test() << "ms" << std::endl; 
 	mlog::manager->use_thread_id(true);
-	std::cout << "added thread id =>\t" << single_thread_test() << "ms" << std::endl; 
+	std::cout << "\tadded thread id =>\t" << single_thread_test() << "ms" << std::endl; 
 	mlog::manager->use_time(true);
-	std::cout << "added time =>\t\t" << single_thread_test() << "ms" << std::endl; 
+	std::cout << "\tadded time =>\t\t" << single_thread_test() << "ms" << std::endl; 
 	mlog::manager->use_position(true);
-	std::cout << "added position time =>\t" << single_thread_test() << "ms" << std::endl; 
+	std::cout << "\tadded position time =>\t" << single_thread_test() << "ms" << std::endl; 
 
 }
 
@@ -254,8 +254,9 @@ void compare_with_boost() {
 	double b = single_thread_test_boost();
 	b = single_thread_test_boost();
 
-	std::cout << "boost.log:\t" << b << "ms" << std::endl;
-	std::cout << "mlog:\t\t" << m << "ms" << std::endl;
+	std::cout << "stdout tests:" << std::endl;
+	std::cout << "\tboost.log:\t" << b << "ms" << std::endl;
+	std::cout << "\tmlog:\t\t" << m << "ms" << std::endl;
 
 	std::remove("boost.log");
 	std::remove("mlog.log");
@@ -263,7 +264,6 @@ void compare_with_boost() {
 	init();
 
 	mlog::file_logger_thread_safe logfile("mlog.log");
-	logfile.get().flush_immediately(true);
 	mlog::manager->set_log(logfile);
 	b = single_thread_test_boost();
 	b = single_thread_test_boost();
@@ -271,9 +271,10 @@ void compare_with_boost() {
 	m = single_thread_test();
 	std::remove("boost.log");
 	std::remove("mlog.log");
-	
-	std::cout << "boost.log:\t" << b << "ms" << std::endl;
-	std::cout << "mlog:\t\t" << m << "ms" << std::endl;
+
+	std::cout << "file tests:" << std::endl;
+	std::cout << "\tboost.log:\t" << b << "ms" << std::endl;
+	std::cout << "\tmlog:\t\t" << m << "ms" << std::endl;
 
 
 

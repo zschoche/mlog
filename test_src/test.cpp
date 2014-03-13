@@ -154,7 +154,6 @@ BOOST_AUTO_TEST_CASE(mlog_marco_test) {
 	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9].\\]\\{trace\\}: trace$") ), true);
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9].\\]\\{warning\\}: warning$") ), true);
-	exit(1);
 	std::remove(filename.c_str());
 	std::cout << "mlog_marco_test passed." << std::endl;
 }
