@@ -45,7 +45,6 @@ class file_logger : public logger<file_logger> {
 	void write_to_log(M &&metadata, T &&log_text) {
 		std::string str = metadata.to_string(std::forward<T>(log_text), true);
 		m_stream.write(str.c_str(), str.size());
-		//boost::iostreams::put(m_stream, '\n');
 		m_offset += str.size(); // + 1;
 
 		if(m_flush_immediately)

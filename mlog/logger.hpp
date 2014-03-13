@@ -128,11 +128,31 @@ struct logger_base {
 		write_to_log(std::move(metadata), boost::str(format));
 	}
 
+	inline void write(mlog_level &&level, boost::format &&format) {
+		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
+				      mlog::manager->use_thread_id());
+		write_to_log(std::move(metadata), boost::str(format));
+	}
+
+	inline void write(mlog_level &&level, const boost::format &format) {
+		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
+				       mlog::manager->use_thread_id());
+		write_to_log(std::move(metadata), boost::str(format));
+	}
+
+
+
 	inline void write(mlog_level &&level, std::string &&log_text,
 			  log_position &&pos) {
 		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
 				      mlog::manager->use_thread_id(), std::move(pos),
 				      mlog::manager->use_position());
+		write_to_log(std::move(metadata), std::move(log_text));
+	}
+
+	inline void write(mlog_level &&level, std::string &&log_text) {
+		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
+				      mlog::manager->use_thread_id());
 		write_to_log(std::move(metadata), std::move(log_text));
 	}
 
@@ -143,6 +163,13 @@ struct logger_base {
 				      mlog::manager->use_position());
 		write_to_log(std::move(metadata), std::string(log_text));
 	}
+
+	void write(mlog_level &&level, const std::string &log_text) {
+		log_metadata metadata(std::move(level), mlog::manager->session(), mlog::manager->use_time(),
+				       mlog::manager->use_thread_id());
+		write_to_log(std::move(metadata), std::string(log_text));
+	}
+
 
 	// virtual void flush() = 0;
 	virtual void write_to_log(log_metadata &&metadata,

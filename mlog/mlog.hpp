@@ -44,10 +44,7 @@ unsigned int pseudo_random_number(unsigned int max = 99);
 #define MLOG_DEBUG(x1)
 #endif
 
-#define MLOG_INFO(x1)                                                          \
-	::mlog::manager->log()->write(                                         \
-				    mlog_level::info, x1,                      \
-				    ::mlog::log_position(__FILE__, __LINE__))
+#define MLOG_INFO(x1) if(::mlog::manager->use_position()) { ::mlog::manager->log()->write(mlog_level::info, x1, ::mlog::log_position(__FILE__, __LINE__)); } else { ::mlog::manager->log()->write(mlog_level::info, x1); }
 
 #define MLOG_WARNING(x1)                                                       \
 	::mlog::manager->log()->write(                                         \

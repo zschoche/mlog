@@ -59,6 +59,15 @@ double single_thread_test_boost() {
 }
 
 
+struct empty_logger : mlog::logger<empty_logger>
+{
+    	template<typename M, typename T>
+    	void write_to_log(M&& metadata, T&& log_text) {
+	}
+
+};
+
+
 
 struct result {
 	double normal;
@@ -231,18 +240,31 @@ void compare_with_boost() {
 
 	std::remove("boost.log");
 	std::remove("mlog.log");
+	
 	init();
+
 	mlog::file_logger_thread_safe logfile("mlog.log");
 	logfile.get().flush_immediately(false);
 	mlog::manager->set_log(logfile);
 	b = single_thread_test_boost();
 	m = single_thread_test();
+	std::remove("boost.log");
+	std::remove("mlog.log");
 	
 	std::cout << "boost.log:\t" << b << "ms" << std::endl;
 	std::cout << "mlog:\t\t" << m << "ms" << std::endl;
 
-	std::remove("boost.log");
-	std::remove("mlog.log");
+
+
+	empty_logger onlyfrontend;
+	mlog::manager->set_log(onlyfrontend);
+	b = single_thread_test_boost();
+	m = single_thread_test();
+	std::cout << "boost.log:\t" << b << "ms" << std::endl;
+	std::cout << "mlog:\t\t" << m << "ms" << std::endl;
+	
+	
+
 
 
 }
