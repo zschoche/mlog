@@ -168,7 +168,7 @@ __Example:__
 struct custom_logger : mlog::logger<custom_logger>
 {
 	template<typename M, typename T>
-	virtual void write_to_log(M&& metadata, T&& log_text) {
+	void write_to_log(M&& metadata, T&& log_text) {
 		// write into your log.	
 	}
 };
