@@ -28,7 +28,10 @@ using boost::thread;
 #endif
 #include <chrono>
 #include <cstdlib>
-#include "manager.hpp"
+#include "mlog.hpp"
+
+#include <sstream>
+#include <cstdio>
 
 enum mlog_level {
 	trace,
@@ -40,7 +43,16 @@ enum mlog_level {
 };
 
 namespace mlog {
+	
+	
+template <typename T> std::string thread_id_to_string(T &&thread_id) {
+	std::stringstream ss;
+	ss << thread_id;
+	return ss.str();
+}
 
+// This should not be cleaned up https://github.com/zschoche/mlog/issues/11
+extern mlog_manager *manager;
 
 template <typename T> inline std::string level_to_string(T &&level) {
 	if (level == mlog_level::trace)
@@ -58,8 +70,7 @@ template <typename T> inline std::string level_to_string(T &&level) {
 }
 
 struct log_position {
-	log_position()
-	:filename(),line_number(0) {}
+	log_position() : filename(), line_number(0) {}
 
 	log_position(std::string _filename, std::size_t _line_number)
 	    : filename(std::move(_filename)),
@@ -68,9 +79,7 @@ struct log_position {
 	std::string filename;
 	std::size_t line_number;
 
-	inline bool has_value() const {
-		return line_number != 0;
-	}
+	inline bool has_value() const { return line_number != 0; }
 };
 
 struct log_metadata {
@@ -83,22 +92,43 @@ struct log_metadata {
 	std::thread::id thread_id;
 	log_position position;
 
-	log_metadata()
-	      :level(info)  {}
+	log_metadata(const log_metadata &) = default;
+	log_metadata(log_metadata &&) = default;
+	log_metadata &operator=(const log_metadata &) = default;
+	log_metadata &operator=(log_metadata &&) = default;
+	~log_metadata() = default;
 
-	log_metadata(mlog_level &&lvl);
-	log_metadata(mlog_level &&lvl, log_position &&position);
-	log_metadata(mlog_level &&lvl, const log_position &position);
+	log_metadata() : level(info) {}
 
-	std::string to_string(const std::string& end_string = std::string(), bool end_line = false) const;
+	static inline std::chrono::time_point<clocks> get_time() {
+		if (mlog::manager->use_time())
+			return clocks::now();
+		else
+			return std::chrono::time_point<clocks>();
+	}
 
-	std::ostream &output(std::ostream &stream) const;
+	static inline std::thread::id get_thread_id() {
+		if (manager->use_thread_id()) {
+			return THREAD_GET_ID();
+		} else
+			return std::thread::id();
+	}
+
+	log_metadata(mlog_level &&lvl)
+	    : level(std::move(lvl)), time(get_time()),
+	      thread_id(get_thread_id()) {}
+
+	log_metadata(mlog_level &&lvl, log_position &&_position)
+	    : level(std::move(lvl)), time(get_time()),
+	      thread_id(get_thread_id()), position(_position) {}
+
+	log_metadata(mlog_level &&lvl, const log_position &_position)
+	    : level(std::move(lvl)), time(get_time()),
+	      thread_id(get_thread_id()), position(std::move(_position)) {}
+
+	std::string to_string(const std::string &end_string = std::string(),
+			      bool end_line = false) const;
+
 };
-
-
 }
 #endif /* __METADATA_HPP_ */
-
-#ifdef MLOG_NO_LIB
-#include "impl/metadata.hpp"
-#endif
