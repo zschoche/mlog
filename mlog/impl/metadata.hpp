@@ -123,9 +123,9 @@ std::string log_metadata::to_string(const std::string &end_string,
 	}
 
 	if (end_line) {
-		result.resize(len + 2);
-		result[len] = '\r';
-		result[len + 1] = '\n';
+		result.resize(len + 1);
+		//result[len] = '\r';
+		result[len] = '\n';
 	} else {
 		result.resize(len);
 	}
