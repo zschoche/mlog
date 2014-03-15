@@ -12,7 +12,7 @@ add_definitions(-DMLOGTRACE)
 
 # boost
 # you should define BOOST_ROOT first
-find_package(Boost COMPONENTS system filesystem unit_test_framework random regex)
+find_package(Boost COMPONENTS system filesystem unit_test_framework regex)
 include_directories(Boost_INCLUDE_DIR ${Boost_INCLUDE_DIRS})
 if(MSVC)
     # disable auto link on windows
@@ -33,6 +33,7 @@ add_library(mlog ${mlog_src})
 
 #programs
 add_executable(test EXCLUDE_FROM_ALL test_src/test.cpp)
+add_executable(benchmark EXCLUDE_FROM_ALL benchmark_src/benchmark.cpp)
 
 
 if (CMAKE_CXX_COMPILER MATCHES ".*clang")
@@ -71,6 +72,7 @@ else()
 endif()
 
 target_link_libraries(test mlog ${Boost_LIBRARIES})
+target_link_libraries(benchmark mlog ${Boost_LIBRARIES} boost_log boost_thread)
 
 install(
     TARGETS mlog

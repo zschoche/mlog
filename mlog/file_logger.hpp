@@ -45,7 +45,6 @@ class file_logger : public logger<file_logger> {
 	void write_to_log(M &&metadata, T &&log_text) {
 		std::string str = metadata.to_string(std::forward<T>(log_text), true);
 		m_stream.write(str.c_str(), str.size());
-		//boost::iostreams::put(m_stream, '\n');
 		m_offset += str.size(); // + 1;
 
 		if(m_flush_immediately)
@@ -54,7 +53,7 @@ class file_logger : public logger<file_logger> {
 		if (max_file_size() != 0 && m_offset > max_file_size()) {
 			m_stream.open(
 			    get_next_logfile(m_log_directory, m_log_name,
-					     max_file_size(), &m_offset));
+					     max_file_size(), &m_offset), std::ios::binary);
 		}
 	}
 
@@ -84,7 +83,7 @@ class file_logger : public logger<file_logger> {
 
 	bool m_flush_immediately;
 
-	boost::iostreams::file_sink m_stream;
+	std::ofstream m_stream;
 	std::string m_log_name;
 	std::string m_log_directory;
 	mlog_bytes m_max_file_size;

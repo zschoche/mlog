@@ -49,7 +49,7 @@ struct mlog_manager {
 	}
 
 	inline bool use_position() const { return m_use_position; }
-	inline bool session() const { return m_session; }
+	inline short session() const { return m_session; }
 	inline void set_default_settings() {
 		use_time(false);
 		use_thread_id(false);
