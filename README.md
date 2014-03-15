@@ -16,35 +16,46 @@ I thought a bit about logging in general and decided to create a lightweight log
 
  - Here are the speed test results on my MacBook Air (1,3 GHz Intel Core i5, 8GB RAM, SSD):
 ```
-### single-threaded standard logger test ###
-0.003ms for each log statment.
-0.003ms for each log statment with thread id.
-0.005ms for each log statment with thread id and timestamp.
-0.015ms for each log statment with thread id, timestamp and position.
+### mlog benchmark ###
 
-### multi-threaded standard logger test ###
-0.003ms for each log statment.
-0.005ms for each log statment with thread id.
-0.005ms for each log statment with thread id and timestamp.
-0.015ms for each log statment with thread id, timestamp and position.
+compare with boost.log on stdout :
+	boost.log:	0.004365ms
+	mlog:		0.004465ms
+compare with boost.log on tests:
+	boost.log:	0.000945ms
+	mlog:		0.000775ms
+frontend tests:
+	default settings =>	0.00018ms
+	added thread id =>	0.000415ms
+	added time =>		0.00074ms
+	added position time =>	0.00094ms
+cout tests:
+	mlog::standard_logger => 0.002205ms
+	mlog::thread_safe<mlog::standard_logger> => 0.00225ms
+	mlog::async_logger<mlog::standard_logger> => 0.000125ms
+		with thread id:		+0.00079ms
+		with time:		+0.001215ms
+		with code position:	+0.001585ms
+file tests:
+	mlog::file_logger => 0.00104ms
+	mlog::thread_safe<mlog::file_logger> => 0.00103ms
+	mlog::async_logger<mlog::file_logger> => 0.00012ms
+		with thread id:		-0.000175ms
+		with time:		-0.00051ms
+		with code position:	-0.00065ms
+syslog tests:
+	mlog::syslog_logger => 0.01322ms
+	mlog::thread_safe<mlog::syslog_logger> => 0.002255ms
+	mlog::async_logger<mlog::syslog_logger> => 0.000165ms
+		with thread id:		-0.01074ms
+		with time:		-0.01064ms
+		with code position:	-0.010675ms
+memory tests:
+	mlog::memory_logger => 2e-05ms
+		with thread id:		0ms
+		with time:		+2.5e-05ms
+		with code position:	0ms
 
-### memory logger test ###
-6.5e-05ms for each log statment.
-6.5e-05ms for each log statment with thread id.
-9e-05ms for each log statment with thread id and timestamp.
-8.5e-05ms for each log statment with thread id, timestamp and position.
-
-### single-threaded file logger test ###
-0.00115ms for each log statment.
-0.00164ms for each log statment with thread id.
-0.002055ms for each log statment with thread id and timestamp.
-0.00229ms for each log statment with thread id, timestamp and position.
-
-### multi-threaded file logger test ###
-0.00117ms for each log statment.
-0.00153ms for each log statment with thread id.
-0.00218ms for each log statment with thread id and timestamp.
-0.00298ms for each log statment with thread id, timestamp and position.
 ```
 ## What makes this library comfortable?
 
