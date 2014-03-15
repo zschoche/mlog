@@ -14,6 +14,7 @@
 #endif
 
 #include <sstream>
+#include <cstring>
 
 namespace mlog {
 
