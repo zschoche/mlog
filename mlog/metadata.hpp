@@ -8,7 +8,6 @@
 #ifndef __METADATA_HPP__
 #define __METADATA_HPP__
 
-#include <string>
 #if defined(_GLIBCXX_HAS_GTHREADS) || defined(__clang__) ||                    \
     (defined(_MSC_VER) && (_MSC_VER >= 1700))
 #include <thread>
@@ -26,12 +25,7 @@ using boost::thread;
 }
 #define THREAD_GET_ID() boost::this_thread::get_id()
 #endif
-#include <chrono>
-#include <cstdlib>
-#include "mlog.hpp"
 
-#include <sstream>
-#include <cstdio>
 
 enum mlog_level {
 	trace,
@@ -45,14 +39,7 @@ enum mlog_level {
 namespace mlog {
 	
 	
-template <typename T> std::string thread_id_to_string(T &&thread_id) {
-	std::stringstream ss;
-	ss << thread_id;
-	return ss.str();
-}
 
-// This should not be cleaned up https://github.com/zschoche/mlog/issues/11
-extern mlog_manager *manager;
 
 template <typename T> inline std::string level_to_string(T &&level) {
 	if (level == mlog_level::trace)
@@ -100,32 +87,12 @@ struct log_metadata {
 
 	log_metadata() : level(info) {}
 
-	static inline std::chrono::time_point<clocks> get_time() {
-		if (mlog::manager->use_time())
-			return clocks::now();
-		else
-			return std::chrono::time_point<clocks>();
-	}
+	static inline std::chrono::time_point<clocks> get_time(); 
+	static inline std::thread::id get_thread_id();
 
-	static inline std::thread::id get_thread_id() {
-		if (manager->use_thread_id()) {
-			return THREAD_GET_ID();
-		} else
-			return std::thread::id();
-	}
-
-	log_metadata(mlog_level &&lvl)
-	    : level(std::move(lvl)), time(get_time()),
-	      thread_id(get_thread_id()) {}
-
-	log_metadata(mlog_level &&lvl, log_position &&_position)
-	    : level(std::move(lvl)), time(get_time()),
-	      thread_id(get_thread_id()), position(_position) {}
-
-	log_metadata(mlog_level &&lvl, const log_position &_position)
-	    : level(std::move(lvl)), time(get_time()),
-	      thread_id(get_thread_id()), position(std::move(_position)) {}
-
+	log_metadata(mlog_level &&lvl);
+	log_metadata(mlog_level &&lvl, log_position &&_position);
+	log_metadata(mlog_level &&lvl, const log_position &_position);
 	std::string to_string(const std::string &end_string = std::string(),
 			      bool end_line = false) const;
 

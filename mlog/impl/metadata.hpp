@@ -13,10 +13,47 @@
 #define snprintf _snprintf_s
 #endif
 
+#include <string>
 #include <sstream>
 #include <cstring>
+#include <chrono>
+#include <cstdlib>
 
 namespace mlog {
+
+	template <typename T> std::string thread_id_to_string(T &&thread_id) {
+	std::stringstream ss;
+	ss << thread_id;
+	return ss.str();
+}
+
+	std::chrono::time_point<log_metadata::clocks> log_metadata::get_time() {
+		if (mlog::manager->use_time())
+			return clocks::now();
+		else
+			return std::chrono::time_point<log_metadata::clocks>();
+	}
+
+	std::thread::id log_metadata::get_thread_id() {
+		if (manager->use_thread_id()) {
+			return THREAD_GET_ID();
+		} else
+			return std::thread::id();
+	}
+
+
+log_metadata::log_metadata(mlog_level &&lvl)
+	    : level(std::move(lvl)), time(get_time()),
+	      thread_id(get_thread_id()) {}
+
+log_metadata::log_metadata(mlog_level &&lvl, log_position &&_position)
+	    : level(std::move(lvl)), time(get_time()),
+	      thread_id(get_thread_id()), position(_position) {}
+
+log_metadata::log_metadata(mlog_level &&lvl, const log_position &_position)
+	    : level(std::move(lvl)), time(get_time()),
+	      thread_id(get_thread_id()), position(std::move(_position)) {}
+
 
 
 std::string log_metadata::to_string(const std::string &end_string,
