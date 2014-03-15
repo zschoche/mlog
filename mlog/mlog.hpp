@@ -29,12 +29,11 @@ unsigned int pseudo_random_number(unsigned int max = 99);
 #define MLOG_TRACE(x1)                                                         \
 	if (::mlog::manager->use_position()) {                                 \
 		::mlog::manager->log()->write(                                 \
-		    mlog_level::trace, x1,                                      \
+		    mlog_level::trace, x1,                                     \
 		    ::mlog::log_position(__FILE__, __LINE__));                 \
 	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::trace, x1);           \
+		::mlog::manager->log()->write(mlog_level::trace, x1);          \
 	}
-
 
 #else
 #define MLOG_TRACE(x1)
@@ -44,10 +43,10 @@ unsigned int pseudo_random_number(unsigned int max = 99);
 #define MLOG_DEBUG(x1)                                                         \
 	if (::mlog::manager->use_position()) {                                 \
 		::mlog::manager->log()->write(                                 \
-		    mlog_level::debug, x1,                                      \
+		    mlog_level::debug, x1,                                     \
 		    ::mlog::log_position(__FILE__, __LINE__));                 \
 	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::debug, x1);           \
+		::mlog::manager->log()->write(mlog_level::debug, x1);          \
 	}
 
 #else
@@ -66,31 +65,29 @@ unsigned int pseudo_random_number(unsigned int max = 99);
 #define MLOG_WARNING(x1)                                                       \
 	if (::mlog::manager->use_position()) {                                 \
 		::mlog::manager->log()->write(                                 \
-		    mlog_level::warning, x1,                                      \
+		    mlog_level::warning, x1,                                   \
 		    ::mlog::log_position(__FILE__, __LINE__));                 \
 	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::warning, x1);           \
+		::mlog::manager->log()->write(mlog_level::warning, x1);        \
 	}
 
 #define MLOG_ERROR(x1)                                                         \
 	if (::mlog::manager->use_position()) {                                 \
 		::mlog::manager->log()->write(                                 \
-		    mlog_level::error, x1,                                      \
+		    mlog_level::error, x1,                                     \
 		    ::mlog::log_position(__FILE__, __LINE__));                 \
 	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::error, x1);           \
+		::mlog::manager->log()->write(mlog_level::error, x1);          \
 	}
-
 
 #define MLOG_FATAL(x1)                                                         \
 	if (::mlog::manager->use_position()) {                                 \
 		::mlog::manager->log()->write(                                 \
-		    mlog_level::fatal, x1,                                      \
+		    mlog_level::fatal, x1,                                     \
 		    ::mlog::log_position(__FILE__, __LINE__));                 \
 	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::fatal, x1);           \
+		::mlog::manager->log()->write(mlog_level::fatal, x1);          \
 	}
-
 
 #endif /* MLOG_HPP_ */
 
