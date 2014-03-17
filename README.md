@@ -4,16 +4,13 @@ Comfortable lightweight C++ logging library -- cross-platform, C++11.
 
 ## Prolog
 
-Building this library first came to my mind when I was working with first version of Boost.Log and experienced some problems with it.
+Boost.Log is a great library (especially v2.0 which was not ready at the beginning of mlog), but one day when I started building a sandboxed app for Apple's OSX 10.8, Boost.Log gave me a headache.
 
-Don't get me wrong Boost.Log is a great library(especially v2.0 which was not ready at the beginning of mlog), but one day when I started building a sandboxed app for Apple's OSX 10.8, Boost.Log gave me a headache.
+I decided to start a lightweight logging library. The goal is to have a library which is as comfortable as possible and with an as low as possible logging performance overhead.
 
-I decided to start a lightweight logging library. The goal is to build a library which is as comfortable as possible and which has as few logging overhead as possible.
+## What makes this library lightweight and comfortable?
 
-## What makes this library lightweight?
-
-The idea is that you are able to make heavily use of log statements during development and beta phases but after words to can build a release of your program with a different set of preprocessor flags to remove all log statements of determining log levels.  
-Removing means that there is zero overhead. Furthermore, nothing of the disabled log statements will be compiled into the binary.  
+During development or beta phases, you'll often want to make heavy use of log statements but you'll want to build a release-version of your app and remove all log statements of specific log levels used in development, which means that there is zero performance overhead for those statements. You can do this easily with a different set of preprocessor flags to disable certain log-levels. No instructions of the disabled log statements will even be compiled into the binary.  
 
 ## What makes this library comfortable?
 
@@ -38,7 +35,7 @@ The follow macro functions accept `char*`, `std::string` and `boost::format`:
 
 __Example:__ `MLOG_INFO("how to log");` and `MLOG_INFO(boost::format("how to log with format: %1%.") % 42);`
 
-The trace and debug log statments only work if __MLOGDEBUG__ and __MLOGTRACE__ are defined as a preprocessor flag. If this is not the case the debug and trace statments will be ignored completely. These statements won't affect the performance of your program any more.
+The trace and debug log statments only work if __MLOGDEBUG__ and __MLOGTRACE__ are defined as a preprocessor flag. If this is not the case the debug and trace statments will be ignored completely, and these statements won't affect the performance of your program.
 
 
 
@@ -112,7 +109,7 @@ memory tests:
 ## Building with CMake
 
 To build the library and with CMake, you will need to
-have CMake version 2.6 or higher installed appropriately in your
+have CMake version 2.6 or higher installed in your
 system.
 
     $ cmake --version
@@ -124,7 +121,7 @@ configure and generate the Makefiles.
     $ cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
 
 Once CMake is done with generating the Makefiles and configuring the project,
-you can now build the library.
+you can build the library.
 
     $ make
 
@@ -148,14 +145,14 @@ MLOG_TRACE("Write this into log.txt");
 This library is shipped with the followed logger types.
 
 ### mlog::standard_logger
-This logger is writing to the 'stdout'. There is also a thread-safe version of it `mlog::standard_logger_thread_safe`.
+This logger is writing to the 'stdout'. There is also a thread-safe version of it: `mlog::standard_logger_thread_safe`.
 
 ### mlog::file_logger
-This logger is writing to a file. There is also a thread-safe version of it `mlog::file_logger_thread_safe`.
+This logger is writing to a file. There is also a thread-safe version of it: `mlog::file_logger_thread_safe`.
 
 ### mlog::memory_logger<X>
-This logger is writing into the memory and keeps the last X log statments. It is already thread-safe and the fastest one in this library. Go with the memory logger if your code is hot.
-There are some pre defined memory loggers:
+This logger is writing into the memory and keeps the last X log statments, which is thread-safe and the fastest one in this library. Go with the memory logger if your code is on a hot code path (or otherwise performance critical).
+There are some pre-defined memory loggers:
 * mlog::memory_logger_normal (holds the last 4096 log entries)
 * mlog::memory_logger_big (holds the last 65535 log entries)
 
@@ -179,7 +176,7 @@ try {
 ```
 
 ### mlog::syslog_logger
-This logger is only on unix available and uses the `syslog()` function.
+This logger is only available on unix systems and uses the `syslog()` function.
 
 ### mlog::thread_safe<L>
 `L` must be a `mlog::logger`. This makes `L` thread-safe.<br>
@@ -216,7 +213,7 @@ logfile.flush();
 
 ### Custom Log Infrastructure
 
-It is possible to create your own logger class if you want to write your log at some place in the network or something like that. You just have to write a custom logger class and inherit from the `logger` tempalte clase by using the [CRTP](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
+It is possible to create your own logger class if you want custom behaviour, like writing a logging file to a network-share. You just have to write a custom logger class and inherit from the `logger` template class by using the [CRTP](https://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 
 __Example:__
 ```c++
