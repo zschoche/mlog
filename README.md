@@ -1,62 +1,20 @@
 # mlog [![Build Status](https://travis-ci.org/zschoche/mlog.png?branch=master)](https://travis-ci.org/zschoche/mlog)
 
-Comfortable lightweight C++ logging library -- header-only, cross-platform, C++11. 
+Comfortable lightweight C++ logging library -- cross-platform, C++11. 
 
 ## Prolog
 
-Building this library first came to my mind when I was working with Boost.Log and experienced some problems with it.
+Building this library first came to my mind when I was working with first version of Boost.Log and experienced some problems with it.
 
-Don't get me wrong Boost.Log is a great library, but one day when I started building a sandboxed app for Apple's OSX 10.8, Boost.Log gave me a headache.
+Don't get me wrong Boost.Log is a great library(especially v2.0 which was not ready at the beginning of mlog), but one day when I started building a sandboxed app for Apple's OSX 10.8, Boost.Log gave me a headache.
 
-I thought a bit about logging in general and decided to create a lightweight logging library. My goal was to build a library which is as comfortable as possible and which has as few logging overhead as possible.
+I decided to start a lightweight logging library. The goal is to build a library which is as comfortable as possible and which has as few logging overhead as possible.
 
 ## What makes this library lightweight?
 
- - The preprocessor flag `MLOG_NO_LIB` make this library header-only.
+The idea is that you are able to make heavily use of log statements during development and beta phases but after words to can build a release of your program with a different set of preprocessor flags to remove all log statements of determining log levels.  
+Removing means that there is zero overhead. Furthermore, nothing of the disabled log statements will be compiled into the binary.  
 
- - Here are the speed test results on my MacBook Air (1,3 GHz Intel Core i5, 8GB RAM, SSD):
-```
-### mlog benchmark ###
-
-compare with boost.log on stdout :
-	boost.log:	0.004365ms
-	mlog:		0.004465ms
-compare with boost.log on tests:
-	boost.log:	0.000945ms
-	mlog:		0.000775ms
-frontend tests:
-	default settings =>	0.00018ms
-	added thread id =>	0.000415ms
-	added time =>		0.00074ms
-	added position time =>	0.00094ms
-cout tests:
-	mlog::standard_logger => 0.002205ms
-	mlog::thread_safe<mlog::standard_logger> => 0.00225ms
-	mlog::async_logger<mlog::standard_logger> => 0.000125ms
-		with thread id:		+0.00079ms
-		with time:		+0.001215ms
-		with code position:	+0.001585ms
-file tests:
-	mlog::file_logger => 0.00104ms
-	mlog::thread_safe<mlog::file_logger> => 0.00103ms
-	mlog::async_logger<mlog::file_logger> => 0.00012ms
-		with thread id:		-0.000175ms
-		with time:		-0.00051ms
-		with code position:	-0.00065ms
-syslog tests:
-	mlog::syslog_logger => 0.01322ms
-	mlog::thread_safe<mlog::syslog_logger> => 0.002255ms
-	mlog::async_logger<mlog::syslog_logger> => 0.000165ms
-		with thread id:		-0.01074ms
-		with time:		-0.01064ms
-		with code position:	-0.010675ms
-memory tests:
-	mlog::memory_logger => 2e-05ms
-		with thread id:		0ms
-		with time:		+2.5e-05ms
-		with code position:	0ms
-
-```
 ## What makes this library comfortable?
 
 Basically you just have to include the __mlog/mlog.hpp__ and use one of the logging macro functions.
@@ -78,9 +36,62 @@ The follow macro functions accept `char*`, `std::string` and `boost::format`:
     MLOG_ERROR()
     MLOG_FATAL()
 
-__Example:__ `MLOG_INFO("how to log");` and `MLOG_INFO(boost::format("how to log with format: %1%.") % 23);`
+__Example:__ `MLOG_INFO("how to log");` and `MLOG_INFO(boost::format("how to log with format: %1%.") % 42);`
 
 The trace and debug log statments only work if __MLOGDEBUG__ and __MLOGTRACE__ are defined as a preprocessor flag. If this is not the case the debug and trace statments will be ignored completely. These statements won't affect the performance of your program any more.
+
+
+
+## Benchmark
+Here are the benchmark results on my MacBook Air (1,3 GHz Intel Core i5, 8GB RAM, SSD):
+```
+### mlog benchmark ###
+
+compare with boost.log on stdout :
+	boost.log:	0.004365ms
+	mlog:		0.004465ms
+	
+compare with boost.log on tests:
+	boost.log:	0.000945ms
+	mlog:		0.000775ms
+	
+frontend tests:
+	default settings =>	0.00018ms
+	added thread id =>	0.000415ms
+	added time =>		0.00074ms
+	added position time =>	0.00094ms
+	
+cout tests:
+	mlog::standard_logger => 0.002205ms
+	mlog::thread_safe<mlog::standard_logger> => 0.00225ms
+	mlog::async_logger<mlog::standard_logger> => 0.000125ms
+		with thread id:		+0.00079ms
+		with time:		+0.001215ms
+		with code position:	+0.001585ms
+		
+file tests:
+	mlog::file_logger => 0.00104ms
+	mlog::thread_safe<mlog::file_logger> => 0.00103ms
+	mlog::async_logger<mlog::file_logger> => 0.00012ms
+		with thread id:		-0.000175ms
+		with time:		-0.00051ms
+		with code position:	-0.00065ms
+		
+syslog tests:
+	mlog::syslog_logger => 0.01322ms
+	mlog::thread_safe<mlog::syslog_logger> => 0.002255ms
+	mlog::async_logger<mlog::syslog_logger> => 0.000165ms
+		with thread id:		-0.01074ms
+		with time:		-0.01064ms
+		with code position:	-0.010675ms
+		
+memory tests:
+	mlog::memory_logger => 2e-05ms
+		with thread id:		0ms
+		with time:		+2.5e-05ms
+		with code position:	0ms
+
+```
 
 ## Dependences
 
@@ -95,6 +106,7 @@ The trace and debug log statments only work if __MLOGDEBUG__ and __MLOGTRACE__ a
  * test suite
  	- [Boost.Regex](www.boost.org/libs/regex/)
 	- [Boost Test Library](www.boost.org/libs/test/)
+	- [Boost.Log](http://www.boost.org/libs/log)
  
 
 ## Building with CMake
@@ -119,7 +131,7 @@ you can now build the library.
 ## Log Destination
 
 The `mlog::manager` is pointing to the the current log destination.
-The standard destination is a `mlog::standard_logger`. use `mlog::manager->set_log(...)` to set your own log destination.
+The standard destination is a `mlog::standard_logger`. Use `mlog::manager->set_log(...)` to set log destination.
 
 Example:
 ```c++
@@ -133,42 +145,74 @@ mlog::manager->set_log(logfile);
 MLOG_TRACE("Write this into log.txt");
 ```
 
-This library is already shipped with the followed logger types:
+This library is shipped with the followed logger types.
 
-<table>
-  <tr>
-    <th>Logger Name</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td>mlog::standard_logger</td>
-    <td>Is logging into std::cout</td>
-  </tr>
-  <tr>
-    <td>mlog::standard_logger_thread_safe</td>
-    <td>Is logging thread safe into std::cout</td>
-  </tr>
-  <tr>
-    <td>mlog::file_logger</td>
-    <td>Is logging into a file</td>
-  </tr> 
-  <tr>
-    <td>mlog::file_logger_thread_safe</td>
-    <td>Is logging thread safe into a file</td>
-  </tr>
-  <tr>
-    <td>mlog::memory_logger_normal</td>
-    <td>Is logging thread safe into the memory<br>(holds the last 4096 log entries)</td>
-  </tr>
-  <tr>
-    <td>mlog::memory_logger_big</td>
-    <td>Is logging thread safe into the memory<br>(holds the last 65535 log entries)</td>
-  </tr>
-  <tr>
-    <td>mlog::syslog_logger</td>
-    <td>It's using the syslog() <br>(unix only)</td>
-  </tr>
-</table>
+### mlog::standard_logger
+This logger is writing to the 'stdout'. There is also a thread-safe version of it `mlog::standard_logger_thread_safe`.
+
+### mlog::file_logger
+This logger is writing to a file. There is also a thread-safe version of it `mlog::file_logger_thread_safe`.
+
+### mlog::memory_logger<X>
+This logger is writing into the memory and keeps the last X log statments. It is already thread-safe and the fastest one in this library. Go with the memory logger if your code is hot.
+There are some pre defined memory loggers:
+* mlog::memory_logger_normal (holds the last 4096 log entries)
+* mlog::memory_logger_big (holds the last 65535 log entries)
+
+The Idea is to print the log only in a case of an error.
+
+__Example:__
+```c++
+#include <mlog/mlog.hpp>
+#include <mlog/memory_logger.hpp>
+    
+//...
+    
+mlog::memory_logger_normal log;
+mlog::manager->set_log(log);
+try {
+	MLOG_TRACE("Write this into the memory.");
+	//...
+} catch(...) {
+	log.output(std::cout); // something goes wrong. Lets have a look into the log.
+}
+```
+
+### mlog::syslog_logger
+This logger is only on unix available and uses the `syslog()` function.
+
+### mlog::thread_safe<L>
+`L` must be a `mlog::logger`. This makes `L` thread-safe.<br>
+
+__Example:__
+```c++
+#include <mlog/mlog.hpp>
+#include <mlog/file_logger.hpp>
+#include <mlog/thread_safe.hpp>
+    
+//...
+    
+mlog::thread_safe<mlog::file_logger> logfile("log.txt");
+mlog::manager->set_log(logfile);
+MLOG_TRACE("Write this into log.txt");
+```
+
+### mlog::async_logger<L>
+`L` must be a `mlog::logger`. This logger is writing asynchron into `L`.<br>
+__Note:__ That makes no sense for some loggers.(e.g. `mlog::memorylogger<>`)
+__Example:__
+```c++
+#include <mlog/mlog.hpp>
+#include <mlog/file_logger.hpp>
+#include <mlog/async_logger.hpp>
+    
+//...
+    
+mlog::async_logger<mlog::file_logger> logfile("log.txt");
+mlog::manager->set_log(logfile);
+MLOG_TRACE("Write this into log.txt");
+logfile.flush();
+```
 
 ### Custom Log Infrastructure
 
@@ -180,7 +224,9 @@ struct custom_logger : mlog::logger<custom_logger>
 {
 	template<typename M, typename T>
 	void write_to_log(M&& metadata, T&& log_text) {
-		// write into your log.	
+		// write into your log:
+		// std::string str = metadata.to_string(std::forward<T>(log_text), false);
+		// ...
 	}
 };
 
@@ -194,6 +240,10 @@ int main() {
 	
 	return 0;
 }
-
-
 ```
+
+## The Manager
+coming soon...
+
+## Filtering
+coming soon...
