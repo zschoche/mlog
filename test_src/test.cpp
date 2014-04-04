@@ -39,7 +39,9 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
 	mlog::memory_logger<2> log;
 	mlog::manager->set_log(&log);
 	MLOG_INFO("1");
+	BOOST_CHECK_EQUAL(boost::regex_match(log.to_string(), boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: 1\\n") ), true);
 	MLOG_INFO("2");
+	BOOST_CHECK_EQUAL(boost::regex_match(log.to_string(), boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: 1\\n\\[[0-9][0-9]\\]\\{info\\}: 2\n") ), true);
 	BOOST_CHECK_EQUAL(log[0].text, "1");
 	BOOST_CHECK_EQUAL(log[1].text, "2");
 	BOOST_CHECK_EQUAL(log[2].text, "1"); // overflow

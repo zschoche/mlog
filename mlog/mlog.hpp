@@ -23,71 +23,38 @@ extern mlog_manager *manager;
 
 unsigned int pseudo_random_number(unsigned int max = 99);
 
+
+template<typename T>
+void write_message(mlog_level&& lvl, T&& msg) {
+	if (::mlog::manager->use_position()) {                                 
+		::mlog::manager->log()->write(                               
+		    std::move(lvl), std::forward<T>(msg),                                  
+		    ::mlog::log_position(__FILE__, __LINE__));            
+	} else {                                                         
+		::mlog::manager->log()->write(std::move(lvl), std::forward<T>(msg));   
+	}
+}
+
+
+
 }; /* namespace mlog */
 
 #ifdef MLOGTRACE
-#define MLOG_TRACE(x1)                                                         \
-	if (::mlog::manager->use_position()) {                                 \
-		::mlog::manager->log()->write(                                 \
-		    mlog_level::trace, x1,                                     \
-		    ::mlog::log_position(__FILE__, __LINE__));                 \
-	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::trace, x1);          \
-	}
-
+#define MLOG_TRACE(x1) mlog::write_message(mlog_level::trace, x1)
 #else
 #define MLOG_TRACE(x1)
 #endif
 
 #ifdef MLOGDEBUG
-#define MLOG_DEBUG(x1)                                                         \
-	if (::mlog::manager->use_position()) {                                 \
-		::mlog::manager->log()->write(                                 \
-		    mlog_level::debug, x1,                                     \
-		    ::mlog::log_position(__FILE__, __LINE__));                 \
-	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::debug, x1);          \
-	}
-
+#define MLOG_DEBUG(x1) mlog::write_message(mlog_level::debug, x1)	
 #else
 #define MLOG_DEBUG(x1)
 #endif
 
-#define MLOG_INFO(x1)                                                          \
-	if (::mlog::manager->use_position()) {                                 \
-		::mlog::manager->log()->write(                                 \
-		    mlog_level::info, x1,                                      \
-		    ::mlog::log_position(__FILE__, __LINE__));                 \
-	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::info, x1);           \
-	}
-
-#define MLOG_WARNING(x1)                                                       \
-	if (::mlog::manager->use_position()) {                                 \
-		::mlog::manager->log()->write(                                 \
-		    mlog_level::warning, x1,                                   \
-		    ::mlog::log_position(__FILE__, __LINE__));                 \
-	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::warning, x1);        \
-	}
-
-#define MLOG_ERROR(x1)                                                         \
-	if (::mlog::manager->use_position()) {                                 \
-		::mlog::manager->log()->write(                                 \
-		    mlog_level::error, x1,                                     \
-		    ::mlog::log_position(__FILE__, __LINE__));                 \
-	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::error, x1);          \
-	}
-
-#define MLOG_FATAL(x1)                                                         \
-	if (::mlog::manager->use_position()) {                                 \
-		::mlog::manager->log()->write(                                 \
-		    mlog_level::fatal, x1,                                     \
-		    ::mlog::log_position(__FILE__, __LINE__));                 \
-	} else {                                                               \
-		::mlog::manager->log()->write(mlog_level::fatal, x1);          \
-	}
+#define MLOG_INFO(x1) mlog::write_message(mlog_level::info, x1)
+#define MLOG_WARNING(x1) mlog::write_message(mlog_level::warning, x1)
+#define MLOG_ERROR(x1) mlog::write_message(mlog_level::error, x1)
+#define MLOG_FATAL(x1) mlog::write_message(mlog_level::fatal, x1)
 
 #endif /* MLOG_HPP_ */
 

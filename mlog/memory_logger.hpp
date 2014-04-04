@@ -39,7 +39,7 @@ template <unsigned long N> class memory_logger : public logger<memory_logger<N> 
 		if ((N - 1) != mask)
 			throw std::invalid_argument("N is not valid. Try 4, 8, "
 						    "16, 32 ... 1024, 2048, "
-						    "4096... and so on.");
+						    "4096..");
 #else
 		constexpr unsigned long bits = mlog::log2(N - 1) + 1;
 		constexpr unsigned long mask = ((1 << bits) - 1);
@@ -83,14 +83,18 @@ template <unsigned long N> class memory_logger : public logger<memory_logger<N> 
 		std::size_t offset = m_offset & (N - 1);
 
 		for (unsigned long index = offset; index < N; index++)
-			m_log_entrys[index].metadata.output(stream)
-			    << m_log_entrys[index].text << std::endl;
+			if(!m_log_entrys[index].text.empty()) stream << m_log_entrys[index].metadata.to_string(m_log_entrys[index].text, true);
 
 		for (unsigned long index = 0; index < offset; index++)
-			m_log_entrys[index].metadata.output(stream)
-			    << m_log_entrys[index].text << std::endl;
-		
+			if(!m_log_entrys[index].text.empty()) stream << m_log_entrys[index].metadata.to_string(m_log_entrys[index].text, true);
 		return stream;
+	}
+
+	std::string to_string() {
+		std::stringstream ss;
+		output(ss);
+		return ss.str();
+
 	}
 
 	const memory_entry &operator[](std::size_t const &index) const {
@@ -126,10 +130,8 @@ template <unsigned long N> class memory_logger : public logger<memory_logger<N> 
 typedef memory_logger<4096> memory_logger_normal;
 typedef memory_logger<static_cast<unsigned short>(-1)> memory_logger_big;
 
-typedef memory_logger_normal memory_logger_normal_thread_safe; // memory_logger
 							       // is already
 							       // thread-safe.
-typedef memory_logger_big memory_logger_big_thread_safe; // memory_logger is
 							 // already thread-safe.
 
 #ifdef _MSC_VER
