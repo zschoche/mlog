@@ -19,7 +19,6 @@ mlog_manager::mlog_manager()
     : m_log(new standard_logger()), m_is_valid(false),
       m_session(mlog::pseudo_random_number()), m_use_time(false),
       m_use_thread_id(false), m_use_position(false) { 
-      	std::cout << m_session << std::endl;
       }
 
 void mlog_manager::set_log(logger_base *log) {

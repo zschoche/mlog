@@ -8,7 +8,7 @@
 
 #include "logger.hpp"
 #include <string>
-#include <boost/iostreams/device/file.hpp>
+#include <fstream>
 #include <boost/filesystem.hpp>
 #include "thread_safe.hpp"
 
