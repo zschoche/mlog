@@ -3,7 +3,8 @@
 *	Author: Philipp Zschoche
 *
 */
-#ifndef __FILE_LOGGER_HPP__
+#ifndef __ANDROID__
+#ifndef __FILE_LOGGER_HPP__  
 #define __FILE_LOGGER_HPP__
 
 #include "logger.hpp"
@@ -104,3 +105,4 @@ typedef thread_safe<file_logger> file_logger_thread_safe;
 #ifdef MLOG_NO_LIB
 #include "impl/file_logger.hpp"
 #endif
+#endif /* __ANDROID__ */

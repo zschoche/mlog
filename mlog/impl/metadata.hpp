@@ -55,7 +55,6 @@ log_metadata::log_metadata(mlog_level &&lvl, const log_position &_position)
 	      thread_id(get_thread_id()), position(std::move(_position)) {}
 
 
-
 std::string log_metadata::to_string(const std::string &end_string,
 				    bool end_line) const {
 
@@ -92,8 +91,7 @@ std::string log_metadata::to_string(const std::string &end_string,
 				// 24-0x7fff72ca8180]{warning}:
 				snprintf(
 				    buffer, max_size,
-				    "%04i-%02i-%02i %02i:%02i:%02i.%llu "
-				    "[%s:%li %02i-%s]{%s}: ",
+				    "%04i-%02i-%02i %02i:%02i:%02i.%llu [%s:%i %02i-%s]{%s}: ",
 				    1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
 				    tm->tm_hour, tm->tm_min, tm->tm_sec, ms,
 				    position.filename.c_str(),
@@ -115,7 +113,7 @@ std::string log_metadata::to_string(const std::string &end_string,
 			if (position.has_value())
 				snprintf(
 				    buffer, max_size,
-				    "%04i-%02i-%02i %02i:%02i:%02i.%llu[%s:%li "
+				    "%04i-%02i-%02i %02i:%02i:%02i.%llu[%s:%i "
 				    "%02i]{%s}: ",
 				    1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
 				    tm->tm_hour, tm->tm_min, tm->tm_sec, ms,
@@ -134,7 +132,7 @@ std::string log_metadata::to_string(const std::string &end_string,
 	} else if (manager->use_thread_id()) //[24-0x7fff72ca8180]{warning}:
 	{
 		if (position.has_value())
-			snprintf(buffer, max_size, "[%s:%li %02i-%s]{%s}: ",
+			snprintf(buffer, max_size, "[%s:%i %02i-%s]{%s}: ",
 				 position.filename.c_str(),
 				 position.line_number, manager->session(),
 				 thread_id_to_string(thread_id).c_str(),
@@ -145,7 +143,7 @@ std::string log_metadata::to_string(const std::string &end_string,
 				 thread_id_to_string(thread_id).c_str(),
 				 level_to_string(level).c_str());
 	} else if (position.has_value()) {
-		snprintf(buffer, max_size, "[%s:%li %02i]{%s}: ",
+		snprintf(buffer, max_size, "[%s:%i %02i]{%s}: ",
 			 position.filename.c_str(), position.line_number,
 			 manager->session(), level_to_string(level).c_str());
 	} else //[24]{warning}:

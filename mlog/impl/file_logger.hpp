@@ -1,10 +1,26 @@
 
+#ifndef __ANDROID__
 #ifndef __FILE_LOGGER_IPP__
 #define __FILE_LOGGER_IPP__
 
 #include "../file_logger.hpp"
 #include <sstream>
 #include <string>
+
+
+#ifdef __ANDROID__
+
+namespace std {
+	template<typename T>
+	std::string to_string(T&& item) {
+		std::stringstream ss;
+		ss << item;
+		return ss.str();
+	}
+
+}
+
+#endif
 
 namespace mlog {
 
@@ -61,3 +77,4 @@ std::string file_logger::get_next_logfile(const std::string &directory,
 } /* mlog */
 
 #endif
+#endif /* __ANDROID__ */
