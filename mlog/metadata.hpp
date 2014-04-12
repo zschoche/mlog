@@ -59,12 +59,42 @@ template <typename T> inline std::string level_to_string(T &&level) {
 struct log_position {
 	log_position() : filename(), line_number(0) {}
 
-	log_position(std::string _filename, std::size_t _line_number)
-	    : filename(std::move(_filename)),
+	log_position(const char* _file, std::size_t _line_number)
+	    : filename(cut_filename(_file)),
 	      line_number(std::move(_line_number)) {}
 
 	std::string filename;
 	int line_number;
+
+	inline static const char* cut_filename(const char* file) {
+		const char* result = file;
+		const char* ptr = file;
+		while(*ptr != '\0') {
+			if(*ptr == separator()) {
+				ptr++;
+				result = ptr;
+			} else {
+				ptr++;
+			}
+		}
+		if(ptr == result) {
+			return file;
+		} else { 
+			if (ptr - result > 256) {
+				return ptr - 256;
+			} else {	
+				return result;
+			}
+		}
+	}
+
+	constexpr static char separator() {
+#if defined(_WIN32_WCE) || defined(_WIN16) || defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
+		return '\\';
+#else
+		return '/';
+#endif
+	}
 
 	inline bool has_value() const { return line_number != 0; }
 };
