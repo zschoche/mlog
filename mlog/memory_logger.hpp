@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <boost/detail/lightweight_mutex.hpp>
 #include <cmath>
+#include <sstream>
 
 namespace mlog {
 
@@ -93,6 +94,7 @@ template <unsigned long N> class memory_logger : public logger<memory_logger<N> 
 	std::string to_string() {
 		std::stringstream ss;
 		output(ss);
+		std::string result = ss.str();
 		return ss.str();
 
 	}

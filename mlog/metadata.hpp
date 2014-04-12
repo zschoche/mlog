@@ -64,7 +64,7 @@ struct log_position {
 	      line_number(std::move(_line_number)) {}
 
 	std::string filename;
-	std::size_t line_number;
+	int line_number;
 
 	inline bool has_value() const { return line_number != 0; }
 };
