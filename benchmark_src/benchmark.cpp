@@ -59,7 +59,7 @@ double single_thread_test_boost() {
 struct empty_logger : mlog::logger<empty_logger> {
 	template <typename M, typename T>
 	void write_to_log(M &&metadata, T &&log_text) {
-		metadata.to_string(log_text);
+		//metadata.to_string(log_text);
 	}
 };
 
@@ -286,7 +286,7 @@ void compare_with_boost() {
 	std::remove("boost.log");
 	std::remove("mlog.log");
 
-	std::cout << "compare with boost.log on tests:" << std::endl;
+	std::cout << "compare with boost.log on files:" << std::endl;
 	std::cout << "\tboost.log:\t" << b << "ms" << std::endl;
 	std::cout << "\tmlog:\t\t" << m << "ms" << std::endl;
 }
