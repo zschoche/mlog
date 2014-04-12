@@ -51,10 +51,29 @@ void write_message(mlog_level&& lvl, T&& msg) {
 #define MLOG_DEBUG(x1)
 #endif
 
+#ifdef DISABLE_MLOG_INFO
+#define MLOG_INFO(x1)
+#else
 #define MLOG_INFO(x1) mlog::write_message(mlog_level::info, x1)
+#endif
+
+#ifdef DISABLE_MLOG_WARNING
+#define MLOG_WARNING(x1) 
+#else
 #define MLOG_WARNING(x1) mlog::write_message(mlog_level::warning, x1)
+#endif
+
+#ifdef DISABLE_MLOG_ERROR
+#define MLOG_ERROR(x1) 
+#else
 #define MLOG_ERROR(x1) mlog::write_message(mlog_level::error, x1)
+#endif
+
+#ifdef DISABLE_MLOG_FATAL
+#define MLOG_FATAL(x1) 
+#else
 #define MLOG_FATAL(x1) mlog::write_message(mlog_level::fatal, x1)
+#endif
 
 #endif /* MLOG_HPP_ */
 

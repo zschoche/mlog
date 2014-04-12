@@ -69,6 +69,7 @@ std::string log_metadata::to_string(const std::string &end_string,
 
 		std::time_t timet = clocks::to_time_t(time);
 
+
 		unsigned long long ms =
 		    std::chrono::duration_cast<std::chrono::nanoseconds>(
 			time.time_since_epoch()).count() -
