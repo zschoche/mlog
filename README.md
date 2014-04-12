@@ -48,7 +48,7 @@ compare with boost.log on stdout :
 	boost.log:	0.004365ms
 	mlog:		0.004465ms
 	
-compare with boost.log on tests:
+compare with boost.log on files:
 	boost.log:	0.000945ms
 	mlog:		0.000775ms
 	
