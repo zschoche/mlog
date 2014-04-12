@@ -29,52 +29,52 @@ struct logger_base {
 
 	inline void write(mlog_level &&level, boost::format &&format,
 			  log_position &&pos) {
-		log_metadata metadata(
+		const log_metadata metadata(
 		    std::move(level), std::move(pos));
 		write_to_log(std::move(metadata), boost::str(format));
 	}
 
 	inline void write(mlog_level &&level, const boost::format &format,
 			  log_position &&pos) {
-		log_metadata metadata(
+		const log_metadata metadata(
 		    std::move(level),		    std::move(pos));
 		write_to_log(std::move(metadata), boost::str(format));
 	}
 
 	inline void write(mlog_level &&level, boost::format &&format) {
-		log_metadata metadata(
+		const log_metadata metadata(
 		    std::move(level));
 		write_to_log(std::move(metadata), boost::str(format));
 	}
 
 	inline void write(mlog_level &&level, const boost::format &format) {
-		log_metadata metadata(
+		const log_metadata metadata(
 		    std::move(level));
 		write_to_log(std::move(metadata), boost::str(format));
 	}
 
 	inline void write(mlog_level &&level, std::string &&log_text,
 			  log_position &&pos) {
-		log_metadata metadata(
+		const log_metadata metadata(
 		    std::move(level), std::move(pos));
 		write_to_log(std::move(metadata), std::move(log_text));
 	}
 
 	inline void write(mlog_level &&level, std::string &&log_text) {
-		log_metadata metadata(
+		const log_metadata metadata(
 		    std::move(level));
 		write_to_log(std::move(metadata), std::move(log_text));
 	}
 
 	template <typename T>
 	void write(mlog_level &&level, const std::string &log_text, T &&pos) {
-		log_metadata metadata(
+		const log_metadata metadata(
 		    std::move(level), std::forward<T>(pos));
 		write_to_log(std::move(metadata), std::string(log_text));
 	}
 
 	void write(mlog_level &&level, const std::string &log_text) {
-		log_metadata metadata(
+		const log_metadata metadata(
 		    std::move(level));
 		write_to_log(std::move(metadata), std::string(log_text));
 	}
