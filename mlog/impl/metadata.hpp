@@ -58,21 +58,21 @@ log_metadata::log_metadata(mlog_level &&lvl, const log_position &_position)
 std::string log_metadata::to_string(const std::string &end_string,
 				    bool end_line) const {
 
-	static const std::size_t max_size = 1024;
+	static const std::size_t max_size = 512;
 	std::string result;
-	result.resize(max_size);
+	result.resize(max_size + end_string.size());
 
 	char *buffer = const_cast<char *>(result.c_str());
-
+	int len;
 	if (manager->use_time()) {
 
-		std::time_t timet = clocks::to_time_t(time);
+		const std::time_t timet = clocks::to_time_t(time);
 
 
-		unsigned long long ms =
-		    std::chrono::duration_cast<std::chrono::nanoseconds>(
+		unsigned int ms =
+		    std::chrono::duration_cast<std::chrono::milliseconds>(
 			time.time_since_epoch()).count() -
-		    timet * 1000000000;
+		    timet * 1000000;
 
 		std::tm *tm = std::gmtime(&timet);
 		static int current_hour = -1;
@@ -90,9 +90,9 @@ std::string log_metadata::to_string(const std::string &end_string,
 			if (position.has_value()) // 2012-11-02 15:24:04.345
 						  // [file:line_number
 				// 24-0x7fff72ca8180]{warning}:
-				snprintf(
+				len = snprintf(
 				    buffer, max_size,
-				    "%04i-%02i-%02i %02i:%02i:%02i.%llu [%s:%i %02i-%s]{%s}: ",
+				    "%04i-%02i-%02i %02i:%02i:%02i.%u [%s:%i %02i-%s]{%s}: ",
 				    1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
 				    tm->tm_hour, tm->tm_min, tm->tm_sec, ms,
 				    position.filename.c_str(),
@@ -101,8 +101,8 @@ std::string log_metadata::to_string(const std::string &end_string,
 				    level_to_string(level).c_str());
 			else // 2012-11-02 15:24:04.345
 				// [24-0x7fff72ca8180]{warning}:
-				snprintf(buffer, max_size,
-					 "%04i-%02i-%02i %02i:%02i:%02i.%llu "
+				len = snprintf(buffer, max_size,
+					 "%04i-%02i-%02i %02i:%02i:%02i.%u "
 					 "[%02i-%s]{%s}: ",
 					 1900 + tm->tm_year, tm->tm_mon,
 					 tm->tm_mday, tm->tm_hour, tm->tm_min,
@@ -111,53 +111,56 @@ std::string log_metadata::to_string(const std::string &end_string,
 					 level_to_string(level).c_str());
 		} else // 2012-11-02 15:24:04.345 [24]{warning}:
 		{
-			if (position.has_value())
-				snprintf(
+			if (position.has_value()) {
+				len = snprintf(
 				    buffer, max_size,
-				    "%04i-%02i-%02i %02i:%02i:%02i.%llu[%s:%i "
+				    "%04i-%02i-%02i %02i:%02i:%02i.%u[%s:%i "
 				    "%02i]{%s}: ",
 				    1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
 				    tm->tm_hour, tm->tm_min, tm->tm_sec, ms,
 				    position.filename.c_str(),
 				    position.line_number, manager->session(),
 				    level_to_string(level).c_str());
-			else
-				snprintf(buffer, max_size,
+			} else {
+				len = snprintf(buffer, max_size,
 					 "%04i-%02i-%02i "
-					 "%02i:%02i:%02i.%llu[%02i]{%s}: ",
+					 "%02i:%02i:%02i.%u[%02i]{%s}: ",
 					 1900 + tm->tm_year, tm->tm_mon,
 					 tm->tm_mday, tm->tm_hour, tm->tm_min,
 					 tm->tm_sec, ms, manager->session(),
 					 level_to_string(level).c_str());
+			}
 		}
 	} else if (manager->use_thread_id()) //[24-0x7fff72ca8180]{warning}:
 	{
-		if (position.has_value())
-			snprintf(buffer, max_size, "[%s:%i %02i-%s]{%s}: ",
+		if (position.has_value()) {
+			len = snprintf(buffer, max_size, "[%s:%i %02i-%s]{%s}: ",
 				 position.filename.c_str(),
 				 position.line_number, manager->session(),
 				 thread_id_to_string(thread_id).c_str(),
 				 level_to_string(level).c_str());
-		else
-			snprintf(buffer, max_size, "[%02i-%s]{%s}: ",
+		} else {
+			len = snprintf(buffer, max_size, "[%02i-%s]{%s}: ",
 				 manager->session(),
 				 thread_id_to_string(thread_id).c_str(),
 				 level_to_string(level).c_str());
+		}
 	} else if (position.has_value()) {
-		snprintf(buffer, max_size, "[%s:%i %02i]{%s}: ",
+		len = snprintf(buffer, max_size, "[%s:%i %02i]{%s}: ",
 			 position.filename.c_str(), position.line_number,
 			 manager->session(), level_to_string(level).c_str());
 	} else //[24]{warning}:
 	{
-		snprintf(buffer, max_size, "[%02i]{%s}: ", manager->session(),
+		 len = snprintf(buffer, max_size, "[%02i]{%s}: ", manager->session(),
 			 level_to_string(level).c_str());
 	}
-	std::size_t len = strlen(buffer);
+	
 	if (!end_string.empty()) {
 		memcpy(&buffer[len], end_string.c_str(), end_string.size());
 		len += end_string.size();
 	}
-
+	
+	
 	if (end_line) {
 		result.resize(len + 1);
 		//result[len] = '\r';
