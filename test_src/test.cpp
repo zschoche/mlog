@@ -15,7 +15,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
-
 #ifdef _MSC_VER
 namespace std {
 double log2(double n) {
@@ -25,8 +24,17 @@ double log2(double n) {
 }
 #endif
 
+struct empty_logger : mlog::logger<empty_logger> {
+
+	template <typename M, typename T>
+	void write_to_log(M &&metadata, T &&log_text) {
+		 std::string str = metadata.to_string(std::forward<T>(log_text), false);
+		 str = metadata.to_string(std::forward<T>(log_text), true);
+	}
+};
 
 BOOST_AUTO_TEST_CASE(mlog_empty_test) {}
+
 
 BOOST_AUTO_TEST_CASE(mlog_log2_test) {
 	for (unsigned long i = 1; i < 1024 * 1024; i++)
@@ -35,13 +43,39 @@ BOOST_AUTO_TEST_CASE(mlog_log2_test) {
 	std::cout << "mlog_log2_test passed." << std::endl;
 }
 
+
+BOOST_AUTO_TEST_CASE(mlog_metadata_overdose_test) {
+	std::string file(256,'a');
+	std::string text(1024,'t');
+	BOOST_CHECK_EQUAL(mlog::log_position::cut_filename("test.cpp"), "test.cpp");
+#if defined(_WIN32_WCE) || defined(_WIN16) || defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
+	BOOST_CHECK_EQUAL(mlog::log_position::cut_filename("c:\\temp\\test.cpp"), "test.cpp");
+#else
+	BOOST_CHECK_EQUAL(mlog::log_position::cut_filename("/tmp/test.cpp"), "test.cpp");
+#endif
+	BOOST_CHECK_EQUAL(mlog::log_position::cut_filename(""), "");
+	BOOST_CHECK_EQUAL(mlog::log_position::cut_filename("/"), "/");
+	BOOST_CHECK_EQUAL(mlog::log_position::cut_filename(std::string(256,'a').c_str()), std::string(256,'a').c_str());
+	BOOST_CHECK_EQUAL(mlog::log_position::cut_filename(std::string(257,'a').c_str()), std::string(256,'a').c_str());
+	BOOST_CHECK_EQUAL(mlog::log_position::cut_filename(std::string(512,'a').c_str()), std::string(256,'a').c_str());
+}
+
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
 	mlog::memory_logger<2> log;
 	mlog::manager->set_log(&log);
 	MLOG_INFO("1");
-	BOOST_CHECK_EQUAL(boost::regex_match(log.to_string(), boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: 1\\n") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		log.to_string(),
+		boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: 1\\n")),
+	    true);
 	MLOG_INFO("2");
-	BOOST_CHECK_EQUAL(boost::regex_match(log.to_string(), boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: 1\\n\\[[0-9][0-9]\\]\\{info\\}: 2\n") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		log.to_string(),
+		boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: "
+			     "1\\n\\[[0-9][0-9]\\]\\{info\\}: 2\n")),
+	    true);
 	BOOST_CHECK_EQUAL(log[0].text, "1");
 	BOOST_CHECK_EQUAL(log[1].text, "2");
 	BOOST_CHECK_EQUAL(log[2].text, "1"); // overflow
@@ -59,7 +93,7 @@ BOOST_AUTO_TEST_CASE(mlog_logger_cleanup_test) {
 }
 
 BOOST_AUTO_TEST_CASE(mlog_memory_logger_mt_test) {
-	
+
 	mlog::memory_logger_normal log;
 	mlog::manager->set_log(log);
 	const std::size_t t = 8;
@@ -93,7 +127,7 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_mt_test) {
 }
 
 BOOST_AUTO_TEST_CASE(mlog_async_test) {
-	
+
 	mlog::async_logger<mlog::memory_logger_normal> log;
 	mlog::manager->set_log(log);
 	const std::size_t t = 8;
@@ -143,20 +177,38 @@ BOOST_AUTO_TEST_CASE(mlog_marco_test) {
 
 	std::ifstream file(filename, std::ios_base::in | std::ios_base::binary);
 	BOOST_CHECK_EQUAL(file.is_open(), true);
-	std::string str; 
+	std::string str;
 	std::getline(file, str);
 	std::cout << str << std::endl;
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: info$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: info$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9][0-9]\\]\\{debug\\}: debug$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{debug\\}: debug$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9][0-9]\\]\\{error\\}: error$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{error\\}: error$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9][0-9]\\]\\{fatal\\}: fatal$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{fatal\\}: fatal$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9][0-9]\\]\\{trace\\}: trace$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{trace\\}: trace$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9][0-9]\\]\\{warning\\}: warning$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{warning\\}: warning$")),
+	    true);
 	std::remove(filename.c_str());
 	std::cout << "mlog_marco_test passed." << std::endl;
 }
@@ -170,36 +222,53 @@ BOOST_AUTO_TEST_CASE(mlog_options_test) {
 	mlog::manager->use_thread_id(true);
 	MLOG_INFO("thread_id");
 	mlog::manager->use_thread_id(false);
-	mlog::manager->use_time(true);	
+	mlog::manager->use_time(true);
 	MLOG_INFO("time");
-	mlog::manager->use_time(false);	
+	mlog::manager->use_time(false);
 	mlog::manager->use_position(true);
 	MLOG_INFO("position");
 	mlog::manager->use_thread_id(true);
-	mlog::manager->use_time(true);	
+	mlog::manager->use_time(true);
 	MLOG_INFO("all");
 	mlog::manager->set_default_settings();
 	log.get().flush();
 	std::ifstream file(filename, std::ios_base::in | std::ios_base::binary);
 	BOOST_CHECK_EQUAL(file.is_open(), true);
-	std::string str; 
+	std::string str;
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: none$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: none$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[0-9][0-9]-.*\\]\\{info\\}: thread_id$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str,
+		boost::regex("^\\[[0-9][0-9]-.*\\]\\{info\\}: thread_id$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^.*\\[[0-9][0-9]\\]\\{info\\}: time$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^.*\\[[0-9][0-9]\\]\\{info\\}: time$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^\\[[^:]*:[0-9]* [0-9]*\\]\\{info\\}: position$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex(
+			 "^\\[[^:]*:[0-9]* [0-9]*\\]\\{info\\}: position$")),
+	    true);
 	std::getline(file, str);
-	BOOST_CHECK_EQUAL(boost::regex_match(str, boost::regex("^.*\\[[^:]*:[0-9]* [0-9]*-.*\\]\\{info\\}: all$") ), true);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex(
+			 "^.*\\[[^:]*:[0-9]* [0-9]*-.*\\]\\{info\\}: all$")),
+	    true);
 	std::remove(filename.c_str());
 	std::cout << "mlog_marco_test passed." << std::endl;
 }
 
-
-
-boost::regex stdline("^\\[[0-9].\\]\\{(info|debung|trace|warning|error|fatal)\\}: [0-9]*$");
+boost::regex
+stdline("^\\[[0-9].\\]\\{(info|debung|trace|warning|error|fatal)\\}: [0-9]*$");
 
 BOOST_AUTO_TEST_CASE(mlog_file_logger_test) {
 
@@ -207,7 +276,7 @@ BOOST_AUTO_TEST_CASE(mlog_file_logger_test) {
 	std::remove(filename.c_str());
 	mlog::file_logger_thread_safe log(filename);
 	mlog::manager->set_log(log);
-	for(int i = 0;i < 512; i++) {
+	for (int i = 0; i < 512; i++) {
 		MLOG_INFO(boost::lexical_cast<std::string>(i));
 	}
 
@@ -216,19 +285,16 @@ BOOST_AUTO_TEST_CASE(mlog_file_logger_test) {
 	BOOST_CHECK_EQUAL(file.is_open(), true);
 
 	int i = 0;
-	for (std::string str; std::getline(file, str);i++) {
+	for (std::string str; std::getline(file, str); i++) {
 		int index = str.find_last_of(" ");
-		BOOST_CHECK(index != std::string::npos); 
-		std::string num = str.substr(index+1);
+		BOOST_CHECK(index != std::string::npos);
+		std::string num = str.substr(index + 1);
 		BOOST_CHECK_EQUAL(std::atoi(num.c_str()), i);
-		BOOST_CHECK_EQUAL(boost::regex_match(str,stdline), true);
+		BOOST_CHECK_EQUAL(boost::regex_match(str, stdline), true);
 	}
 	std::remove(filename.c_str());
 	std::cout << "mlog_file_logger_test passed." << std::endl;
 }
-
-
-
 
 BOOST_AUTO_TEST_CASE(mlog_file_logger_mt_test) {
 
@@ -248,7 +314,7 @@ BOOST_AUTO_TEST_CASE(mlog_file_logger_mt_test) {
 
 	for (auto &t : threads)
 		t.join();
-	
+
 	log.get().flush();
 
 	int result[512];
@@ -256,18 +322,16 @@ BOOST_AUTO_TEST_CASE(mlog_file_logger_mt_test) {
 		i = 0;
 	}
 
-	
 	std::ifstream file(filename, std::ios_base::in | std::ios_base::binary);
 	BOOST_CHECK_EQUAL(file.is_open(), true);
-	
+
 	for (std::string str; std::getline(file, str);) {
 		int index = str.find_last_of(" ");
-		BOOST_CHECK(index != std::string::npos); 
-		std::string num = str.substr(index+1);
+		BOOST_CHECK(index != std::string::npos);
+		std::string num = str.substr(index + 1);
 		int n = std::atoi(num.c_str());
 		result[n]++;
-		BOOST_CHECK_EQUAL(boost::regex_match(str,stdline), true);
-		
+		BOOST_CHECK_EQUAL(boost::regex_match(str, stdline), true);
 	}
 
 	for (auto &&i : result) {
@@ -275,7 +339,6 @@ BOOST_AUTO_TEST_CASE(mlog_file_logger_mt_test) {
 	}
 	std::cout << "mlog_file_logger_mt_test passed." << std::endl;
 }
-
 
 BOOST_AUTO_TEST_CASE(multiple_loggers_test) {
 	mlog::multiple_loggers log;
@@ -330,6 +393,21 @@ BOOST_AUTO_TEST_CASE(memory_logger_test_small) {
 	std::cout << "memory_logger_test_small passed." << std::endl;
 }
 
+
+
+BOOST_AUTO_TEST_CASE(mlog_heavy_test) {
+
+	empty_logger log;
+	mlog::manager->set_log(log);
+	std::string str = "heavy";
+	for (int i = 0; i < 16; i++) {
+		str += str;
+		MLOG_INFO(str);
+	}
+	std::cout << "mlog_heavy_test passed." << std::endl;
+}
+
+
 void find_log_messages(std::string &&log, std::vector<std::string> &strs) {
 	std::ifstream file(log, std::ios_base::in | std::ios_base::binary);
 	if (file.is_open()) {
@@ -344,7 +422,6 @@ void find_log_messages(std::string &&log, std::vector<std::string> &strs) {
 }
 
 
-
 #if !defined(TRAVIS) && !defined(_WIN32) &&                                    \
     (defined(__unix__) || defined(__unix) ||                                   \
      (defined(__APPLE__) && defined(__MACH__)))
@@ -352,8 +429,7 @@ BOOST_AUTO_TEST_CASE(mlog_syslog_test) {
 
 	if (std::getenv("TRAVIS") == nullptr) {
 
-
-		int id = mlog::pseudo_random_number(1024*1024);
+		int id = mlog::pseudo_random_number(1024 * 1024);
 
 		std::string debug = boost::str(
 		    boost::format("This is a debug test (%1%)") % id);
