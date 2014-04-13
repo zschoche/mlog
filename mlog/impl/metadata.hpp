@@ -154,6 +154,9 @@ std::string log_metadata::to_string(const std::string &end_string,
 		 len = snprintf(buffer, max_size, "[%02i]{%s}: ", manager->session(),
 			 level_to_string(level).c_str());
 	}
+	if(len > max_size) {
+		len = max_size;
+	}
 	
 	if (!end_string.empty()) {
 		memcpy(&buffer[len], end_string.c_str(), end_string.size());
