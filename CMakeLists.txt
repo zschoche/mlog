@@ -10,6 +10,10 @@ add_definitions(-DMLOGTRACE)
 
 #add_definitions(-DMLOG_NO_LIB)
 
+set(VERSION_MAJOR "0")
+set(VERSION_MINOR "2")
+set(VERSION_PATCH "0")
+
 # boost
 # you should define BOOST_ROOT first
 find_package(Boost COMPONENTS system filesystem unit_test_framework regex)
@@ -29,10 +33,16 @@ include_directories(
 
 
 #source directorys
-aux_source_directory(./libs mlog_src)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/libs mlog_src)
 
 #librarys
-add_library(mlog SHARED ${mlog_src})
+FILE(GLOB mlog_public_incl ${CMAKE_CURRENT_SOURCE_DIR}/mlog/*.hpp)
+FILE(GLOB mlog_private_incl ${CMAKE_CURRENT_SOURCE_DIR}/mlog/impl/*.hpp)
+
+add_library(mlog SHARED ${mlog_src} ${mlog_incl})
+set_target_properties(mlog PROPERTIES
+    PUBLIC_HEADER  "${mlog_public_incl}"
+    PRIVATE_HEADER "${mlog_private_incl}")
 
 #programs
 add_executable(test EXCLUDE_FROM_ALL test_src/test.cpp)
@@ -77,10 +87,13 @@ target_link_libraries(benchmark mlog ${Boost_LIBRARIES} boost_log boost_thread)
 
 install(
     TARGETS mlog
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    )
-install(DIRECTORY mlog DESTINATION include)
+    RUNTIME DESTINATION bin COMPONENT runtime
+    LIBRARY DESTINATION lib COMPONENT runtime
+    ARCHIVE DESTINATION lib COMPONENT runtime
+    PUBLIC_HEADER DESTINATION include/mlog COMPONENT development
+    PRIVATE_HEADER DESTINATION include/mlog/impl COMPONENT development
+)
 #enable_testing()
 #ADD_TEST(unittest test)
+
+add_subdirectory(debian)

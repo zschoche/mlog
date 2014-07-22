@@ -1,0 +1,13 @@
+# - Config file for the Mlog package
+#  It defines the following variables
+#  Mlog_FOUND           - the library is found
+#  Mlog_INCLUDE_DIRS    - include directories for MlogClient
+#  Mlog_LIBRARY_DIRS    - directory for MlogClient libraries
+#  Mlog_LIBRARIES       - libraries to link against
+
+set (Mlog_FOUND "ON")
+
+set (Mlog_INCLUDE_DIRS @CMAKE_INSTALL_PREFIX@/include)
+set (Mlog_LIBRARY_DIRS @CMAKE_INSTALL_PREFIX@/lib)
+set (Mlog_LIBRARIES mlog)
+
