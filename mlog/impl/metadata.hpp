@@ -63,7 +63,7 @@ std::string log_metadata::to_string(const std::string &end_string,
 	result.resize(max_size + end_string.size());
 
 	char *buffer = const_cast<char *>(result.c_str());
-	int len;
+	size_t len;
 	if (manager->use_time()) {
 
 		const std::time_t timet = clocks::to_time_t(time);
@@ -157,13 +157,13 @@ std::string log_metadata::to_string(const std::string &end_string,
 	if(len > max_size) {
 		len = max_size;
 	}
-	
+
 	if (!end_string.empty()) {
 		memcpy(&buffer[len], end_string.c_str(), end_string.size());
 		len += end_string.size();
 	}
-	
-	
+
+
 	if (end_line) {
 		result.resize(len + 1);
 		//result[len] = '\r';
