@@ -1,0 +1,8 @@
+include (CPackConfig.cmake)
+
+set (CPACK_COMPONENTS_ALL runtime)
+
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "Development files for mlog")
+set (CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+set (CPACK_DEBIAN_PACKAGE_SECTION "dev")
+set (CPACK_DEBIAN_ARCHITECTURE ${CMAKE_SYSTEM_PROCESSOR})

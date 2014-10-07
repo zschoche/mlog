@@ -39,7 +39,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/libs mlog_src)
 FILE(GLOB mlog_public_incl ${CMAKE_CURRENT_SOURCE_DIR}/mlog/*.hpp)
 FILE(GLOB mlog_private_incl ${CMAKE_CURRENT_SOURCE_DIR}/mlog/impl/*.hpp)
 
-add_library(mlog SHARED ${mlog_src} ${mlog_incl})
+add_library(mlog ${mlog_src} ${mlog_incl})
 set_target_properties(mlog PROPERTIES
     PUBLIC_HEADER  "${mlog_public_incl}"
     PRIVATE_HEADER "${mlog_private_incl}")
