@@ -41,7 +41,7 @@ namespace mlog {
 #if _MSC_VER
 			localtime_s(r, &t);
 #else
-			localtime_s(&t, r);
+			localtime_r(&t, r);
 #endif
 
 		}
