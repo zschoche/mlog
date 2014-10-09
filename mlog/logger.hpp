@@ -1,8 +1,13 @@
-/*
- * logger.hpp
- *
- *  Created on: Aug 9, 2012
- *      Author: philipp
+/*
+
+ * logger.hpp
+
+ *
+
+ *  Created on: Aug 9, 2012
+
+ *      Author: philipp
+
  */
 
 #ifndef __LOGGER_HPP__

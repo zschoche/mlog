@@ -1,7 +1,11 @@
-/*
-*
-*	Author: Philipp Zschoche
-*
+/*
+
+*
+
+*	Author: Philipp Zschoche
+
+*
+
 */
 #ifndef __ANDROID__
 #ifndef __FILE_LOGGER_HPP__
@@ -15,22 +19,38 @@
 
 typedef std::size_t mlog_bytes;
 
-/*
-constexpr mlog_bytes operator"" _KB(int kb)
-{
-	return kb * 1024;
-}
-
-constexpr mlog_bytes operator"" _MB(std::size_t mb)
-{
-	return mb * 1024 * 1024;
-}
-
-constexpr mlog_bytes operator"" _GB(std::size_t bg)
-{
-	return gb * 1024 * 1024 * 1024;
-}
-
+/*
+
+constexpr mlog_bytes operator"" _KB(int kb)
+
+{
+
+	return kb * 1024;
+
+}
+
+
+
+constexpr mlog_bytes operator"" _MB(std::size_t mb)
+
+{
+
+	return mb * 1024 * 1024;
+
+}
+
+
+
+constexpr mlog_bytes operator"" _GB(std::size_t bg)
+
+{
+
+	return gb * 1024 * 1024 * 1024;
+
+}
+
+
+
 */
 
 namespace mlog {

@@ -1,8 +1,13 @@
-/*
- * logger.hpp
- *
- *  Created on: Aug 9, 2012
- *      Author: philipp
+/*
+
+ * logger.hpp
+
+ *
+
+ *  Created on: Aug 9, 2012
+
+ *      Author: philipp
+
  */
 
 #ifndef __METADATA_HPP__
@@ -107,10 +112,14 @@ class log_metadata {
 	std::thread::id thread_id;
 	log_position position;
 
-	/*	log_metadata(const log_metadata &) = default;
-	//	log_metadata(log_metadata &&) = default;
-		log_metadata &operator=(const log_metadata &) = default;
-		log_metadata &operator=(log_metadata &&) = default;
+	/*	log_metadata(const log_metadata &) = default;
+
+	//	log_metadata(log_metadata &&) = default;
+
+		log_metadata &operator=(const log_metadata &) = default;
+
+		log_metadata &operator=(log_metadata &&) = default;
+
 		~log_metadata() = default;*/
 
 	log_metadata() : level(info) {}

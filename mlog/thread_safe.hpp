@@ -1,7 +1,11 @@
-/*
-*
-*	Author: Philipp Zschoche
-*
+/*
+
+*
+
+*	Author: Philipp Zschoche
+
+*
+
 */
 #ifndef __THREAD_SAFE_HPP__
 #define __THREAD_SAFE_HPP__

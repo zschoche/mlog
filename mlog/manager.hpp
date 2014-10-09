@@ -1,8 +1,13 @@
-/*
- * mlog.hpp
- *
- *  Created on: Aug 12, 2012
- *      Author: philipp
+/*
+
+ * mlog.hpp
+
+ *
+
+ *  Created on: Aug 12, 2012
+
+ *      Author: philipp
+
  */
 
 #ifndef _MLOG_MANAGER_HPP_

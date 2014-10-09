@@ -1,8 +1,14 @@
-/*
- * mlog.cpp
- *
- *  Created on: Aug 12, 2012
- *  Author: philipp
+
+/*
+
+ * mlog.cpp
+
+ *
+
+ *  Created on: Aug 12, 2012
+
+ *  Author: philipp
+
  */
 
 #ifndef __MLOG_IPP__
