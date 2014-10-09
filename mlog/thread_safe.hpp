@@ -1,7 +1,7 @@
-/*
-*
-*	Author: Philipp Zschoche
-*
+/*
+*
+*	Author: Philipp Zschoche
+*
 */
 #ifndef __THREAD_SAFE_HPP__
 #define __THREAD_SAFE_HPP__
@@ -17,7 +17,8 @@
 
 namespace mlog {
 
-template <class logger_type> class thread_safe : public logger<thread_safe<logger_type> > {
+template <class logger_type>
+class thread_safe : public logger<thread_safe<logger_type> > {
       public:
 
 #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
@@ -41,17 +42,14 @@ template <class logger_type> class thread_safe : public logger<thread_safe<logge
 
 	~thread_safe() {}
 
-	template<typename M, typename T>
-	void write_to_log(M&& metadata, T&& log_text) {
+	template <typename M, typename T>
+	void write_to_log(M &&metadata, T &&log_text) {
 		boost::detail::lightweight_mutex::scoped_lock lock(m_mutex);
 		m_logger.write_to_log(std::forward<M>(metadata),
-					  std::forward<T>(log_text));
+				      std::forward<T>(log_text));
 	}
 
-	inline logger_type& get() {
-		return m_logger;
-	}
-	
+	inline logger_type &get() { return m_logger; }
 
       private:
 	logger_type m_logger;

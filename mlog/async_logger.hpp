@@ -26,7 +26,6 @@ struct async_logger : logger<async_logger<logger_type> > {
 	async_logger(std::size_t queue_size, Args &&... args)
 	    : m_queue_size(queue_size), m_logger(std::forward<Args>(args)...),
 	      m_worker(0), m_queue(m_queue_size) {}
-	
 
 #else
 

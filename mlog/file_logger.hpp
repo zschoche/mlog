@@ -1,10 +1,10 @@
-/*
-*
-*	Author: Philipp Zschoche
-*
+/*
+*
+*	Author: Philipp Zschoche
+*
 */
 #ifndef __ANDROID__
-#ifndef __FILE_LOGGER_HPP__  
+#ifndef __FILE_LOGGER_HPP__
 #define __FILE_LOGGER_HPP__
 
 #include "logger.hpp"
@@ -15,22 +15,22 @@
 
 typedef std::size_t mlog_bytes;
 
-/*
-constexpr mlog_bytes operator"" _KB(int kb)
-{
-	return kb * 1024;
-}
-
-constexpr mlog_bytes operator"" _MB(std::size_t mb)
-{
-	return mb * 1024 * 1024;
-}
-
-constexpr mlog_bytes operator"" _GB(std::size_t bg)
-{
-	return gb * 1024 * 1024 * 1024;
-}
-
+/*
+constexpr mlog_bytes operator"" _KB(int kb)
+{
+	return kb * 1024;
+}
+
+constexpr mlog_bytes operator"" _MB(std::size_t mb)
+{
+	return mb * 1024 * 1024;
+}
+
+constexpr mlog_bytes operator"" _GB(std::size_t bg)
+{
+	return gb * 1024 * 1024 * 1024;
+}
+
 */
 
 namespace mlog {
@@ -44,17 +44,19 @@ class file_logger : public logger<file_logger> {
 
 	template <typename M, typename T>
 	void write_to_log(M &&metadata, T &&log_text) {
-		std::string str = metadata.to_string(std::forward<T>(log_text), true);
+		std::string str =
+		    metadata.to_string(std::forward<T>(log_text), true);
 		m_stream.write(str.c_str(), str.size());
-		m_offset += str.size(); 
+		m_offset += str.size();
 
-		if(m_flush_immediately)
+		if (m_flush_immediately)
 			flush();
 
 		if (m_max_file_size != 0 && m_offset > max_file_size()) {
 			m_stream.open(
 			    get_next_logfile(m_log_directory, m_log_name,
-					     max_file_size(), &m_offset), std::ios::binary);
+					     max_file_size(), &m_offset),
+			    std::ios::binary);
 		}
 	}
 
@@ -68,17 +70,11 @@ class file_logger : public logger<file_logger> {
 
 	void flush();
 
-	inline bool flush_immediately() const {
-		return m_flush_immediately;
-	}
+	inline bool flush_immediately() const { return m_flush_immediately; }
 
-	template<typename T>
-	void flush_immediately(T&& value) {
+	template <typename T> void flush_immediately(T &&value) {
 		m_flush_immediately = value;
 	}
-	
-
-
 
       private:
 

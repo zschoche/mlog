@@ -1,8 +1,8 @@
-/*
- * mlog.hpp
- *
- *  Created on: Aug 12, 2012
- *      Author: philipp
+/*
+ * mlog.hpp
+ *
+ *  Created on: Aug 12, 2012
+ *      Author: philipp
  */
 
 #ifndef _MLOG_MANAGER_HPP_
@@ -67,5 +67,3 @@ struct mlog_manager {
 };
 } /* namespace mlog */
 #endif /* _MLOG_MANAGER_HPP_ */
-
-

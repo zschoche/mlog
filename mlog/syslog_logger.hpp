@@ -1,8 +1,8 @@
-/*
-*
-*	Author: Philipp Zschoche
-*	GitHub: https://github.com/zschoche
-*
+/*
+*
+*	Author: Philipp Zschoche
+*	GitHub: https://github.com/zschoche
+*
 */
 #if !defined(_WIN32) && (defined(__unix__) || defined(__unix) ||               \
 			 (defined(__APPLE__) && defined(__MACH__)))
@@ -37,11 +37,11 @@ class syslog_logger : public logger<syslog_logger> {
 
 	virtual ~syslog_logger() { closelog(); }
 
-	template<typename M, typename T>
-	void write_to_log(M&& metadata, T&& log_text) {
-		syslog(level, "%s", metadata.to_string(std::forward<T>(log_text)).c_str());
+	template <typename M, typename T>
+	void write_to_log(M &&metadata, T &&log_text) {
+		syslog(level, "%s",
+		       metadata.to_string(std::forward<T>(log_text)).c_str());
 	}
-
 
 	syslog_level level;
 };

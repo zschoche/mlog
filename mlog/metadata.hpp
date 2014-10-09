@@ -1,8 +1,8 @@
-/*
- * logger.hpp
- *
- *  Created on: Aug 9, 2012
- *      Author: philipp
+/*
+ * logger.hpp
+ *
+ *  Created on: Aug 9, 2012
+ *      Author: philipp
  */
 
 #ifndef __METADATA_HPP__
@@ -26,7 +26,6 @@ using boost::thread;
 #define THREAD_GET_ID() boost::this_thread::get_id()
 #endif
 
-
 enum mlog_level {
 	trace,
 	debug,
@@ -37,9 +36,6 @@ enum mlog_level {
 };
 
 namespace mlog {
-	
-	
-
 
 template <typename T> inline std::string level_to_string(T &&level) {
 	if (level == mlog_level::trace)
@@ -59,37 +55,39 @@ template <typename T> inline std::string level_to_string(T &&level) {
 struct log_position {
 	log_position() : filename(), line_number(0) {}
 
-	log_position(const char* _file, std::size_t _line_number)
+	log_position(const char *_file, std::size_t _line_number)
 	    : filename(cut_filename(_file)),
 	      line_number(std::move(_line_number)) {}
 
 	std::string filename;
 	int line_number;
 
-	inline static const char* cut_filename(const char* file) {
-		const char* result = file;
-		const char* ptr = file;
-		while(*ptr != '\0') {
-			if(*ptr == separator()) {
+	inline static const char *cut_filename(const char *file) {
+		const char *result = file;
+		const char *ptr = file;
+		while (*ptr != '\0') {
+			if (*ptr == separator()) {
 				ptr++;
 				result = ptr;
 			} else {
 				ptr++;
 			}
 		}
-		if(ptr == result) {
+		if (ptr == result) {
 			return file;
-		} else { 
+		} else {
 			if (ptr - result > 256) {
 				return ptr - 256;
-			} else {	
+			} else {
 				return result;
 			}
 		}
 	}
 
- static char separator() {
-#if defined(_WIN32_WCE) || defined(_WIN16) || defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
+	static char separator() {
+#if defined(_WIN32_WCE) || defined(_WIN16) || defined(_WIN32) ||               \
+    defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) ||           \
+    defined(__WINDOWS__)
 		return '\\';
 #else
 		return '/';
@@ -100,7 +98,7 @@ struct log_position {
 };
 
 class log_metadata {
-public:
+      public:
 	// typedef std::chrono::high_resolution_clock clocks;
 	typedef std::chrono::system_clock clocks;
 
@@ -109,15 +107,15 @@ public:
 	std::thread::id thread_id;
 	log_position position;
 
-/*	log_metadata(const log_metadata &) = default;
-//	log_metadata(log_metadata &&) = default;
-	log_metadata &operator=(const log_metadata &) = default;
-	log_metadata &operator=(log_metadata &&) = default;
-	~log_metadata() = default;*/
+	/*	log_metadata(const log_metadata &) = default;
+	//	log_metadata(log_metadata &&) = default;
+		log_metadata &operator=(const log_metadata &) = default;
+		log_metadata &operator=(log_metadata &&) = default;
+		~log_metadata() = default;*/
 
 	log_metadata() : level(info) {}
 
-	static inline std::chrono::time_point<clocks> get_time(); 
+	static inline std::chrono::time_point<clocks> get_time();
 	static inline std::thread::id get_thread_id();
 
 	log_metadata(mlog_level &&lvl);
@@ -125,7 +123,6 @@ public:
 	log_metadata(mlog_level &&lvl, const log_position &_position);
 	std::string to_string(const std::string &end_string = std::string(),
 			      bool end_line = false) const;
-
 };
 }
 #endif /* __METADATA_HPP_ */
