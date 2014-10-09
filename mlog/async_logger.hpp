@@ -35,7 +35,7 @@ struct async_logger : logger<async_logger<logger_type> > {
 		    BOOST_PP_IF(n, >, )                                        \
 		    async_logger(BOOST_PP_ENUM_BINARY_PARAMS(n, Arg, arg))     \
 	    : m_queue_size(1024), m_logger(BOOST_PP_ENUM_PARAMS(n, arg)),      \
-	      m_working(0), m_queue(queue_size) {}
+	      m_worker(0), m_queue(m_queue_size) {}
 
 	BOOST_PP_REPEAT(5, CTOR, ~)
 #undef CTOR
