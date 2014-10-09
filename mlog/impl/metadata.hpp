@@ -10,7 +10,7 @@
 #include "../metadata.hpp"
 #include <cstdio>
 #if _MSC_VER
-#define snprintf _snprintf_s
+#define snprintf _snprintf
 #endif
 
 #include <string>
@@ -27,6 +27,26 @@ namespace mlog {
 	return ss.str();
 }
 
+	namespace detail {
+		void get_tm_time(const std::time_t& t, std::tm* r) {
+#if _MSC_VER
+			gmtime_s(r, &t);
+#else
+			gmtime_r(&t, r);
+#endif
+
+		}
+
+		void get_local_time(const std::time_t& t, std::tm* r) {
+#if _MSC_VER
+			localtime_s(r, &t);
+#else
+			localtime_r(&t, r);
+#endif
+
+		}
+
+	}
 	std::chrono::time_point<log_metadata::clocks> log_metadata::get_time() {
 		if (mlog::manager->use_time())
 			return clocks::now();
@@ -60,7 +80,7 @@ std::string log_metadata::to_string(const std::string &end_string,
 
 	static const std::size_t max_size = 512;
 	std::string result;
-	result.resize(max_size + end_string.size());
+	result.resize(max_size + end_string.size()+2);
 
 	char *buffer = const_cast<char *>(result.c_str());
 	size_t len;
@@ -74,16 +94,17 @@ std::string log_metadata::to_string(const std::string &end_string,
 			time.time_since_epoch()).count() -
 		    timet * 1000000;
 
-		std::tm *tm = std::gmtime(&timet);
+		std::tm tm;
+		detail::get_tm_time(timet, &tm);
 		static int current_hour = -1;
 		static int local_factor = 0;
 
-		if (tm->tm_hour != current_hour) {
-			current_hour = tm->tm_hour;
-			tm = std::localtime(&timet);
-			local_factor = tm->tm_hour - current_hour;
+		if (tm.tm_hour != current_hour) {
+			current_hour = tm.tm_hour;
+			detail::get_local_time(timet, &tm);
+			local_factor = tm.tm_hour - current_hour;
 		} else {
-			tm->tm_hour += local_factor;
+			tm.tm_hour += local_factor;
 		}
 
 		if (manager->use_thread_id()) {
@@ -93,8 +114,8 @@ std::string log_metadata::to_string(const std::string &end_string,
 				len = snprintf(
 				    buffer, max_size,
 				    "%04i-%02i-%02i %02i:%02i:%02i.%u [%s:%i %02i-%s]{%s}: ",
-				    1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
-				    tm->tm_hour, tm->tm_min, tm->tm_sec, ms,
+				    1900 + tm.tm_year, tm.tm_mon, tm.tm_mday,
+				    tm.tm_hour, tm.tm_min, tm.tm_sec, ms,
 				    position.filename.c_str(),
 				    position.line_number, manager->session(),
 				    thread_id_to_string(thread_id).c_str(),
@@ -104,9 +125,9 @@ std::string log_metadata::to_string(const std::string &end_string,
 				len = snprintf(buffer, max_size,
 					 "%04i-%02i-%02i %02i:%02i:%02i.%u "
 					 "[%02i-%s]{%s}: ",
-					 1900 + tm->tm_year, tm->tm_mon,
-					 tm->tm_mday, tm->tm_hour, tm->tm_min,
-					 tm->tm_sec, ms, manager->session(),
+					 1900 + tm.tm_year, tm.tm_mon,
+					 tm.tm_mday, tm.tm_hour, tm.tm_min,
+					 tm.tm_sec, ms, manager->session(),
 					 thread_id_to_string(thread_id).c_str(),
 					 level_to_string(level).c_str());
 		} else // 2012-11-02 15:24:04.345 [24]{warning}:
@@ -116,8 +137,8 @@ std::string log_metadata::to_string(const std::string &end_string,
 				    buffer, max_size,
 				    "%04i-%02i-%02i %02i:%02i:%02i.%u[%s:%i "
 				    "%02i]{%s}: ",
-				    1900 + tm->tm_year, tm->tm_mon, tm->tm_mday,
-				    tm->tm_hour, tm->tm_min, tm->tm_sec, ms,
+				    1900 + tm.tm_year, tm.tm_mon, tm.tm_mday,
+				    tm.tm_hour, tm.tm_min, tm.tm_sec, ms,
 				    position.filename.c_str(),
 				    position.line_number, manager->session(),
 				    level_to_string(level).c_str());
@@ -125,9 +146,9 @@ std::string log_metadata::to_string(const std::string &end_string,
 				len = snprintf(buffer, max_size,
 					 "%04i-%02i-%02i "
 					 "%02i:%02i:%02i.%u[%02i]{%s}: ",
-					 1900 + tm->tm_year, tm->tm_mon,
-					 tm->tm_mday, tm->tm_hour, tm->tm_min,
-					 tm->tm_sec, ms, manager->session(),
+					 1900 + tm.tm_year, tm.tm_mon,
+					 tm.tm_mday, tm.tm_hour, tm.tm_min,
+					 tm.tm_sec, ms, manager->session(),
 					 level_to_string(level).c_str());
 			}
 		}
@@ -165,9 +186,9 @@ std::string log_metadata::to_string(const std::string &end_string,
 
 
 	if (end_line) {
-		result.resize(len + 1);
-		//result[len] = '\r';
-		result[len] = '\n';
+		result.resize(len + 2);
+		result[len] = '\r';
+		result[len+1] = '\n';
 	} else {
 		result.resize(len);
 	}

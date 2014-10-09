@@ -5,7 +5,6 @@ Makefile
 cmake_install.cmake
 libmlog.a
 tags
-test
 *swp
 log.txt
 log.txt.0

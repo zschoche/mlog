@@ -15,14 +15,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
-#ifdef _MSC_VER
-namespace std {
-double log2(double n) {
-	// log(n)/log(2) is log2.
-	return log(n) / log(2);
-}
-}
-#endif
+
 
 struct empty_logger : mlog::logger<empty_logger> {
 
@@ -67,14 +60,14 @@ BOOST_AUTO_TEST_CASE(mlog_memory_logger_1_test) {
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
 		log.to_string(),
-		boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: 1\\n")),
+		boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: 1\\r\\n")),
 	    true);
 	MLOG_INFO("2");
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
 		log.to_string(),
-		boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: "
-			     "1\\n\\[[0-9][0-9]\\]\\{info\\}: 2\n")),
+		boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: 1\\r\\n"
+						"\\[[0-9][0-9]\\]\\{info\\}: 2\\r\\n")),
 	    true);
 	BOOST_CHECK_EQUAL(log[0].text, "1");
 	BOOST_CHECK_EQUAL(log[1].text, "2");
@@ -161,6 +154,7 @@ BOOST_AUTO_TEST_CASE(mlog_async_test) {
 	std::cout << "mlog_async_test passed." << std::endl;
 }
 
+
 BOOST_AUTO_TEST_CASE(mlog_marco_test) {
 	const std::string filename = "macro_test.log";
 	std::remove(filename.c_str());
@@ -179,35 +173,35 @@ BOOST_AUTO_TEST_CASE(mlog_marco_test) {
 	BOOST_CHECK_EQUAL(file.is_open(), true);
 	std::string str;
 	std::getline(file, str);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: info\\r$")),
+	    true);
+	std::getline(file, str);
 	std::cout << str << std::endl;
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
-		str, boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: info$")),
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{debug\\}: debug\\r$")),
 	    true);
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
-		str, boost::regex("^\\[[0-9][0-9]\\]\\{debug\\}: debug$")),
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{error\\}: error\\r$")),
 	    true);
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
-		str, boost::regex("^\\[[0-9][0-9]\\]\\{error\\}: error$")),
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{fatal\\}: fatal\\r$")),
 	    true);
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
-		str, boost::regex("^\\[[0-9][0-9]\\]\\{fatal\\}: fatal$")),
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{trace\\}: trace\\r$")),
 	    true);
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
-		str, boost::regex("^\\[[0-9][0-9]\\]\\{trace\\}: trace$")),
-	    true);
-	std::getline(file, str);
-	BOOST_CHECK_EQUAL(
-	    boost::regex_match(
-		str, boost::regex("^\\[[0-9][0-9]\\]\\{warning\\}: warning$")),
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{warning\\}: warning\\r$")),
 	    true);
 	std::remove(filename.c_str());
 	std::cout << "mlog_marco_test passed." << std::endl;
@@ -238,37 +232,37 @@ BOOST_AUTO_TEST_CASE(mlog_options_test) {
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
-		str, boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: none$")),
+		str, boost::regex("^\\[[0-9][0-9]\\]\\{info\\}: none\r$")),
 	    true);
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
 		str,
-		boost::regex("^\\[[0-9][0-9]-.*\\]\\{info\\}: thread_id$")),
+		boost::regex("^\\[[0-9][0-9]-.*\\]\\{info\\}: thread_id\r$")),
 	    true);
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
-		str, boost::regex("^.*\\[[0-9][0-9]\\]\\{info\\}: time$")),
-	    true);
-	std::getline(file, str);
-	BOOST_CHECK_EQUAL(
-	    boost::regex_match(
-		str, boost::regex(
-			 "^\\[[^:]*:[0-9]* [0-9]*\\]\\{info\\}: position$")),
+		str, boost::regex("^.*\\[[0-9][0-9]\\]\\{info\\}: time\r$")),
 	    true);
 	std::getline(file, str);
 	BOOST_CHECK_EQUAL(
 	    boost::regex_match(
 		str, boost::regex(
-			 "^.*\\[[^:]*:[0-9]* [0-9]*-.*\\]\\{info\\}: all$")),
+			 "^\\[[^:]*:[0-9]* [0-9]*\\]\\{info\\}: position\r$")),
+	    true);
+	std::getline(file, str);
+	BOOST_CHECK_EQUAL(
+	    boost::regex_match(
+		str, boost::regex(
+			 "^.*\\[[^:]*:[0-9]* [0-9]*-.*\\]\\{info\\}: all\r$")),
 	    true);
 	std::remove(filename.c_str());
 	std::cout << "mlog_marco_test passed." << std::endl;
 }
 
 boost::regex
-stdline("^\\[[0-9].\\]\\{(info|debung|trace|warning|error|fatal)\\}: [0-9]*$");
+stdline("^\\[[0-9].\\]\\{(info|debung|trace|warning|error|fatal)\\}: [0-9]*\r$");
 
 BOOST_AUTO_TEST_CASE(mlog_file_logger_test) {
 
@@ -292,6 +286,7 @@ BOOST_AUTO_TEST_CASE(mlog_file_logger_test) {
 		BOOST_CHECK_EQUAL(std::atoi(num.c_str()), i);
 		BOOST_CHECK_EQUAL(boost::regex_match(str, stdline), true);
 	}
+
 	std::remove(filename.c_str());
 	std::cout << "mlog_file_logger_test passed." << std::endl;
 }
