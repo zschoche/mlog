@@ -47,3 +47,4 @@ log.txt.5
 log.txt.6
 log.txt.7
 benchmark
+*.filters
