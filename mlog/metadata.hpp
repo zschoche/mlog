@@ -88,7 +88,7 @@ struct log_position {
 		}
 	}
 
-	constexpr static char separator() {
+ static char separator() {
 #if defined(_WIN32_WCE) || defined(_WIN16) || defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__)
 		return '\\';
 #else
@@ -99,8 +99,8 @@ struct log_position {
 	inline bool has_value() const { return line_number != 0; }
 };
 
-struct log_metadata {
-
+class log_metadata {
+public:
 	// typedef std::chrono::high_resolution_clock clocks;
 	typedef std::chrono::system_clock clocks;
 
@@ -109,11 +109,11 @@ struct log_metadata {
 	std::thread::id thread_id;
 	log_position position;
 
-	log_metadata(const log_metadata &) = default;
-	log_metadata(log_metadata &&) = default;
+/*	log_metadata(const log_metadata &) = default;
+//	log_metadata(log_metadata &&) = default;
 	log_metadata &operator=(const log_metadata &) = default;
 	log_metadata &operator=(log_metadata &&) = default;
-	~log_metadata() = default;
+	~log_metadata() = default;*/
 
 	log_metadata() : level(info) {}
 
