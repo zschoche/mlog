@@ -44,15 +44,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\Boost\lib;../Debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>../../..;C:\Boost\include\boost-1_53;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Libraries\boost\stage\lib;C:\Boost\lib;../Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Libraries\boost;../../..;C:\Boost\include\boost-1_53;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
     <LibraryWPath>$(LibraryWPath)</LibraryWPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>../../..;C:\Boost\include\boost-1_56;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Boost\lib;../Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Libraries\boost;../../..;C:\Boost\include\boost-1_56;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Libraries\boost\stage\lib;C:\Boost\lib;../Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
