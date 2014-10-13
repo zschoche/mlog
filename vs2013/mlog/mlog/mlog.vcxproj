@@ -40,11 +40,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Libraries\boost;C:\Boost\include\boost-1_56;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Libraries\boost\stage\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Libraries\boost;../../..;C:\Boost\include\boost-1_56;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Libraries\boost\stage\lib;C:\Boost\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Libraries\boost;C:\Boost\include\boost-1_56;$(IncludePath)</IncludePath>
+    <IncludePath>>C:\Libraries\boost;../../..;C:\Boost\include\boost-1_56;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libraries\boost\stage\lib;C:\Boost\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -55,7 +55,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
