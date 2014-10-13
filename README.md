@@ -1,4 +1,4 @@
-# mlog [![Build Status](https://travis-ci.org/zschoche/mlog.png?branch=master)](https://travis-ci.org/zschoche/mlog)
+# mlog [![Build Status](https://travis-ci.org/zschoche/mlog.png?branch=master)](https://travis-ci.org/zschoche/mlog) [![Build status](https://ci.appveyor.com/api/projects/status/vg10iijgbu67htwp?svg=true)](https://ci.appveyor.com/project/zschoche/mlog)
 
 Comfortable lightweight C++ logging library -- cross-platform, C++11. 
 
