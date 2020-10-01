@@ -8,7 +8,7 @@ Boost.Log is a great library (especially v2.0 which was not ready at the beginni
 
 I decided to start a lightweight logging library. The goal is to have a library which is as comfortable as possible and with an as low as possible logging performance overhead.
 
-## What makes this library lightweight and comfortable?
+## What makes this library lightweight?
 
 During development or beta phases, you'll often want to make heavy use of log statements but you'll want to build a release-version of your app and remove all log statements of specific log levels used in development, which means that there is zero performance overhead for those statements. You can do this easily with a different set of preprocessor flags to disable certain log-levels. No instructions of the disabled log statements will even be compiled into the binary.  
 
