@@ -16,7 +16,7 @@ set(VERSION_PATCH "0")
 
 # boost
 # you should define BOOST_ROOT first
-find_package(Boost COMPONENTS system filesystem unit_test_framework regex)
+find_package(Boost COMPONENTS system filesystem unit_test_framework regex log)
 include_directories()
 if(MSVC)
     # disable auto link on windows
@@ -59,7 +59,7 @@ else()
                     OUTPUT_VARIABLE GCC_VERSION)
         if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
                 message("using gcc with -std=c++0x")
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -pthread")
         else()
                 message("using gcc with -std=gnu++0x")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
